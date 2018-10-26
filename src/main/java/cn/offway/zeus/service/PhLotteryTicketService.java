@@ -1,0 +1,33 @@
+package cn.offway.zeus.service;
+
+import java.util.List;
+
+import cn.offway.zeus.domain.PhLotteryTicket;
+import cn.offway.zeus.domain.PhWxuserInfo;
+
+/**
+ * 抽奖券表Service接口
+ *
+ * @author wn
+ * @version $v: 1.0.0, $time:2018-10-15 16:49:00 Exp $
+ */
+public interface PhLotteryTicketService{
+
+	PhLotteryTicket save(PhLotteryTicket phLotteryTicket);
+	
+	PhLotteryTicket findOne(Long id);
+	
+	/**
+	 * 抽奖登记-发放抽奖券
+	 * @param productId
+	 * @param openid
+	 */
+	void register(Long productId, PhWxuserInfo phWxuserInfo, PhWxuserInfo iphWxuserInfo);
+	
+	int countByProductIdAndUnionidAndSource(Long productId, String unionid, String source);
+
+	List<PhLotteryTicket> findByProductIdAndUnionid(Long productId, String unionid);
+
+	void shareTicket(String unionid, Long productId);
+
+}
