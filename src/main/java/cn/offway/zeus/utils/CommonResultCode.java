@@ -25,6 +25,9 @@ public enum CommonResultCode implements ResultCode {
     /** 活动已参加 */
     ACTIVITY_PARTICIPATED("1004", "ACTIVITY_PARTICIPATED"),
     
+    /** 活动已上限 */
+    ACTIVITY_LIMIT("1005", "ACTIVITY_LIMIT"),
+    
     ;
 	
 	
