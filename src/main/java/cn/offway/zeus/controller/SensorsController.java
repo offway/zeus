@@ -57,7 +57,7 @@ public class SensorsController {
 		
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		SaTrack saTrack = new SaTrack();
 		Map<String, Object> properties = new HashMap<>();
 		//浏览页面
@@ -120,5 +120,5 @@ public class SensorsController {
 		saTrack.setProperties(properties);
 		System.out.println(JSON.toJSONString(saTrack,SerializerFeature.WriteMapNullValue));
 		
-	}
+	}*/
 }
