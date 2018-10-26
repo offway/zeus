@@ -176,6 +176,12 @@ public class LotteryController {
 	@PostMapping("/saveShare")
 	public JsonResult saveShare(@ApiParam("活动ID") @RequestParam Long productId,@ApiParam("用户unionid") @RequestParam String unionid){
 		try {
+			// 检查活动时间
+			PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
+			Date now = new Date();
+			if (now.before(phProductInfo.getBeginTime()) || now.after(phProductInfo.getEndTime())) {
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
+			}
 			phShareRecordService.saveShare(productId,unionid);
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		} catch (Exception e) {
