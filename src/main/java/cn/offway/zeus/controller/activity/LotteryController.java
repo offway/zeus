@@ -104,7 +104,7 @@ public class LotteryController {
 				int count = phInviteRecordService.countByProductIdAndUnionid(productId, inviteUnionid);
 				if(count >= 50){
 					//邀请上限
-					return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_PARTICIPATED);
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_LIMIT);
 				}
 			}
 			
