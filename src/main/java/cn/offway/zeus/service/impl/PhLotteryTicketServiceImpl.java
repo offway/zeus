@@ -23,6 +23,7 @@ import cn.offway.zeus.repository.PhLotteryTicketRepository;
 import cn.offway.zeus.service.PhInviteRecordService;
 import cn.offway.zeus.service.PhLotteryTicketService;
 import cn.offway.zeus.service.PhWxuserInfoService;
+import cn.offway.zeus.utils.CommonResultCode;
 
 
 /**
@@ -97,46 +98,52 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 
 	private void inviteExcute(Long productId, PhWxuserInfo phWxuserInfo, PhWxuserInfo iphWxuserInfo,
 			List<PhLotteryTicket> phLotteryTickets) {
-		//邀请人获得抽奖码
-		//1.查询邀请用户数
-		int count = phInviteRecordService.countByProductIdAndUnionid(productId, iphWxuserInfo.getUnionid());
-		count ++; 
-		//邀请人获得抽奖码数
-		int getTickets = 1;
-		switch (count) {
-		case 2:
-			getTickets = 2;
-			break;
-		case 4:
-			getTickets = 3;
-			break;
-		case 8:
-			getTickets = 4;
-			break;
-		case 15:
-			getTickets = 6;
-			break;
-		case 30:
-			getTickets = 10;
-			break;
-		default:
-			getTickets = 1;
-			break;
+		
+		//查询邀请用户数
+		int inviteCount = phInviteRecordService.countByProductIdAndUnionid(productId, iphWxuserInfo.getUnionid());
+		//邀请50人以上不发放抽奖券
+		if(inviteCount < 50){
+			
+			//邀请人获得抽奖码
+			inviteCount ++; 
+			//邀请人获得抽奖码数
+			int getTickets = 1;
+			switch (inviteCount) {
+			case 2:
+				getTickets = 2;
+				break;
+			case 4:
+				getTickets = 3;
+				break;
+			case 8:
+				getTickets = 4;
+				break;
+			case 15:
+				getTickets = 6;
+				break;
+			case 30:
+				getTickets = 10;
+				break;
+			default:
+				getTickets = 1;
+				break;
+			}
+			
+			for (int i = 0; i < getTickets; i++) {
+				PhLotteryTicket phLotteryTicket = new PhLotteryTicket();
+				phLotteryTicket.setCreateTime(new Date());
+				phLotteryTicket.setHeadUrl(iphWxuserInfo.getHeadimgurl());
+				phLotteryTicket.setNickName(iphWxuserInfo.getNickname());
+				phLotteryTicket.setUnionid(iphWxuserInfo.getUnionid());
+				phLotteryTicket.setProductId(productId);
+				phLotteryTicket.setSource(TicketSourceEnum.INVITE.getCode());
+				phLotteryTicket.setRemark("邀请用户所得,邀请了用户unionid:"+phWxuserInfo.getUnionid());
+				phLotteryTickets.add(phLotteryTicket);
+			}
+			
+			saTrack(iphWxuserInfo.getUnionid(), getTickets);
 		}
 		
-		for (int i = 0; i < getTickets; i++) {
-			PhLotteryTicket phLotteryTicket = new PhLotteryTicket();
-			phLotteryTicket.setCreateTime(new Date());
-			phLotteryTicket.setHeadUrl(iphWxuserInfo.getHeadimgurl());
-			phLotteryTicket.setNickName(iphWxuserInfo.getNickname());
-			phLotteryTicket.setUnionid(iphWxuserInfo.getUnionid());
-			phLotteryTicket.setProductId(productId);
-			phLotteryTicket.setSource(TicketSourceEnum.INVITE.getCode());
-			phLotteryTicket.setRemark("邀请用户所得,邀请了用户unionid:"+phWxuserInfo.getUnionid());
-			phLotteryTickets.add(phLotteryTicket);
-		}
-		
-		saTrack(iphWxuserInfo.getUnionid(), getTickets);
 		
 		//保存邀请记录
 		PhInviteRecord phInviteRecord = new PhInviteRecord();

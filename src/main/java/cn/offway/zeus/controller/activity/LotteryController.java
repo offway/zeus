@@ -101,11 +101,6 @@ public class LotteryController {
 				if(null == iphWxuserInfo){
 					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 				}
-				int count = phInviteRecordService.countByProductIdAndUnionid(productId, inviteUnionid);
-				if(count >= 50){
-					//邀请上限
-					return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_LIMIT);
-				}
 			}
 			
 			phLotteryTicketService.register(productId, phWxuserInfo, iphWxuserInfo);
