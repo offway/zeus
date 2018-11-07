@@ -1,8 +1,14 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.criterion.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import cn.offway.zeus.domain.PhProductInfo;
@@ -32,5 +38,20 @@ public class PhProductInfoServiceImpl implements PhProductInfoService {
 	@Override
 	public PhProductInfo findOne(Long id){
 		return phProductInfoRepository.findOne(id);
+	}
+	
+	@Override
+	public Map<String, List<PhProductInfo>> list(){
+		Map<String, List<PhProductInfo>> resultMap = new HashMap<>();
+		
+		resultMap.put("current", phProductInfoRepository.findByNow());
+		resultMap.put("next", phProductInfoRepository.findBynext());
+		resultMap.put("before", phProductInfoRepository.findByBefore());
+		return resultMap;
+	}
+	
+	@Override
+	public List<PhProductInfo> findByUnionid(String unionid){
+		return phProductInfoRepository.findByUnionid(unionid);
 	}
 }

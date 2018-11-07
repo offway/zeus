@@ -1,5 +1,8 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+import java.util.Map;
+
 import cn.offway.zeus.domain.PhProductInfo;
 
 /**
@@ -13,4 +16,8 @@ public interface PhProductInfoService{
 	PhProductInfo save(PhProductInfo phProductInfo);
 	
 	PhProductInfo findOne(Long id);
+
+	Map<String, List<PhProductInfo>> list();
+
+	List<PhProductInfo> findByUnionid(String unionid);
 }

@@ -23,6 +23,12 @@ public class PhProductInfo implements Serializable {
     /** 活动描述 **/
     private String desc;
 
+    /** 活动banner **/
+    private String banner;
+
+    /** 奖品价值[单位RMB] **/
+    private Double price;
+
     /** 活动开始时间 **/
     private Date beginTime;
 
@@ -63,6 +69,24 @@ public class PhProductInfo implements Serializable {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    @Column(name = "banner", length = 255)
+    public String getBanner() {
+        return banner;
+    }
+
+    public void setBanner(String banner) {
+        this.banner = banner;
+    }
+
+    @Column(name = "price", precision = 15, scale = 2)
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     @Temporal(TemporalType.TIMESTAMP)
