@@ -2,6 +2,9 @@ package cn.offway.zeus.domain;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
@@ -17,8 +20,14 @@ public class PhWxuserInfo implements Serializable {
     /** ID **/
     private Long id;
 
-    /** 微信用户ID **/
+    /** 微信公众号用户ID **/
     private String openid;
+	
+    /** 微信小程序用户ID **/
+    private String miniopenid;
+	
+    /** 微信APP用户ID **/
+    private String appopenid;
 
     /** 用户昵称 **/
     private String nickname;
@@ -47,9 +56,6 @@ public class PhWxuserInfo implements Serializable {
     /** 创建时间 **/
     private Date createTime;
 
-    /** 是否下载APP[0-否,1-是] **/
-    private String appDownload;
-
     /** 备注 **/
     private String remark;
 
@@ -73,8 +79,27 @@ public class PhWxuserInfo implements Serializable {
     public void setOpenid(String openid) {
         this.openid = openid;
     }
+    
 
-    @Column(name = "nickname", length = 200)
+    @Column(name = "miniopenid", length = 50)
+    public String getMiniopenid() {
+		return miniopenid;
+	}
+
+	public void setMiniopenid(String miniopenid) {
+		this.miniopenid = miniopenid;
+	}
+
+	@Column(name = "appopenid", length = 50)
+	public String getAppopenid() {
+		return appopenid;
+	}
+
+	public void setAppopenid(String appopenid) {
+		this.appopenid = appopenid;
+	}
+
+	@Column(name = "nickname", length = 200)
     public String getNickname() {
         return nickname;
     }
@@ -154,15 +179,6 @@ public class PhWxuserInfo implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-    }
-
-    @Column(name = "app_download", length = 1)
-    public String getAppDownload() {
-        return appDownload;
-    }
-
-    public void setAppDownload(String appDownload) {
-        this.appDownload = appDownload;
     }
 
     @Column(name = "remark", length = 200)

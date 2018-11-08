@@ -77,11 +77,9 @@ public class IndexController {
 		if(StringUtils.isNotBlank(phWxuserInfo.getOpenid())){
 			//如果存在授权用户信息则更新
 			PhWxuserInfo oldphWxuserInfo = phWxuserInfoService.findByUnionid(phWxuserInfo.getUnionid());
-			phWxuserInfo.setAppDownload("0");//默认没下载APP
 			phWxuserInfo.setCreateTime(new Date());
 			if(null != oldphWxuserInfo){
 				phWxuserInfo.setId(oldphWxuserInfo.getId());
-				phWxuserInfo.setAppDownload(oldphWxuserInfo.getAppDownload());
 			}
 			return phWxuserInfoService.save(phWxuserInfo);
 		}else{

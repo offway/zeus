@@ -2,6 +2,7 @@ package cn.offway.zeus.controller;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -46,9 +47,17 @@ public class UserController {
 			if(null == phWxuserInfo){
 				phWxuserInfo = new PhWxuserInfo();
 			}
+			if(StringUtils.isBlank(wxuserInfo.getOpenid())){
+				wxuserInfo.setOpenid(phWxuserInfo.getOpenid());
+			}
+			if(StringUtils.isBlank(wxuserInfo.getAppopenid())){
+				wxuserInfo.setAppopenid(phWxuserInfo.getAppopenid());
+			}
+			if(StringUtils.isBlank(wxuserInfo.getMiniopenid())){
+				wxuserInfo.setMiniopenid(phWxuserInfo.getMiniopenid());
+			}
 			BeanUtils.copyProperties(wxuserInfo, phWxuserInfo);
 			phWxuserInfo.setCreateTime(new Date());
-			phWxuserInfo.setAppDownload("1");
 			phWxuserInfoService.save(phWxuserInfo);
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		} catch (Exception e) {

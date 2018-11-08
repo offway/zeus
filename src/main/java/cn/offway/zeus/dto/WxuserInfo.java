@@ -18,8 +18,14 @@ public class WxuserInfo implements Serializable {
 	 */
 	private static final long serialVersionUID = -649303806117978843L;
 
-	@ApiModelProperty("微信用户ID")
+	@ApiModelProperty("微信公众号用户ID")
     private String openid;
+	
+	@ApiModelProperty("微信小程序用户ID")
+    private String miniopenid;
+	
+	@ApiModelProperty("微信APP用户ID")
+    private String appopenid;
 
     @ApiModelProperty("用户昵称")
     private String nickname;
@@ -53,7 +59,23 @@ public class WxuserInfo implements Serializable {
         this.openid = openid;
     }
 
-    public String getNickname() {
+    public String getMiniopenid() {
+		return miniopenid;
+	}
+
+	public void setMiniopenid(String miniopenid) {
+		this.miniopenid = miniopenid;
+	}
+
+	public String getAppopenid() {
+		return appopenid;
+	}
+
+	public void setAppopenid(String appopenid) {
+		this.appopenid = appopenid;
+	}
+
+	public String getNickname() {
     	return nickname;
     }
 
