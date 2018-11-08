@@ -142,18 +142,9 @@ public class LotteryController {
 		
 		PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
 		map.put("productId", phProductInfo.getId());
+		map.put("banner", phProductInfo.getBanner());
 		map.put("beginTime", phProductInfo.getBeginTime());
 		map.put("endTime", phProductInfo.getEndTime());
-		//是否下载APP
-//		boolean appDownloaded = false;
-//		PhWxuserInfo phWxuserInfo = phWxuserInfoService.findByUnionid(unionid);
-//		if(null!= phWxuserInfo){
-//			String appDownload = phWxuserInfo.getAppDownload();
-//			if("1".equals(appDownload)){
-//				appDownloaded = true;
-//			}
-//		}
-//		map.put("appDownloaded", appDownloaded);
 		//默认已下载APP
 		map.put("appDownloaded", true);
 		int shareCount = phShareRecordService.countByUnionidAndProductId(unionid, productId);

@@ -22,6 +22,9 @@ public class PhProductInfo implements Serializable {
 
     /** 活动描述 **/
     private String desc;
+    
+    /** 活动列表图片 **/
+    private String image;
 
     /** 活动banner **/
     private String banner;
@@ -71,7 +74,16 @@ public class PhProductInfo implements Serializable {
         this.desc = desc;
     }
 
-    @Column(name = "banner", length = 255)
+    @Column(name = "image", length = 255)
+    public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	@Column(name = "banner", length = 255)
     public String getBanner() {
         return banner;
     }
