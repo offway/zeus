@@ -78,7 +78,7 @@ public class LotteryController {
 	@ApiOperation(value = "登记抽奖")
 	@PostMapping("/register")
 	public JsonResult register(@ApiParam("活动ID") @RequestParam Long productId, @ApiParam("用户unionid") @RequestParam String unionid,
-			@ApiParam("邀请人unionid") @RequestParam(required = false) String inviteUnionid,@ApiParam("表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id") @RequestParam String formId) {
+			@ApiParam("邀请人unionid") @RequestParam(required = false) String inviteUnionid,@ApiParam("表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id") @RequestParam(required = false) String formId) {
 
 		try {
 			// 检查活动时间
@@ -169,7 +169,8 @@ public class LotteryController {
 	
 	@ApiOperation(value = "保存分享记录")
 	@PostMapping("/saveShare")
-	public JsonResult saveShare(@ApiParam("活动ID") @RequestParam Long productId,@ApiParam("用户unionid") @RequestParam String unionid){
+	public JsonResult saveShare(@ApiParam("活动ID") @RequestParam Long productId,@ApiParam("用户unionid") @RequestParam String unionid,
+			@ApiParam("渠道") @RequestParam(required = false) String channel){
 		try {
 			// 检查活动时间
 			PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
@@ -177,7 +178,7 @@ public class LotteryController {
 			if (now.before(phProductInfo.getBeginTime()) || now.after(phProductInfo.getEndTime())) {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
 			}
-			phShareRecordService.saveShare(productId,unionid);
+			phShareRecordService.saveShare(productId,unionid,channel);
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -17,11 +17,13 @@ import com.sensorsdata.analytics.javasdk.exceptions.InvalidArgumentException;
 
 import cn.offway.zeus.domain.PhInviteRecord;
 import cn.offway.zeus.domain.PhLotteryTicket;
+import cn.offway.zeus.domain.PhProductInfo;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.enums.TicketSourceEnum;
 import cn.offway.zeus.repository.PhLotteryTicketRepository;
 import cn.offway.zeus.service.PhInviteRecordService;
 import cn.offway.zeus.service.PhLotteryTicketService;
+import cn.offway.zeus.service.PhProductInfoService;
 import cn.offway.zeus.service.PhWxuserInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 
@@ -45,6 +47,9 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 	
 	@Autowired
 	private PhInviteRecordService phInviteRecordService;
+	
+	@Autowired
+	private PhProductInfoService phProductInfoService;
 	
 	@Autowired
 	private SensorsAnalytics sa;
@@ -83,12 +88,15 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		phLotteryTicket.setFormId(formId);
 		phLotteryTickets.add(phLotteryTicket);
 		
-		saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size());
+		
+		PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
+		String channel = StringUtils.isNotBlank(formId)?"小程序":"公众号";
+		saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
 
 		
 		if(null != iphWxuserInfo){
 			//邀请奖励
-			inviteExcute(productId, phWxuserInfo, iphWxuserInfo, phLotteryTickets);
+			inviteExcute(phProductInfo, phWxuserInfo, iphWxuserInfo, phLotteryTickets,channel);
 		}
 		
 		
@@ -97,11 +105,11 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		phLotteryTicketRepository.updateCode();
 	}
 
-	private void inviteExcute(Long productId, PhWxuserInfo phWxuserInfo, PhWxuserInfo iphWxuserInfo,
-			List<PhLotteryTicket> phLotteryTickets) {
+	private void inviteExcute(PhProductInfo phProductInfo, PhWxuserInfo phWxuserInfo, PhWxuserInfo iphWxuserInfo,
+			List<PhLotteryTicket> phLotteryTickets,String channel) {
 		
 		//查询邀请用户数
-		int inviteCount = phInviteRecordService.countByProductIdAndUnionid(productId, iphWxuserInfo.getUnionid());
+		int inviteCount = phInviteRecordService.countByProductIdAndUnionid(phProductInfo.getId(), iphWxuserInfo.getUnionid());
 		//邀请50人以上不发放抽奖券
 		if(inviteCount < 50){
 			
@@ -136,13 +144,13 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 				phLotteryTicket.setHeadUrl(iphWxuserInfo.getHeadimgurl());
 				phLotteryTicket.setNickName(iphWxuserInfo.getNickname());
 				phLotteryTicket.setUnionid(iphWxuserInfo.getUnionid());
-				phLotteryTicket.setProductId(productId);
+				phLotteryTicket.setProductId(phProductInfo.getId());
 				phLotteryTicket.setSource(TicketSourceEnum.INVITE.getCode());
 				phLotteryTicket.setRemark("邀请用户所得,邀请了用户unionid:"+phWxuserInfo.getUnionid());
 				phLotteryTickets.add(phLotteryTicket);
 			}
 			
-			saTrack(iphWxuserInfo.getUnionid(), getTickets);
+			saTrack(iphWxuserInfo.getUnionid(), getTickets,phProductInfo.getName(),channel);
 		}
 		
 		
@@ -153,13 +161,13 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		phInviteRecord.setInviteHeadUrl(phWxuserInfo.getHeadimgurl());
 		phInviteRecord.setInviteNickName(phWxuserInfo.getNickname());
 		phInviteRecord.setUnionid(iphWxuserInfo.getUnionid());
-		phInviteRecord.setProductId(productId);
+		phInviteRecord.setProductId(phProductInfo.getId());
 		phInviteRecordService.save(phInviteRecord);
 		
 	}
 	
 	@Override
-	public void shareTicket(String unionid,Long productId){
+	public void shareTicket(String unionid,Long productId,String channel){
 		//仅第一次分享获得抽奖码
 		int count = countByProductIdAndUnionidAndSource(productId, unionid, TicketSourceEnum.SHARE.getCode());
 		if(count == 0){
@@ -181,15 +189,17 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 			//更新抽奖码为ID
 			phLotteryTicketRepository.updateCode();
 			
-			saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size());
+			PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
+			
+			saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
 		}
 	}
 
-	private void saTrack(String unionid, int getTickets) {
+	private void saTrack(String unionid, int getTickets,String productName,String channel) {
 		try {
 			Map<String, Object> properties = new HashMap<>();
-			properties.put("activity_name", "抽奖活动1");
-			properties.put("channel", "公众号");
+			properties.put("activity_name", productName);
+			properties.put("channel", StringUtils.isBlank(channel)?"公众号":channel);
 			properties.put("activity_id", 1);
 			properties.put("prize", "抽奖码");
 			properties.put("prize_num", getTickets);

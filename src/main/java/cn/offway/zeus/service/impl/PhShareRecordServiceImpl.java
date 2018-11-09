@@ -55,7 +55,7 @@ public class PhShareRecordServiceImpl implements PhShareRecordService {
 	
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
 	@Override
-	public PhShareRecord saveShare(Long productId, String unionid) throws Exception{
+	public PhShareRecord saveShare(Long productId, String unionid,String channel) throws Exception{
 		
 		PhWxuserInfo phWxuserInfo = phWxuserInfoService.findByUnionid(unionid);
 		PhShareRecord phShareRecord = new PhShareRecord();
@@ -65,7 +65,7 @@ public class PhShareRecordServiceImpl implements PhShareRecordService {
 		phShareRecord.setUnionid(unionid);
 		phShareRecord.setProductId(productId);
 		//抽奖券
-		phLotteryTicketService.shareTicket(unionid, productId);
+		phLotteryTicketService.shareTicket(unionid, productId,channel);
 		return save(phShareRecord);
 	}
 }

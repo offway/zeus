@@ -21,8 +21,6 @@ public interface PhLotteryTicketService{
 
 	List<PhLotteryTicket> findByProductIdAndUnionid(Long productId, String unionid);
 
-	void shareTicket(String unionid, Long productId);
-
 	/**
 	 * 抽奖登记-发放抽奖券
 	 * @param productId
@@ -31,5 +29,7 @@ public interface PhLotteryTicketService{
 	 * @param formId
 	 */
 	void register(Long productId, PhWxuserInfo phWxuserInfo, PhWxuserInfo iphWxuserInfo, String formId);
+
+	void shareTicket(String unionid, Long productId, String channel);
 
 }

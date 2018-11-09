@@ -14,7 +14,7 @@ public interface PhShareRecordService{
 	
 	PhShareRecord findOne(Long id);
 
-	PhShareRecord saveShare(Long productId, String unionid) throws Exception;
-
 	int countByUnionidAndProductId(String unionid, Long productId);
+
+	PhShareRecord saveShare(Long productId, String unionid, String channel) throws Exception;
 }
