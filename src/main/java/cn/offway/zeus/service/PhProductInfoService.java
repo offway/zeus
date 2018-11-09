@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.offway.zeus.domain.PhProductInfo;
+import cn.offway.zeus.dto.ProductInfo;
 
 /**
  * 活动产品表Service接口
@@ -17,7 +18,7 @@ public interface PhProductInfoService{
 	
 	PhProductInfo findOne(Long id);
 
-	Map<String, List<PhProductInfo>> list();
-
 	List<PhProductInfo> findByUnionid(String unionid);
+
+	Map<String, List<ProductInfo>> list(String unionid);
 }

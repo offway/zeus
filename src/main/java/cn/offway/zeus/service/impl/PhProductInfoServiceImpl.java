@@ -1,17 +1,18 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.criterion.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import cn.offway.zeus.domain.PhProductInfo;
+import cn.offway.zeus.dto.ProductInfo;
 import cn.offway.zeus.repository.PhProductInfoRepository;
 import cn.offway.zeus.service.PhProductInfoService;
 
@@ -41,13 +42,29 @@ public class PhProductInfoServiceImpl implements PhProductInfoService {
 	}
 	
 	@Override
-	public Map<String, List<PhProductInfo>> list(){
-		Map<String, List<PhProductInfo>> resultMap = new HashMap<>();
-		
-		resultMap.put("current", phProductInfoRepository.findByNow());
-		resultMap.put("next", phProductInfoRepository.findBynext());
-		resultMap.put("before", phProductInfoRepository.findByBefore());
+	public Map<String, List<ProductInfo>> list(String unionid){
+		Map<String, List<ProductInfo>> resultMap = new HashMap<>();
+		//用户参与的活动
+		List<PhProductInfo> phProductInfos = findByUnionid(unionid);
+		resultMap.put("current", getProductInfos(phProductInfoRepository.findByNow(),phProductInfos));
+		resultMap.put("next", getProductInfos(phProductInfoRepository.findBynext(),phProductInfos));
+		resultMap.put("before", getProductInfos(phProductInfoRepository.findByBefore(),phProductInfos));
 		return resultMap;
+	}
+
+	private List<ProductInfo> getProductInfos(List<PhProductInfo> infos,List<PhProductInfo> phProductInfos) {
+		List<ProductInfo> productInfos = new ArrayList<>();
+		for (PhProductInfo phProductInfo : infos) {
+			ProductInfo productInfo = new ProductInfo();
+			BeanUtils.copyProperties(phProductInfo, productInfo);
+			for (PhProductInfo product : phProductInfos) {
+				if(product.getId().longValue() == productInfo.getId().longValue()){
+					productInfo.setIsJoin(true);
+				}
+			}
+			productInfos.add(productInfo);
+		}
+		return productInfos;
 	}
 	
 	@Override

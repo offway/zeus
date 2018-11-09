@@ -7,17 +7,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import cn.offway.zeus.domain.PhProductInfo;
-import cn.offway.zeus.service.PhLotteryTicketService;
+import cn.offway.zeus.dto.ProductInfo;
 import cn.offway.zeus.service.PhProductInfoService;
+import cn.offway.zeus.service.PhProductRuleService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 /**
  * 活动产品
@@ -32,15 +33,18 @@ public class ProductController {
 	private PhProductInfoService phProductInfoService;
 	
 	@Autowired
+	private PhProductRuleService phProductRuleService;
+	
+	@Autowired
 	private JsonResultHelper jsonResultHelper;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@ApiOperation(value = "活动列表")
 	@GetMapping("/list")
-	public JsonResult list(){
+	public JsonResult list(@ApiParam("用户unionid") @RequestParam(required = false) String unionid){
 		try {
-			Map<String, List<PhProductInfo>> resultMap = phProductInfoService.list();
+			Map<String, List<ProductInfo>> resultMap = phProductInfoService.list(unionid);
 			return jsonResultHelper.buildSuccessJsonResult(resultMap);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -51,12 +55,24 @@ public class ProductController {
 	
 	@ApiOperation(value = "用户参与活动列表")
 	@GetMapping("/user")
-	public JsonResult user(String unionid){
+	public JsonResult user(@ApiParam("用户unionid") @RequestParam String unionid){
 		try {
 			return jsonResultHelper.buildSuccessJsonResult(phProductInfoService.findByUnionid(unionid));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("用户参与活动列表异常,unionid:{}",unionid,e);
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		}
+	}
+	
+	@ApiOperation(value = "查询活动规则")
+	@GetMapping("/rules")
+	public JsonResult rules(@ApiParam("活动ID") @RequestParam Long productId){
+		try {
+			return jsonResultHelper.buildSuccessJsonResult(phProductRuleService.findByProductId(productId));
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("查询活动规则异常,productId:{}",productId,e);
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
 	}

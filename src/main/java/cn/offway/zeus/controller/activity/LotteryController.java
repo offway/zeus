@@ -24,6 +24,7 @@ import cn.offway.zeus.enums.TicketSourceEnum;
 import cn.offway.zeus.service.PhInviteRecordService;
 import cn.offway.zeus.service.PhLotteryTicketService;
 import cn.offway.zeus.service.PhProductInfoService;
+import cn.offway.zeus.service.PhProductRuleService;
 import cn.offway.zeus.service.PhShareRecordService;
 import cn.offway.zeus.service.PhWinningRecordService;
 import cn.offway.zeus.service.PhWxuserInfoService;
@@ -63,6 +64,9 @@ public class LotteryController {
 	
 	@Autowired
 	private PhShareRecordService phShareRecordService;
+	
+	@Autowired
+	private PhProductRuleService phProductRuleService;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -140,8 +144,7 @@ public class LotteryController {
 		Map<String, Object> map = new HashMap<>();
 		
 		PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
-		map.put("productId", phProductInfo.getId());
-		map.put("banner", phProductInfo.getBanner());
+		map.put("product", phProductInfo);
 		map.put("beginTime", phProductInfo.getBeginTime());
 		map.put("endTime", phProductInfo.getEndTime());
 		//默认已下载APP
@@ -152,6 +155,8 @@ public class LotteryController {
 		//是否已经参与活动
 		int participates = phLotteryTicketService.countByProductIdAndUnionidAndSource(productId, unionid, TicketSourceEnum.JOIN.getCode());
 		map.put("isJoin", participates>0?true:false);
+		//活动规则
+		map.put("rules", phProductRuleService.findContontByProductId(productId));
 		return map;
 		
 	}
