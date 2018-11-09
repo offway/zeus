@@ -27,10 +27,10 @@ public interface PhProductInfoRepository extends JpaRepository<PhProductInfo,Lon
 	@Query(nativeQuery=true,value="select * from ph_product_info where NOW() >= begin_time and NOW() < end_time order by begin_time desc")
 	List<PhProductInfo> findByNow();
 	
-	@Query(nativeQuery=true,value="select * from ph_product_info where NOW() < begin_time order by end_time desc")
+	@Query(nativeQuery=true,value="select * from ph_product_info where NOW() < begin_time order by begin_time asc")
 	List<PhProductInfo> findBynext();
 	
-	@Query(nativeQuery=true,value="select * from ph_product_info where NOW() >= end_time order by begin_time asc")
+	@Query(nativeQuery=true,value="select * from ph_product_info where NOW() >= end_time order by end_time desc")
 	List<PhProductInfo> findByBefore();
 	
 	@Query(nativeQuery=true,value="select i.* from ph_product_info i where i.id in (select DISTINCT(t.product_id) from ph_lottery_ticket t where t.source='0' and t.unionid = ?1)")
