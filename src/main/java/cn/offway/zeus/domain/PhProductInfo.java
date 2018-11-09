@@ -22,8 +22,8 @@ public class PhProductInfo implements Serializable {
 
     /** 活动描述 **/
     private String desc;
-    
-    /** 活动列表图片 **/
+
+    /** 活动列表图 **/
     private String image;
 
     /** 活动banner **/
@@ -31,6 +31,18 @@ public class PhProductInfo implements Serializable {
 
     /** 奖品价值[单位RMB] **/
     private Double price;
+
+    /** 缩略图 **/
+    private String thumbnail;
+
+    /** 分享图片 **/
+    private String shareImage;
+
+    /** 分享标题 **/
+    private String shareTitle;
+
+    /** 分享描述 **/
+    private String shareDesc;
 
     /** 活动开始时间 **/
     private Date beginTime;
@@ -65,7 +77,7 @@ public class PhProductInfo implements Serializable {
         this.name = name;
     }
 
-    @Column(name = "desc", length = 50)
+    @Column(name = "desc", length = 200)
     public String getDesc() {
         return desc;
     }
@@ -74,16 +86,16 @@ public class PhProductInfo implements Serializable {
         this.desc = desc;
     }
 
-    @Column(name = "image", length = 255)
+    @Column(name = "image", length = 100)
     public String getImage() {
-		return image;
-	}
+        return image;
+    }
 
-	public void setImage(String image) {
-		this.image = image;
-	}
+    public void setImage(String image) {
+        this.image = image;
+    }
 
-	@Column(name = "banner", length = 255)
+    @Column(name = "banner", length = 100)
     public String getBanner() {
         return banner;
     }
@@ -99,6 +111,42 @@ public class PhProductInfo implements Serializable {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    @Column(name = "thumbnail", length = 100)
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    @Column(name = "share_image", length = 100)
+    public String getShareImage() {
+        return shareImage;
+    }
+
+    public void setShareImage(String shareImage) {
+        this.shareImage = shareImage;
+    }
+
+    @Column(name = "share_title", length = 100)
+    public String getShareTitle() {
+        return shareTitle;
+    }
+
+    public void setShareTitle(String shareTitle) {
+        this.shareTitle = shareTitle;
+    }
+
+    @Column(name = "share_desc", length = 200)
+    public String getShareDesc() {
+        return shareDesc;
+    }
+
+    public void setShareDesc(String shareDesc) {
+        this.shareDesc = shareDesc;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

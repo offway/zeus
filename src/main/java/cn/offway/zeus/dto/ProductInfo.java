@@ -24,8 +24,8 @@ public class ProductInfo implements Serializable {
 
     /** 活动描述 **/
     private String desc;
-    
-    /** 活动列表图片 **/
+
+    /** 活动列表图 **/
     private String image;
 
     /** 活动banner **/
@@ -33,6 +33,18 @@ public class ProductInfo implements Serializable {
 
     /** 奖品价值[单位RMB] **/
     private Double price;
+
+    /** 缩略图 **/
+    private String thumbnail;
+
+    /** 分享图片 **/
+    private String shareImage;
+
+    /** 分享标题 **/
+    private String shareTitle;
+
+    /** 分享描述 **/
+    private String shareDesc;
 
     /** 活动开始时间 **/
     private Date beginTime;
@@ -136,7 +148,38 @@ public class ProductInfo implements Serializable {
 	public void setIsJoin(boolean isJoin) {
 		this.isJoin = isJoin;
 	}
-	
+
+	public String getThumbnail() {
+		return thumbnail;
+	}
+
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
+	}
+
+	public String getShareImage() {
+		return shareImage;
+	}
+
+	public void setShareImage(String shareImage) {
+		this.shareImage = shareImage;
+	}
+
+	public String getShareTitle() {
+		return shareTitle;
+	}
+
+	public void setShareTitle(String shareTitle) {
+		this.shareTitle = shareTitle;
+	}
+
+	public String getShareDesc() {
+		return shareDesc;
+	}
+
+	public void setShareDesc(String shareDesc) {
+		this.shareDesc = shareDesc;
+	}
 	
 
 }
