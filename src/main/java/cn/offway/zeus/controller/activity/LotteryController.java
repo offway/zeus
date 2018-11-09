@@ -74,7 +74,7 @@ public class LotteryController {
 	@ApiOperation(value = "登记抽奖")
 	@PostMapping("/register")
 	public JsonResult register(@ApiParam("活动ID") @RequestParam Long productId, @ApiParam("用户unionid") @RequestParam String unionid,
-			@ApiParam("邀请人unionid") @RequestParam(required = false) String inviteUnionid) {
+			@ApiParam("邀请人unionid") @RequestParam(required = false) String inviteUnionid,@ApiParam("表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id") @RequestParam String formId) {
 
 		try {
 			// 检查活动时间
@@ -102,8 +102,7 @@ public class LotteryController {
 					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 				}
 			}
-			
-			phLotteryTicketService.register(productId, phWxuserInfo, iphWxuserInfo);
+			phLotteryTicketService.register(productId, phWxuserInfo, iphWxuserInfo,formId);
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		} catch (Exception e) {
 			e.printStackTrace();

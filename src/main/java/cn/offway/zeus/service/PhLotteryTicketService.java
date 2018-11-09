@@ -17,17 +17,19 @@ public interface PhLotteryTicketService{
 	
 	PhLotteryTicket findOne(Long id);
 	
-	/**
-	 * 抽奖登记-发放抽奖券
-	 * @param productId
-	 * @param openid
-	 */
-	void register(Long productId, PhWxuserInfo phWxuserInfo, PhWxuserInfo iphWxuserInfo);
-	
 	int countByProductIdAndUnionidAndSource(Long productId, String unionid, String source);
 
 	List<PhLotteryTicket> findByProductIdAndUnionid(Long productId, String unionid);
 
 	void shareTicket(String unionid, Long productId);
+
+	/**
+	 * 抽奖登记-发放抽奖券
+	 * @param productId
+	 * @param phWxuserInfo
+	 * @param iphWxuserInfo
+	 * @param formId
+	 */
+	void register(Long productId, PhWxuserInfo phWxuserInfo, PhWxuserInfo iphWxuserInfo, String formId);
 
 }

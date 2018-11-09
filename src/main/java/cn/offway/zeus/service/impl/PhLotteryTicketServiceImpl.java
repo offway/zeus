@@ -70,7 +70,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 	}
 
 	@Override
-	public void register(Long productId, PhWxuserInfo phWxuserInfo ,PhWxuserInfo iphWxuserInfo) {
+	public void register(Long productId, PhWxuserInfo phWxuserInfo ,PhWxuserInfo iphWxuserInfo,String formId) {
 		List<PhLotteryTicket> phLotteryTickets = new ArrayList<>();
 		PhLotteryTicket phLotteryTicket = new PhLotteryTicket();
 		phLotteryTicket.setCreateTime(new Date());
@@ -80,6 +80,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		phLotteryTicket.setProductId(productId);
 		phLotteryTicket.setSource(TicketSourceEnum.JOIN.getCode());
 		phLotteryTicket.setRemark("登记抽奖获得");
+		phLotteryTicket.setFormId(formId);
 		phLotteryTickets.add(phLotteryTicket);
 		
 		saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size());

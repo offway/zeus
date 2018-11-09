@@ -40,6 +40,9 @@ public class PhLotteryTicket implements Serializable {
 
     /** 备注 **/
     private String remark;
+    
+    /** 表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id **/
+    private String formId;
 
 
     @Id
@@ -125,5 +128,16 @@ public class PhLotteryTicket implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    @Column(name = "form_id", length = 200)
+	public String getFormId() {
+		return formId;
+	}
+
+	public void setFormId(String formId) {
+		this.formId = formId;
+	}
+    
+    
 
 }
