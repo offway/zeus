@@ -2,6 +2,7 @@ package cn.offway.zeus.service.impl;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhShareRecord;
 import cn.offway.zeus.domain.PhWxuserInfo;
+import cn.offway.zeus.enums.ChannelEnum;
 import cn.offway.zeus.repository.PhShareRecordRepository;
 import cn.offway.zeus.service.PhLotteryTicketService;
 import cn.offway.zeus.service.PhShareRecordService;
@@ -57,6 +59,8 @@ public class PhShareRecordServiceImpl implements PhShareRecordService {
 	@Override
 	public PhShareRecord saveShare(Long productId, String unionid,String channel) throws Exception{
 		
+		channel = StringUtils.isBlank(channel)?ChannelEnum.H5.getDesc():channel;
+
 		PhWxuserInfo phWxuserInfo = phWxuserInfoService.findByUnionid(unionid);
 		PhShareRecord phShareRecord = new PhShareRecord();
 		phShareRecord.setCreateTime(new Date());
@@ -64,6 +68,8 @@ public class PhShareRecordServiceImpl implements PhShareRecordService {
 		phShareRecord.setNickName(phWxuserInfo.getNickname());
 		phShareRecord.setUnionid(unionid);
 		phShareRecord.setProductId(productId);
+		phShareRecord.setChannel(ChannelEnum.getByDesc(channel).getCode());
+		
 		//抽奖券
 		phLotteryTicketService.shareTicket(unionid, productId,channel);
 		return save(phShareRecord);

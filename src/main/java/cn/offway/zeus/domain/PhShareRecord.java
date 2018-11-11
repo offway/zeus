@@ -31,6 +31,9 @@ public class PhShareRecord implements Serializable {
 
     /** 创建时间 **/
     private Date createTime;
+    
+    /** 渠道[0-公众号,1-小程序,2-苹果,3-安卓] **/
+    private String channel;
 
     /** 备注 **/
     private String remark;
@@ -92,8 +95,17 @@ public class PhShareRecord implements Serializable {
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+    
+    @Column(name = "channel", length = 2)
+    public String getChannel() {
+		return channel;
+	}
 
-    @Column(name = "remark", length = 200)
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	@Column(name = "remark", length = 200)
     public String getRemark() {
         return remark;
     }
