@@ -1,5 +1,6 @@
 package cn.offway.zeus.controller.activity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,6 @@ import cn.offway.zeus.enums.TicketSourceEnum;
 import cn.offway.zeus.service.PhInviteRecordService;
 import cn.offway.zeus.service.PhLotteryTicketService;
 import cn.offway.zeus.service.PhProductInfoService;
-import cn.offway.zeus.service.PhProductRuleService;
 import cn.offway.zeus.service.PhShareRecordService;
 import cn.offway.zeus.service.PhWinningRecordService;
 import cn.offway.zeus.service.PhWxuserInfoService;
@@ -64,9 +64,6 @@ public class LotteryController {
 	
 	@Autowired
 	private PhShareRecordService phShareRecordService;
-	
-	@Autowired
-	private PhProductRuleService phProductRuleService;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -156,10 +153,19 @@ public class LotteryController {
 		int participates = phLotteryTicketService.countByProductIdAndUnionidAndSource(productId, unionid, TicketSourceEnum.JOIN.getCode());
 		map.put("isJoin", participates>0?true:false);
 		//活动规则
-		map.put("rules", phProductRuleService.findContontByProductId(productId));
+		String[] rules = phProductInfo.getRuleContent().split("\n");
+		List<String> rule = new ArrayList<>();
+		for (String s : rules) {
+			if(StringUtils.isNotBlank(s)){
+				rule.add(s);
+			}
+		}
+
+		map.put("rules", rule);
 		return map;
 		
 	}
+	
 	
 	@ApiOperation(value = "中奖用户列表")
 	@GetMapping("/winRecord")

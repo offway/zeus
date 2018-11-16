@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cn.offway.zeus.dto.ProductInfo;
 import cn.offway.zeus.service.PhProductInfoService;
-import cn.offway.zeus.service.PhProductRuleService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -31,9 +30,6 @@ public class ProductController {
 	
 	@Autowired
 	private PhProductInfoService phProductInfoService;
-	
-	@Autowired
-	private PhProductRuleService phProductRuleService;
 	
 	@Autowired
 	private JsonResultHelper jsonResultHelper;
@@ -65,15 +61,4 @@ public class ProductController {
 		}
 	}
 	
-	@ApiOperation(value = "查询活动规则")
-	@GetMapping("/rules")
-	public JsonResult rules(@ApiParam("活动ID") @RequestParam Long productId){
-		try {
-			return jsonResultHelper.buildSuccessJsonResult(phProductRuleService.findByProductId(productId));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("查询活动规则异常,productId:{}",productId,e);
-			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
-		}
-	}
 }

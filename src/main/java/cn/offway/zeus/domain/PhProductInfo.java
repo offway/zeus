@@ -1,8 +1,18 @@
 package cn.offway.zeus.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 活动产品表
@@ -21,7 +31,7 @@ public class PhProductInfo implements Serializable {
     private String name;
 
     /** 活动描述 **/
-    private String desc;
+    private String productDesc;
 
     /** 活动列表图 **/
     private String image;
@@ -52,6 +62,9 @@ public class PhProductInfo implements Serializable {
 
     /** 创建时间 **/
     private Date createTime;
+    
+    /** 活动规则 **/
+    private String ruleContent;
 
     /** 备注 **/
     private String remark;
@@ -77,21 +90,21 @@ public class PhProductInfo implements Serializable {
         this.name = name;
     }
 
-    @Column(name = "desc", length = 200)
+    @Column(name = "product_desc", length = 200)
     public String getDesc() {
-        return desc;
-    }
+		return productDesc;
+	}
 
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
+	public void setDesc(String productDesc) {
+		this.productDesc = productDesc;
+	}
 
     @Column(name = "image", length = 100)
     public String getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+	public void setImage(String image) {
         this.image = image;
     }
 
@@ -187,5 +200,16 @@ public class PhProductInfo implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    @Column(name = "rule_content")
+	public String getRuleContent() {
+		return ruleContent;
+	}
+
+	public void setRuleContent(String ruleContent) {
+		this.ruleContent = ruleContent;
+	}
+    
+    
 
 }
