@@ -153,14 +153,16 @@ public class LotteryController {
 		int participates = phLotteryTicketService.countByProductIdAndUnionidAndSource(productId, unionid, TicketSourceEnum.JOIN.getCode());
 		map.put("isJoin", participates>0?true:false);
 		//活动规则
-		String[] rules = phProductInfo.getRuleContent().split("\n");
+		String ruleContent = phProductInfo.getRuleContent();
 		List<String> rule = new ArrayList<>();
-		for (String s : rules) {
-			if(StringUtils.isNotBlank(s)){
-				rule.add(s);
+		if(StringUtils.isNotBlank(ruleContent)){
+			String[] rules = phProductInfo.getRuleContent().split("\n");
+			for (String s : rules) {
+				if(StringUtils.isNotBlank(s)){
+					rule.add(s);
+				}
 			}
 		}
-
 		map.put("rules", rule);
 		return map;
 		

@@ -174,7 +174,7 @@ public class HttpClientUtil {
 				HttpEntity responseEntity = response.getEntity();  
 				if (responseEntity != null) {  
 					result = EntityUtils.toByteArray(responseEntity);
-					logger.info("HTTP GET请求结果:{}",result);
+//					logger.info("HTTP GET请求结果:{}",result);
 				}  
             } finally {  
                 response.close();  
