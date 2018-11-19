@@ -8,10 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -29,7 +31,7 @@ import io.swagger.annotations.ApiParam;
  * @author wn
  *
  */
-@RestController
+@Controller
 public class IndexController {
 
 	@Value("${wx.appid}")
@@ -46,6 +48,7 @@ public class IndexController {
 	@Autowired
 	private PhWxuserInfoService phWxuserInfoService;
 
+	@ResponseBody
 	@GetMapping("/")
 	@ApiOperation(value = "欢迎页")
 	public String index() {
@@ -58,6 +61,7 @@ public class IndexController {
 	 * @param code
 	 * @return
 	 */
+	@ResponseBody
 	@ApiOperation(value = "微信授权-根据授权码获取用户信息")
 	@PostMapping("/access/wx")
 	public Object wxAccess(@ApiParam("授权码") @RequestParam String code) {
@@ -87,45 +91,26 @@ public class IndexController {
 		}
 	}
 
+	@ResponseBody
 	@ApiOperation(value = "微信授权-获取JS-SDK配置")
 	@PostMapping("/access/wx/config")
 	public Map<String, String> getJssdkinfo(String url) {
 		return WechatUtil.getJssdkinfo(url, APPID, SECRET);
 	}
 	
-//	public static void main(String[] args) throws InvalidArgumentException {
-//		// 从神策分析获取的数据接收的 URL
-//		final String SA_SERVER_URL = "http://101.132.142.203:8106/sa?project=default";
-//		// 使用 Debug 模式，并且导入 Debug 模式下所发送的数据
-//		final boolean SA_WRITE_DATA = true;
-//
-//		// 使用 DebugConsumer 初始化 SensorsAnalytics
-//		final SensorsAnalytics sa = new SensorsAnalytics(
-//				new SensorsAnalytics.DebugConsumer(SA_SERVER_URL, SA_WRITE_DATA));
-//
-//		// 用户的 Distinct Id
-//		String distinctId = "vinann";
-//		
-//		Map<String, Object> properties = new HashMap<String, Object>();
-//
-//		// '$time' 属性是系统预置属性，表示事件发生的时间，如果不填入该属性，则默认使用系统当前时间
-//		properties.put("$time", new Date());
-//		// '$ip' 属性是系统预置属性，如果服务端中能获取用户 IP 地址，并填入该属性，神策分析会自动根据 IP 地址解析用户的省份、城市信息
-//		properties.put("$ip", "101.132.142.203");
-//		// 商品 ID
-//		properties.put("ProductId", "123456");
-//		// 商品类别
-//		properties.put("ProductCatalog", "iPhone");
-//		// 是否加入收藏夹，Boolean 类型的属性
-//		properties.put("isAddedToFav", true);
-//
-//		// 记录用户浏览商品事件
-//		sa.track(distinctId, false, "ViewProduct", properties);
-//
-//		// 使用神策分析记录用户行为数据
-//		// ...
-//
-//		// 程序结束前，停止神策分析 SD
-//		sa.shutdown();
-//	}
+	@GetMapping("/check/{state}")
+	public String check(@PathVariable String state){
+		return "redirect:"+WechatUtil.getCodeRequest("https://zeus.offway.cn/result", "snsapi_base", APPID, state);
+	}
+	
+	@GetMapping("/result")
+	@ResponseBody
+	public String result(String code,String state){
+		String accessTokenResult = HttpClientUtil.get("https://api.weixin.qq.com/sns/oauth2/access_token?appid="
+				+ APPID + "&secret=" + SECRET + "&code=" + code + "&grant_type=authorization_code");
+
+		logger.info("用户核实结果-标识:{},结果:{}",state,accessTokenResult);
+		return "中奖用户核实操作已完成";
+	}
+	
 }
