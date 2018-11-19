@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import cn.offway.zeus.domain.PhProductInfo;
 import cn.offway.zeus.dto.ProductInfo;
+import cn.offway.zeus.dto.ProductJoin;
 import cn.offway.zeus.repository.PhProductInfoRepository;
 import cn.offway.zeus.service.PhProductInfoService;
 
@@ -70,5 +71,10 @@ public class PhProductInfoServiceImpl implements PhProductInfoService {
 	@Override
 	public List<PhProductInfo> findByUnionid(String unionid){
 		return phProductInfoRepository.findByUnionid(unionid);
+	}
+
+	@Override
+	public List<ProductJoin> findProductJoinByUnionid(String unionid) {
+		return phProductInfoRepository.findProductJoinByUnionid(unionid);
 	}
 }

@@ -53,7 +53,7 @@ public class ProductController {
 	@GetMapping("/user")
 	public JsonResult user(@ApiParam("用户unionid") @RequestParam String unionid){
 		try {
-			return jsonResultHelper.buildSuccessJsonResult(phProductInfoService.findByUnionid(unionid));
+			return jsonResultHelper.buildSuccessJsonResult(phProductInfoService.findProductJoinByUnionid(unionid));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("用户参与活动列表异常,unionid:{}",unionid,e);

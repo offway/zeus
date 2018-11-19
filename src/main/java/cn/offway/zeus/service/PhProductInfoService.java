@@ -5,6 +5,7 @@ import java.util.Map;
 
 import cn.offway.zeus.domain.PhProductInfo;
 import cn.offway.zeus.dto.ProductInfo;
+import cn.offway.zeus.dto.ProductJoin;
 
 /**
  * 活动产品表Service接口
@@ -21,4 +22,6 @@ public interface PhProductInfoService{
 	List<PhProductInfo> findByUnionid(String unionid);
 
 	Map<String, List<ProductInfo>> list(String unionid);
+	
+	List<ProductJoin> findProductJoinByUnionid(String unionid);
 }
