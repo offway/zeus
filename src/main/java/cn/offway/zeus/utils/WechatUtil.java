@@ -470,17 +470,15 @@ public class WechatUtil {
     // 获取授权请求
     public static String getCodeRequest(String redirectUri, String scope,
                                         String appid,String  state) {
-        String result = null;
+        String result = GetCodeRequest;
 
-        GetCodeRequest = GetCodeRequest.replace("APPID", urlEnodeUTF8(appid));
+        result = result.replace("APPID", urlEnodeUTF8(appid));
 
-        GetCodeRequest = GetCodeRequest.replace("REDIRECT_URI",
+        result = result.replace("REDIRECT_URI",
                 urlEnodeUTF8(redirectUri));
 
-        GetCodeRequest = GetCodeRequest.replace("SCOPE", scope);
-        GetCodeRequest = GetCodeRequest.replace("STATE", state);
-
-        result = GetCodeRequest;
+        result = result.replace("SCOPE", scope);
+        result = result.replace("STATE", state);
 
         return result;
 
