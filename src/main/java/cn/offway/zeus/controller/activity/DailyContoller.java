@@ -62,7 +62,7 @@ public class DailyContoller {
 	
 	@ApiOperation(value = "活动详情")
 	@GetMapping("/detail")
-	public JsonResult detail(@ApiParam("活动ID") @RequestParam Long activityId, @ApiParam("用户unionid") @RequestParam String unionid){
+	public JsonResult detail(@ApiParam("活动ID") @RequestParam Long activityId, @ApiParam("用户unionid") @RequestParam(required=false) String unionid){
 		try {
 			return jsonResultHelper.buildSuccessJsonResult(phActivityInfoService.detail(activityId,unionid));
 		} catch (Exception e) {
