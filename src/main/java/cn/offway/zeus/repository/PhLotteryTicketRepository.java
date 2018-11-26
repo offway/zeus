@@ -20,11 +20,6 @@ public interface PhLotteryTicketRepository extends JpaRepository<PhLotteryTicket
 
 	@Modifying
     @Transactional
-	@Query(nativeQuery=true,value="UPDATE ph_lottery_ticket set CODE=CONCAT('OW',LPAD(id, 6, 0)) where CODE is null")
-	int updateCodeold();
-	
-	@Modifying
-    @Transactional
 	@Query(nativeQuery=true,value="UPDATE ph_lottery_ticket set CODE=CONCAT('OW',LPAD(nextval(product_id), 6, 0)) where CODE is null")
 	int updateCode();
 	
