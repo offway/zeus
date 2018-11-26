@@ -88,6 +88,8 @@ public class IndexController {
 			phWxuserInfo.setCreateTime(new Date());
 			if(null != oldphWxuserInfo){
 				phWxuserInfo.setId(oldphWxuserInfo.getId());
+				phWxuserInfo.setAppopenid(oldphWxuserInfo.getAppopenid());
+				phWxuserInfo.setMiniopenid(oldphWxuserInfo.getMiniopenid());
 			}
 			return phWxuserInfoService.save(phWxuserInfo);
 		}else{
