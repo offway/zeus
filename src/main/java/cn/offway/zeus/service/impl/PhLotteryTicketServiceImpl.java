@@ -102,7 +102,11 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		
 		phLotteryTicketRepository.save(phLotteryTickets);
 		//更新抽奖码为ID
-		phLotteryTicketRepository.updateCode();
+		if(productId.intValue()<=3){
+			phLotteryTicketRepository.updateCodeold();
+		}else{
+			phLotteryTicketRepository.updateCode();
+		}
 	}
 
 	private void inviteExcute(PhProductInfo phProductInfo, PhWxuserInfo phWxuserInfo, PhWxuserInfo iphWxuserInfo,
@@ -187,7 +191,11 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 			
 			phLotteryTicketRepository.save(phLotteryTickets);
 			//更新抽奖码为ID
-			phLotteryTicketRepository.updateCode();
+			if(productId.intValue()<=3){
+				phLotteryTicketRepository.updateCodeold();
+			}else{
+				phLotteryTicketRepository.updateCode();
+			}
 			
 			PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
 			
