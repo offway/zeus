@@ -2,7 +2,9 @@ package cn.offway.zeus.service;
 
 import java.util.List;
 
+import cn.offway.zeus.domain.PhActivityInfo;
 import cn.offway.zeus.domain.PhActivityJoin;
+import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.ActivityJoin;
 
 /**
@@ -20,4 +22,12 @@ public interface PhActivityJoinService{
 	int countByUnionidAndActivityId(String unionid, Long activityId);
 
 	List<ActivityJoin> findByunionid(String unionid);
+
+	void join(PhActivityInfo phActivityInfo, PhWxuserInfo phWxuserInfo);
+
+	List<PhActivityJoin> findByActivityId(Long activityId);
+
+	List<PhActivityJoin> luckly(Long activityId, Long num);
+
+	int updateLuckly(List<Long> ids);
 }

@@ -13,4 +13,12 @@ public interface PhActivityPrizeService{
 	PhActivityPrize save(PhActivityPrize phActivityPrize);
 	
 	PhActivityPrize findOne(Long id);
+
+	PhActivityPrize findByActivityIdAndUnionid(Long activityid, String unionid);
+
+	/**
+	 * 开奖
+	 * @param activityId
+	 */
+	void open(Long activityId);
 }

@@ -8,11 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import cn.offway.zeus.domain.PhActivityInfo;
 import cn.offway.zeus.domain.PhActivityJoin;
+import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.ActivityJoin;
 import cn.offway.zeus.repository.PhActivityJoinRepository;
 import cn.offway.zeus.service.PhActivityJoinService;
+import io.swagger.annotations.ApiParam;
 
 
 /**
@@ -53,5 +57,39 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 			activityJoins.add(new ActivityJoin(Long.valueOf(obj[0].toString()), obj[1].toString(), obj[2].toString(), (Date)obj[3], (Date)obj[4]));
 		}
 		return activityJoins;
+	}
+	
+	@Override
+	public void join(PhActivityInfo phActivityInfo,PhWxuserInfo phWxuserInfo ){
+		
+		
+		PhActivityJoin phActivityJoin = new PhActivityJoin();
+		phActivityJoin.setActivityId(phActivityInfo.getId());
+		phActivityJoin.setActivityImage(phActivityInfo.getImage());
+		phActivityJoin.setActivityName(phActivityInfo.getName());
+		phActivityJoin.setCreateTime(new Date());
+		phActivityJoin.setHeadUrl(phWxuserInfo.getHeadimgurl());
+		phActivityJoin.setIsLucky("0");
+		phActivityJoin.setNickName(phWxuserInfo.getNickname());
+		phActivityJoin.setRemark("");
+		phActivityJoin.setUnionid(phWxuserInfo.getUnionid());
+		
+		save(phActivityJoin);
+		
+	}
+	
+	@Override
+	public List<PhActivityJoin> findByActivityId(Long activityId){
+		return phActivityJoinRepository.findByActivityId(activityId);
+	}
+	
+	@Override
+	public List<PhActivityJoin> luckly(Long activityId,Long num){
+		return phActivityJoinRepository.luckly(activityId, num);
+	}
+	
+	@Override
+	public int updateLuckly(List<Long> ids){
+		return phActivityJoinRepository.updateLuckly(ids);
 	}
 }

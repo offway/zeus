@@ -28,12 +28,18 @@ public enum CommonResultCode implements ResultCode {
     /** 活动已上限 */
     ACTIVITY_LIMIT("1005", "ACTIVITY_LIMIT"),
     
+    /** 用户不存在 */
+    USER_NOT_EXISTS("1006", "USER_NOT_EXISTS"),
+    
+    /** 中奖信息不存在 */
+    PRIZE_NOT_EXISTS("1007", "PRIZE_NOT_EXISTS"),
+    
     ;
 	
 	
     private String errorCode;
 
-    private String    statusCode;
+    private String statusCode;
 
     CommonResultCode(String statusCode, String errorCode) {
         this.statusCode = statusCode;

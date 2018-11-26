@@ -41,6 +41,9 @@ public class PhActivityJoin implements Serializable {
     /** 创建时间 **/
     private Date createTime;
 
+    /** form_id小程序推送使用 **/
+    private String formId;
+
     /** 备注 **/
     private String remark;
 
@@ -127,6 +130,15 @@ public class PhActivityJoin implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    @Column(name = "form_id", length = 100)
+    public String getFormId() {
+        return formId;
+    }
+
+    public void setFormId(String formId) {
+        this.formId = formId;
     }
 
     @Column(name = "remark", length = 200)

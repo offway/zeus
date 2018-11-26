@@ -13,5 +13,5 @@ import cn.offway.zeus.domain.PhActivityPrize;
  */
 public interface PhActivityPrizeRepository extends JpaRepository<PhActivityPrize,Long>,JpaSpecificationExecutor<PhActivityPrize> {
 
-	/** 此处写一些自定义的方法 **/
+	PhActivityPrize findByActivityIdAndUnionid(Long activityid,String unionid);
 }
