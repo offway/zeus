@@ -53,7 +53,7 @@ public class PhActivityInfoServiceImpl implements PhActivityInfoService {
 	public Map<String, List<PhActivityInfo>> list(){
 		Map<String, List<PhActivityInfo>> resultMap = new HashMap<>();
 		resultMap.put("current", phActivityInfoRepository.findByNow());
-		resultMap.put("before", phActivityInfoRepository.findByNow());
+		resultMap.put("before", phActivityInfoRepository.findByBefore());
 		return resultMap;
 	}
 	
