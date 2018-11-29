@@ -36,6 +36,9 @@ public class ProductJoin implements Serializable {
     /** 创建时间 **/
     private Date createTime;
     
+    /** 状态[0-进行中,1-已结束]**/
+    private String status;
+    
     
 
 	public ProductJoin(Long id, String image, String name, Date createTime, Date beginTime, Date endTime) {
@@ -46,6 +49,11 @@ public class ProductJoin implements Serializable {
 		this.beginTime = beginTime;
 		this.endTime = endTime;
 		this.createTime = createTime;
+		if(endTime.after(new Date())){
+			this.status = "0";
+		}else{
+			this.status = "1";
+		}
 	}
 
 	public Long getId() {
@@ -97,5 +105,12 @@ public class ProductJoin implements Serializable {
 		this.createTime = createTime;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 }
