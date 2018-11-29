@@ -26,4 +26,9 @@ public interface PhLotteryTicketRepository extends JpaRepository<PhLotteryTicket
 	int countByProductIdAndUnionidAndSource(Long productId,String unionid,String source);
 	
 	List<PhLotteryTicket> findByProductIdAndUnionid(Long productId,String unionid);
+	
+	@Modifying
+    @Transactional
+	@Query(nativeQuery=true,value="UPDATE ph_lottery_ticket set form_id=?3 where product_id = ?1 and unionid =?2 and source=0")
+	int updateFormId(Long productId,String unionid,String formId);
 }

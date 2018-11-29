@@ -71,6 +71,9 @@ public class PhProductInfo implements Serializable {
     
     /** 活动规则 **/
     private String ruleContent;
+    
+    /** 开奖视频地址 **/
+    private String video;
 
     /** 备注 **/
     private String remark;
@@ -233,6 +236,16 @@ public class PhProductInfo implements Serializable {
 	public void setBackground(String background) {
 		this.background = background;
 	}
+
+	@Column(name = "video", length = 500)
+	public String getVideo() {
+		return video;
+	}
+
+	public void setVideo(String video) {
+		this.video = video;
+	}
+	
     
 
 }

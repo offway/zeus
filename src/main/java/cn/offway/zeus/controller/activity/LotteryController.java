@@ -195,5 +195,16 @@ public class LotteryController {
 		}
 		
 	}
+	
+	@ApiOperation(value = "更新formId")
+	@PostMapping("/updateFormId")
+	public JsonResult updateFormId(@ApiParam("活动ID") @RequestParam Long productId, @ApiParam("用户unionid") @RequestParam String unionid,
+			@ApiParam("表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id") @RequestParam String formId ){
+		
+		phLotteryTicketService.updateFormId(productId, unionid, formId);
+		
+		return jsonResultHelper.buildSuccessJsonResult(null);
+		
+	}
 
 }

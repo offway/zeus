@@ -70,6 +70,11 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 	}
 	
 	@Override
+	public int updateFormId(Long productId,String unionid,String formId){
+		return phLotteryTicketRepository.updateFormId(productId, unionid, formId);
+	}
+	
+	@Override
 	public List<PhLotteryTicket> findByProductIdAndUnionid(Long productId,String unionid){
 		return phLotteryTicketRepository.findByProductIdAndUnionid(productId,unionid);
 	}
