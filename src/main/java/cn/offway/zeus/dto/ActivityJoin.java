@@ -92,12 +92,12 @@ public class ActivityJoin implements Serializable {
 	}
 
 
-	public boolean isEnd() {
+	public boolean getIsEnd() {
 		return isEnd;
 	}
 
 
-	public void setEnd(boolean isEnd) {
+	public void setIsEnd(boolean isEnd) {
 		this.isEnd = isEnd;
 	}
 }
