@@ -23,11 +23,11 @@ public interface PhActivityJoinService{
 
 	List<ActivityJoin> findByunionid(String unionid);
 
-	void join(PhActivityInfo phActivityInfo, PhWxuserInfo phWxuserInfo);
-
 	List<PhActivityJoin> findByActivityId(Long activityId);
 
 	List<PhActivityJoin> luckly(Long activityId, Long num);
 
 	int updateLuckly(List<Long> ids);
+
+	void join(PhActivityInfo phActivityInfo, PhWxuserInfo phWxuserInfo, String formId);
 }

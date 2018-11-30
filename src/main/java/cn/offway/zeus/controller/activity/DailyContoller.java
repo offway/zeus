@@ -86,7 +86,8 @@ public class DailyContoller {
 	
 	@ApiOperation(value = "参与活动")
 	@PostMapping("/join")
-	public JsonResult join(@ApiParam("活动ID") @RequestParam Long activityId, @ApiParam("用户unionid") @RequestParam String unionid){
+	public JsonResult join(@ApiParam("活动ID") @RequestParam Long activityId, @ApiParam("用户unionid") @RequestParam String unionid,
+			@ApiParam("表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id") @RequestParam String formId){
 		try {
 			
 			PhWxuserInfo phWxuserInfo = phWxuserInfoService.findByUnionid(unionid);
@@ -102,7 +103,7 @@ public class DailyContoller {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_PARTICIPATED);
 			}
 			
-			phActivityJoinService.join(phActivityInfo,phWxuserInfo);
+			phActivityJoinService.join(phActivityInfo,phWxuserInfo,formId);
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -113,15 +114,15 @@ public class DailyContoller {
 	
 	@ApiOperation(value = "填写地址")
 	@PostMapping("/addr")
-	public JsonResult addr(PhActivityPrize activityPrize){
+	public JsonResult addr(@ApiParam("活动ID") @RequestParam Long activityId,@ApiParam("unionid") @RequestParam String unionid,@ApiParam("收货人") @RequestParam String realName,@ApiParam("收货人手机") @RequestParam String phone,@ApiParam("收货人地址") @RequestParam String addr){
 		
-		PhActivityPrize phActivityPrize = phActivityPrizeService.findByActivityIdAndUnionid(activityPrize.getActivityId(), activityPrize.getUnionid());
+		PhActivityPrize phActivityPrize = phActivityPrizeService.findByActivityIdAndUnionid(activityId, unionid);
 		if(null == phActivityPrize){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PRIZE_NOT_EXISTS);
 		}
-		phActivityPrize.setAddr(activityPrize.getAddr());
-		phActivityPrize.setPhone(activityPrize.getPhone());
-		phActivityPrize.setRealName(activityPrize.getRealName());
+		phActivityPrize.setAddr(addr);
+		phActivityPrize.setPhone(phone);
+		phActivityPrize.setRealName(realName);
 		phActivityPrizeService.save(phActivityPrize);
 		return jsonResultHelper.buildSuccessJsonResult(null); 
 	}

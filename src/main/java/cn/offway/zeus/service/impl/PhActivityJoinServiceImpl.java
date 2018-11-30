@@ -60,7 +60,7 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 	}
 	
 	@Override
-	public void join(PhActivityInfo phActivityInfo,PhWxuserInfo phWxuserInfo ){
+	public void join(PhActivityInfo phActivityInfo,PhWxuserInfo phWxuserInfo,String formId){
 		
 		
 		PhActivityJoin phActivityJoin = new PhActivityJoin();
@@ -72,6 +72,7 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 		phActivityJoin.setIsLucky("0");
 		phActivityJoin.setNickName(phWxuserInfo.getNickname());
 		phActivityJoin.setRemark("");
+		phActivityJoin.setFormId(formId);
 		phActivityJoin.setUnionid(phWxuserInfo.getUnionid());
 		
 		save(phActivityJoin);

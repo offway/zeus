@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import cn.offway.zeus.domain.PhActivityPrize;
 
 /**
@@ -21,4 +23,6 @@ public interface PhActivityPrizeService{
 	 * @param activityId
 	 */
 	void open(Long activityId);
+
+	List<PhActivityPrize> findByActivityId(Long activityid);
 }

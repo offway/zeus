@@ -54,6 +54,11 @@ public class PhActivityPrizeServiceImpl implements PhActivityPrizeService {
 	}
 	
 	@Override
+	public List<PhActivityPrize> findByActivityId(Long activityid){
+		return phActivityPrizeRepository.findByActivityId(activityid);
+	}
+	
+	@Override
 	public void open(Long activityId){
 		/**
 		 *  
