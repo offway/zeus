@@ -44,6 +44,9 @@ public class ActivityInfo implements Serializable {
 
     /** 活动截止时间 **/
     private Date endTime;
+    
+    /** 填写地址过期时间  **/
+    private Date expireTime;
 
     /** 状态[0-未开始,1-进行中,2-已结束，3-已过期] **/
     private String status;
@@ -166,4 +169,12 @@ public class ActivityInfo implements Serializable {
 		this.remark = remark;
 	}
 
+	public Date getExpireTime() {
+		return expireTime;
+	}
+
+	public void setExpireTime(Date expireTime) {
+		this.expireTime = expireTime;
+	}
+	
 }

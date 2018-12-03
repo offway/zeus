@@ -74,12 +74,13 @@ public class PhActivityInfoServiceImpl implements PhActivityInfoService {
 		
 		ActivityInfo activityInfo = new ActivityInfo();
 		BeanUtils.copyProperties(phActivityInfo, activityInfo);
-		
+		//填写地址过期时间 
+		activityInfo.setExpireTime(DateUtils.addDays(activityInfo.getEndTime(), 7));
 		Date now = new Date();
 		if(now.before(activityInfo.getBeginTime())){
 			activityInfo.setStatus("0");
 		}else if(now.after(activityInfo.getEndTime()) || now.equals(activityInfo.getEndTime())){
-			if(now.after(DateUtils.addDays(activityInfo.getEndTime(), 7))){
+			if(now.after(activityInfo.getExpireTime())){
 				//已过期
 				activityInfo.setStatus("3");
 			}else{

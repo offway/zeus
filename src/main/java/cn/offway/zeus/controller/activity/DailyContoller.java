@@ -114,17 +114,28 @@ public class DailyContoller {
 	
 	@ApiOperation(value = "填写地址")
 	@PostMapping("/addr")
-	public JsonResult addr(@ApiParam("活动ID") @RequestParam Long activityId,@ApiParam("unionid") @RequestParam String unionid,@ApiParam("收货人") @RequestParam String realName,@ApiParam("收货人手机") @RequestParam String phone,@ApiParam("收货人地址") @RequestParam String addr){
+	public JsonResult addr(@ApiParam("活动ID") @RequestParam Long activityId,@ApiParam("unionid") @RequestParam String unionid,@ApiParam("收货人") @RequestParam String realName,@ApiParam("收货人手机") @RequestParam String phone,
+			@ApiParam("收货人地址") @RequestParam String addr,@ApiParam("微信号") @RequestParam String wxid,@ApiParam("备注") @RequestParam String remark){
 		
 		PhActivityPrize phActivityPrize = phActivityPrizeService.findByActivityIdAndUnionid(activityId, unionid);
 		if(null == phActivityPrize){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PRIZE_NOT_EXISTS);
 		}
 		phActivityPrize.setAddr(addr);
+		phActivityPrize.setWxid(wxid);
+		phActivityPrize.setRemark(remark);
 		phActivityPrize.setPhone(phone);
 		phActivityPrize.setRealName(realName);
 		phActivityPrizeService.save(phActivityPrize);
 		return jsonResultHelper.buildSuccessJsonResult(null); 
+	}
+	
+	@ApiOperation(value = "查询地址")
+	@GetMapping("/addr")
+	public JsonResult addr(@ApiParam("活动ID") @RequestParam Long activityId,@ApiParam("unionid") @RequestParam String unionid){
+		
+		PhActivityPrize phActivityPrize = phActivityPrizeService.findByActivityIdAndUnionid(activityId, unionid);
+		return jsonResultHelper.buildSuccessJsonResult(phActivityPrize); 
 	}
 	
 	
