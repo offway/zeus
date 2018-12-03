@@ -156,7 +156,7 @@ public class LotteryController {
 		String ruleContent = phProductInfo.getRuleContent();
 		List<String> rule = new ArrayList<>();
 		if(StringUtils.isNotBlank(ruleContent)){
-			String[] rules = phProductInfo.getRuleContent().split("\n");
+			String[] rules = ruleContent.split("\n");
 			for (String s : rules) {
 				if(StringUtils.isNotBlank(s)){
 					rule.add(s);
@@ -164,6 +164,19 @@ public class LotteryController {
 			}
 		}
 		map.put("rules", rule);
+		
+		//APP活动规则
+		String appRuleContent = phProductInfo.getAppRuleContent();
+		List<String> ruleList = new ArrayList<>();
+		if(StringUtils.isNotBlank(appRuleContent)){
+			String[] rules = appRuleContent.split("\n");
+			for (String s : rules) {
+				if(StringUtils.isNotBlank(s)){
+					ruleList.add(s);
+				}
+			}
+		}
+		map.put("appRules", ruleList);
 		return map;
 		
 	}
