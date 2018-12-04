@@ -87,7 +87,8 @@ public class DailyContoller {
 	@ApiOperation(value = "参与活动")
 	@PostMapping("/join")
 	public JsonResult join(@ApiParam("活动ID") @RequestParam Long activityId, @ApiParam("用户unionid") @RequestParam String unionid,
-			@ApiParam("表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id") @RequestParam String formId){
+			@ApiParam("表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id") @RequestParam String formId,
+			@ApiParam("神策统计distinctId") @RequestParam String distinctId){
 		try {
 			
 			PhWxuserInfo phWxuserInfo = phWxuserInfoService.findByUnionid(unionid);
@@ -103,7 +104,7 @@ public class DailyContoller {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_PARTICIPATED);
 			}
 			
-			phActivityJoinService.join(phActivityInfo,phWxuserInfo,formId);
+			phActivityJoinService.join(phActivityInfo,phWxuserInfo,formId,distinctId);
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		} catch (Exception e) {
 			e.printStackTrace();

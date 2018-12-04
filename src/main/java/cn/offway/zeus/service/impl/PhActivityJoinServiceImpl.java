@@ -2,13 +2,19 @@ package cn.offway.zeus.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.sensorsdata.analytics.javasdk.SensorsAnalytics;
+import com.sensorsdata.analytics.javasdk.exceptions.InvalidArgumentException;
 
 import cn.offway.zeus.domain.PhActivityInfo;
 import cn.offway.zeus.domain.PhActivityJoin;
@@ -32,6 +38,9 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 
 	@Autowired
 	private PhActivityJoinRepository phActivityJoinRepository;
+	
+	@Autowired
+	private SensorsAnalytics sa;
 	
 	@Override
 	public PhActivityJoin save(PhActivityJoin phActivityJoin){
@@ -60,7 +69,7 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 	}
 	
 	@Override
-	public void join(PhActivityInfo phActivityInfo,PhWxuserInfo phWxuserInfo,String formId){
+	public void join(PhActivityInfo phActivityInfo,PhWxuserInfo phWxuserInfo,String formId,String distinctId){
 		
 		
 		PhActivityJoin phActivityJoin = new PhActivityJoin();
@@ -77,6 +86,27 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 		
 		save(phActivityJoin);
 		
+		saTrack(phWxuserInfo.getUnionid(),distinctId, phActivityInfo.getId(), phActivityInfo.getName());
+		
+		
+	}
+	
+	private void saTrack(String unionid,String distinctId, Long activityId,String activityName) {
+		try {
+			
+			//绑定关系
+			sa.trackSignUp(unionid, distinctId);
+			
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("activity_name", activityName);
+			properties.put("channel", "小程序");
+			properties.put("activity_id", activityId);
+			
+			sa.track(unionid, true, "event_activity_join", properties);
+		} catch (InvalidArgumentException e) {
+			e.printStackTrace();
+			logger.error("小程序每日福利参与-神策记录数据异常",e);
+		}
 	}
 	
 	@Override

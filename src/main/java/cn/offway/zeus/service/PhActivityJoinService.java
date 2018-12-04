@@ -29,5 +29,5 @@ public interface PhActivityJoinService{
 
 	int updateLuckly(List<Long> ids);
 
-	void join(PhActivityInfo phActivityInfo, PhWxuserInfo phWxuserInfo, String formId);
+	void join(PhActivityInfo phActivityInfo, PhWxuserInfo phWxuserInfo, String formId, String distinctId);
 }
