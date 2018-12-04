@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.service.PhWxuserInfoService;
+import cn.offway.zeus.service.WxService;
 import cn.offway.zeus.utils.HttpClientUtil;
 import cn.offway.zeus.utils.JsonResultHelper;
 import cn.offway.zeus.utils.WechatUtil;
@@ -47,6 +48,9 @@ public class IndexController {
 	
 	@Autowired
 	private PhWxuserInfoService phWxuserInfoService;
+	
+	@Autowired
+	private WxService wxService;
 
 	@ResponseBody
 	@GetMapping("/")
@@ -84,6 +88,8 @@ public class IndexController {
 			phWxuserInfo.setCreateTime(new Date());
 			if(null != oldphWxuserInfo){
 				phWxuserInfo.setId(oldphWxuserInfo.getId());
+				phWxuserInfo.setAppopenid(oldphWxuserInfo.getAppopenid());
+				phWxuserInfo.setMiniopenid(oldphWxuserInfo.getMiniopenid());
 			}
 			return phWxuserInfoService.save(phWxuserInfo);
 		}else{
@@ -95,7 +101,7 @@ public class IndexController {
 	@ApiOperation(value = "微信授权-获取JS-SDK配置")
 	@PostMapping("/access/wx/config")
 	public Map<String, String> getJssdkinfo(String url) {
-		return WechatUtil.getJssdkinfo(url, APPID, SECRET);
+		return wxService.getJssdkinfo(url);
 	}
 	
 	@GetMapping("/check/{state}")

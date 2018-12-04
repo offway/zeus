@@ -70,6 +70,11 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 	}
 	
 	@Override
+	public int updateFormId(Long productId,String unionid,String formId){
+		return phLotteryTicketRepository.updateFormId(productId, unionid, formId);
+	}
+	
+	@Override
 	public List<PhLotteryTicket> findByProductIdAndUnionid(Long productId,String unionid){
 		return phLotteryTicketRepository.findByProductIdAndUnionid(productId,unionid);
 	}
@@ -101,7 +106,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		
 		
 		phLotteryTicketRepository.save(phLotteryTickets);
-		//更新抽奖码为ID
+		//更新抽奖码
 		phLotteryTicketRepository.updateCode();
 	}
 
@@ -186,7 +191,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 			}
 			
 			phLotteryTicketRepository.save(phLotteryTickets);
-			//更新抽奖码为ID
+			//更新抽奖码
 			phLotteryTicketRepository.updateCode();
 			
 			PhProductInfo phProductInfo = phProductInfoService.findOne(productId);

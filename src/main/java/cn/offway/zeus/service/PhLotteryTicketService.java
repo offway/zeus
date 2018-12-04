@@ -32,4 +32,6 @@ public interface PhLotteryTicketService{
 
 	void shareTicket(String unionid, Long productId, String channel);
 
+	int updateFormId(Long productId, String unionid, String formId);
+
 }

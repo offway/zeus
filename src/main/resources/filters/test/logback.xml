@@ -19,7 +19,7 @@
            stdout将日志信息输出到控制上，为方便开发测试使用
     -->
     <contextName>zeus</contextName>
-    <property name="LOG_PATH" value="/opt/zeus/logs" />
+    <property name="LOG_PATH" value="/opt/logs/test" />
     <!--设置系统日志目录-->
     <property name="APPDIR" value="zeus" />
     

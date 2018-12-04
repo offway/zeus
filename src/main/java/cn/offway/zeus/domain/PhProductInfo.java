@@ -53,6 +53,12 @@ public class PhProductInfo implements Serializable {
 
     /** 分享描述 **/
     private String shareDesc;
+    
+    /** 保存图片 **/
+    private String saveImage;
+    
+    /** 背景图片 **/
+    private String background;
 
     /** 活动开始时间 **/
     private Date beginTime;
@@ -65,6 +71,12 @@ public class PhProductInfo implements Serializable {
     
     /** 活动规则 **/
     private String ruleContent;
+    
+    /** APP活动规则 **/
+    private String appRuleContent;
+    
+    /** 开奖视频地址 **/
+    private String video;
 
     /** 备注 **/
     private String remark;
@@ -209,7 +221,41 @@ public class PhProductInfo implements Serializable {
 	public void setRuleContent(String ruleContent) {
 		this.ruleContent = ruleContent;
 	}
-    
-    
+	
+	@Column(name = "save_image", length = 100)
+	public String getSaveImage() {
+		return saveImage;
+	}
+
+	public void setSaveImage(String saveImage) {
+		this.saveImage = saveImage;
+	}
+
+	@Column(name = "background", length = 100)
+	public String getBackground() {
+		return background;
+	}
+
+	public void setBackground(String background) {
+		this.background = background;
+	}
+
+	@Column(name = "video", length = 500)
+	public String getVideo() {
+		return video;
+	}
+
+	public void setVideo(String video) {
+		this.video = video;
+	}
+
+	@Column(name = "app_rule_content")
+	public String getAppRuleContent() {
+		return appRuleContent;
+	}
+
+	public void setAppRuleContent(String appRuleContent) {
+		this.appRuleContent = appRuleContent;
+	}
 
 }

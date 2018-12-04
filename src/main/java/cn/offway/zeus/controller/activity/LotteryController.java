@@ -156,7 +156,7 @@ public class LotteryController {
 		String ruleContent = phProductInfo.getRuleContent();
 		List<String> rule = new ArrayList<>();
 		if(StringUtils.isNotBlank(ruleContent)){
-			String[] rules = phProductInfo.getRuleContent().split("\n");
+			String[] rules = ruleContent.split("\n");
 			for (String s : rules) {
 				if(StringUtils.isNotBlank(s)){
 					rule.add(s);
@@ -164,6 +164,19 @@ public class LotteryController {
 			}
 		}
 		map.put("rules", rule);
+		
+		//APP活动规则
+		String appRuleContent = phProductInfo.getAppRuleContent();
+		List<String> ruleList = new ArrayList<>();
+		if(StringUtils.isNotBlank(appRuleContent)){
+			String[] rules = appRuleContent.split("\n");
+			for (String s : rules) {
+				if(StringUtils.isNotBlank(s)){
+					ruleList.add(s);
+				}
+			}
+		}
+		map.put("appRules", ruleList);
 		return map;
 		
 	}
@@ -193,6 +206,17 @@ public class LotteryController {
 			logger.error("保存分享记录异常",e);
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
+		
+	}
+	
+	@ApiOperation(value = "更新formId")
+	@PostMapping("/updateFormId")
+	public JsonResult updateFormId(@ApiParam("活动ID") @RequestParam Long productId, @ApiParam("用户unionid") @RequestParam String unionid,
+			@ApiParam("表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id") @RequestParam String formId ){
+		
+		phLotteryTicketService.updateFormId(productId, unionid, formId);
+		
+		return jsonResultHelper.buildSuccessJsonResult(null);
 		
 	}
 

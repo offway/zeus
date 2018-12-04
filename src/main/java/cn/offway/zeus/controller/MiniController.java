@@ -123,6 +123,11 @@ public class MiniController {
 		}
 		
 	}
+	@GetMapping(value = "/download",produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseBody
+    public byte[] download(String url) throws IOException {
+		return HttpClientUtil.getByteArray(url);
+	}
 	
 	
 	
