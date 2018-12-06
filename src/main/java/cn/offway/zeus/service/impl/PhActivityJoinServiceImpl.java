@@ -21,6 +21,7 @@ import cn.offway.zeus.domain.PhActivityJoin;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.ActivityJoin;
 import cn.offway.zeus.repository.PhActivityJoinRepository;
+import cn.offway.zeus.service.PhActivityInfoService;
 import cn.offway.zeus.service.PhActivityJoinService;
 import io.swagger.annotations.ApiParam;
 
@@ -41,6 +42,9 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 	
 	@Autowired
 	private SensorsAnalytics sa;
+	
+	@Autowired
+	private PhActivityInfoService phActivityInfoService;
 	
 	@Override
 	public PhActivityJoin save(PhActivityJoin phActivityJoin){
@@ -85,6 +89,9 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 		phActivityJoin.setUnionid(phWxuserInfo.getUnionid());
 		
 		save(phActivityJoin);
+		
+		phActivityInfo.setJoinNum(phActivityInfo.getJoinNum().longValue()+1L);
+		phActivityInfoService.save(phActivityInfo);
 		
 		saTrack(phWxuserInfo.getUnionid(),distinctId, phActivityInfo.getId(), phActivityInfo.getName());
 		
