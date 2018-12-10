@@ -199,6 +199,42 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 			saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
 		}
 	}
+	
+
+	@Override
+	public void appTicket(String unionid) throws Exception{
+		PhWxuserInfo phWxuserInfo = phWxuserInfoService.findByUnionid(unionid);
+		if(null != phWxuserInfo){
+			//检查是否已经赠送
+			int count = phLotteryTicketRepository.countBySource(TicketSourceEnum.APP_REGISTER.getCode());
+			if(count == 0){
+				//查询用户参与的正在进行的活动
+				List<Long> productIds = phLotteryTicketRepository.findProductId(unionid);
+				List<PhLotteryTicket> phLotteryTickets = new ArrayList<>();
+				
+				for (Long productId : productIds) {
+					for (int i = 0; i < 5; i++) {
+						PhLotteryTicket phLotteryTicket = new PhLotteryTicket();
+						phLotteryTicket.setCreateTime(new Date());
+						phLotteryTicket.setHeadUrl(phWxuserInfo.getHeadimgurl());
+						phLotteryTicket.setNickName(phWxuserInfo.getNickname());
+						phLotteryTicket.setUnionid(phWxuserInfo.getUnionid());
+						phLotteryTicket.setProductId(productId);
+						phLotteryTicket.setSource(TicketSourceEnum.APP_REGISTER.getCode());
+						phLotteryTicket.setRemark("APP注册");
+						phLotteryTickets.add(phLotteryTicket);
+					}
+				}
+
+				phLotteryTicketRepository.save(phLotteryTickets);
+				//更新抽奖码
+				phLotteryTicketRepository.updateCode();
+				
+			}
+		}
+		
+		
+	}
 
 	private void saTrack(String unionid, int getTickets,String productName,String channel) {
 		try {

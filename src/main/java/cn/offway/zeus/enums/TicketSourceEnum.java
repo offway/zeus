@@ -12,7 +12,9 @@ public enum TicketSourceEnum {
 
 	INVITE("1", "邀请好友"),
 
-	SHARE("2", "分享");
+	SHARE("2", "分享"),
+
+	APP_REGISTER("3", "APP注册");
 
     private String code;
 

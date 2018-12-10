@@ -34,4 +34,6 @@ public interface PhLotteryTicketService{
 
 	int updateFormId(Long productId, String unionid, String formId);
 
+	void appTicket(String unionid) throws Exception;
+
 }

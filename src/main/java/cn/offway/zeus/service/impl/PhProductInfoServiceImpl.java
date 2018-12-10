@@ -43,13 +43,13 @@ public class PhProductInfoServiceImpl implements PhProductInfoService {
 	}
 	
 	@Override
-	public Map<String, List<ProductInfo>> list(String unionid){
+	public Map<String, List<ProductInfo>> list(String unionid,int channel){
 		Map<String, List<ProductInfo>> resultMap = new HashMap<>();
 		//用户参与的活动
 		List<PhProductInfo> phProductInfos = findByUnionid(unionid);
-		resultMap.put("current", getProductInfos(phProductInfoRepository.findByNow(),phProductInfos));
-		resultMap.put("next", getProductInfos(phProductInfoRepository.findBynext(),phProductInfos));
-		resultMap.put("before", getProductInfos(phProductInfoRepository.findByBefore(),phProductInfos));
+		resultMap.put("current", getProductInfos(phProductInfoRepository.findByNow(channel),phProductInfos));
+		resultMap.put("next", getProductInfos(phProductInfoRepository.findBynext(channel),phProductInfos));
+		resultMap.put("before", getProductInfos(phProductInfoRepository.findByBefore(channel),phProductInfos));
 		return resultMap;
 	}
 

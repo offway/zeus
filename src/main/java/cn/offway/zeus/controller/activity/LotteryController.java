@@ -219,5 +219,19 @@ public class LotteryController {
 		return jsonResultHelper.buildSuccessJsonResult(null);
 		
 	}
+	
+	@ApiOperation(value = "APP注册送券")
+	@PostMapping("/appTicket")
+	public JsonResult appTicket(String unionid){
+		try {
+			phLotteryTicketService.appTicket(unionid);
+			return jsonResultHelper.buildSuccessJsonResult(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("APP注册送券异常",e);
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		}
+		
+	}
 
 }

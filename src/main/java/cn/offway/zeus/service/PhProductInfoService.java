@@ -21,7 +21,7 @@ public interface PhProductInfoService{
 
 	List<PhProductInfo> findByUnionid(String unionid);
 
-	Map<String, List<ProductInfo>> list(String unionid);
-	
 	List<ProductJoin> findProductJoinByUnionid(String unionid);
+
+	Map<String, List<ProductInfo>> list(String unionid, int channel);
 }

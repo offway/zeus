@@ -3,6 +3,7 @@ package cn.offway.zeus.controller.activity;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.BitField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,10 @@ public class ProductController {
 	
 	@ApiOperation(value = "活动列表")
 	@GetMapping("/list")
-	public JsonResult list(@ApiParam("用户unionid") @RequestParam(required = false) String unionid){
+	public JsonResult list(@ApiParam("用户unionid") @RequestParam(required = false) String unionid,
+			@ApiParam("渠道,该字段为二进制位运算标识,0否1是,从右到左第一位表示H5,第二位表示小程序,第三位表示APP,第四位表示其他活动。如要查询APP则传参为0100,查询H5和小程序则传参0011以此类推") @RequestParam String channel){
 		try {
-			Map<String, List<ProductInfo>> resultMap = phProductInfoService.list(unionid);
+			Map<String, List<ProductInfo>> resultMap = phProductInfoService.list(unionid,Integer.parseInt(channel,2));
 			return jsonResultHelper.buildSuccessJsonResult(resultMap);
 		} catch (Exception e) {
 			e.printStackTrace();

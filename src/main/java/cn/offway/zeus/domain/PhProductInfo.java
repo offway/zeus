@@ -40,7 +40,7 @@ public class PhProductInfo implements Serializable {
     private String banner;
 
     /** 奖品价值[单位RMB] **/
-    private Double price;
+    private String price;
 
     /** 缩略图 **/
     private String thumbnail;
@@ -80,6 +80,15 @@ public class PhProductInfo implements Serializable {
 
     /** 备注 **/
     private String remark;
+    
+    /** 平台 **/
+    private Long channel; 
+    
+    /** 排序 **/
+    private Long sort;
+    
+    /** 其他活动展示图 **/
+    private String showImage;
 
 
     @Id
@@ -129,12 +138,12 @@ public class PhProductInfo implements Serializable {
         this.banner = banner;
     }
 
-    @Column(name = "price", precision = 15, scale = 2)
-    public Double getPrice() {
+    @Column(name = "price", length = 50)
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
@@ -258,4 +267,30 @@ public class PhProductInfo implements Serializable {
 		this.appRuleContent = appRuleContent;
 	}
 
+	@Column(name = "channel", length = 8)
+	public Long getChannel() {
+		return channel;
+	}
+
+	public void setChannel(Long channel) {
+		this.channel = channel;
+	}
+
+	@Column(name = "sort", length = 11)
+	public Long getSort() {
+		return sort;
+	}
+
+	public void setSort(Long sort) {
+		this.sort = sort;
+	}
+	
+	@Column(name = "show_image", length = 100)
+	public String getShowImage() {
+		return showImage;
+	}
+
+	public void setShowImage(String showImage) {
+		this.showImage = showImage;
+	}
 }

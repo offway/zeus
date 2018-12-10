@@ -32,7 +32,7 @@ public class ProductInfo implements Serializable {
     private String banner;
 
     /** 奖品价值[单位RMB] **/
-    private Double price;
+    private String price;
 
     /** 缩略图 **/
     private String thumbnail;
@@ -60,6 +60,9 @@ public class ProductInfo implements Serializable {
     
     /** 是否已参加活动 **/
     private boolean isJoin = false;
+    
+    /** 其他活动展示图 **/
+    private String showImage;
 
 	public Long getId() {
 		return id;
@@ -101,11 +104,11 @@ public class ProductInfo implements Serializable {
 		this.banner = banner;
 	}
 
-	public Double getPrice() {
+	public String getPrice() {
 		return price;
 	}
 
-	public void setPrice(Double price) {
+	public void setPrice(String price) {
 		this.price = price;
 	}
 
@@ -180,6 +183,13 @@ public class ProductInfo implements Serializable {
 	public void setShareDesc(String shareDesc) {
 		this.shareDesc = shareDesc;
 	}
-	
+
+	public String getShowImage() {
+		return showImage;
+	}
+
+	public void setShowImage(String showImage) {
+		this.showImage = showImage;
+	}
 
 }

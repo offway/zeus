@@ -25,14 +25,14 @@ public interface PhProductInfoRepository extends JpaRepository<PhProductInfo,Lon
 	int updateStatus();
 	
 	
-	@Query(nativeQuery=true,value="select * from ph_product_info where NOW() >= begin_time and NOW() < end_time order by begin_time desc")
-	List<PhProductInfo> findByNow();
+	@Query(nativeQuery=true,value="select * from ph_product_info where  channel& ?1=?1 and  NOW() >= begin_time and video is null order by sort desc,begin_time desc")
+	List<PhProductInfo> findByNow(int channel);
 	
-	@Query(nativeQuery=true,value="select * from ph_product_info where NOW() < begin_time order by begin_time asc")
-	List<PhProductInfo> findBynext();
+	@Query(nativeQuery=true,value="select * from ph_product_info where channel& ?1=?1 and NOW() < begin_time order by sort desc,begin_time asc")
+	List<PhProductInfo> findBynext(int channel);
 	
-	@Query(nativeQuery=true,value="select * from ph_product_info where NOW() >= end_time order by end_time desc")
-	List<PhProductInfo> findByBefore();
+	@Query(nativeQuery=true,value="select * from ph_product_info where channel& ?1=?1 and NOW() >= end_time and video is not null order by sort desc,end_time desc")
+	List<PhProductInfo> findByBefore(int channel);
 	
 	@Query(nativeQuery=true,value="select i.* from ph_product_info i where i.id in (select DISTINCT(t.product_id) from ph_lottery_ticket t where t.source='0' and t.unionid = ?1)")
 	List<PhProductInfo> findByUnionid(String unionid);
