@@ -211,7 +211,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		PhWxuserInfo phWxuserInfo = phWxuserInfoService.findByUnionid(unionid);
 		if(null != phWxuserInfo){
 			//检查是否已经赠送
-			int count = phLotteryTicketRepository.countBySource(TicketSourceEnum.APP_REGISTER.getCode());
+			int count = phLotteryTicketRepository.countByUnionidAndSource(unionid,TicketSourceEnum.APP_REGISTER.getCode());
 			if(count == 0){
 				//查询用户参与的正在进行的活动
 				List<Object> productIds = phLotteryTicketRepository.findProductId(unionid);
