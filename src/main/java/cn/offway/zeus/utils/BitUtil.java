@@ -19,4 +19,15 @@ public class BitUtil {
 		return (ab & b) == b;
 	}
 	
+	public static void main(String[] args) {
+		
+		
+		String[] s ={"0001","0011","0101","0111","1001","1011","1101","1111"};
+		String[] s1 ={"0010","0011","0110","1010","1011","1110","1111"};
+		for (String string : s1) {
+			
+			System.out.println(Integer.parseInt(string, 2));
+		}
+	}
+	
 }

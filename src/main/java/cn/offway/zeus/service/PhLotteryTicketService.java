@@ -36,4 +36,6 @@ public interface PhLotteryTicketService{
 
 	void appTicket(String unionid) throws Exception;
 
+	int countByUnionidAndSource(String unionid, String source);
+
 }

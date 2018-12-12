@@ -144,8 +144,9 @@ public class LotteryController {
 		map.put("product", phProductInfo);
 		map.put("beginTime", phProductInfo.getBeginTime());
 		map.put("endTime", phProductInfo.getEndTime());
-		//默认已下载APP
-		map.put("appDownloaded", true);
+		//查询是否下载APP
+		int count = phLotteryTicketService.countByUnionidAndSource(unionid, TicketSourceEnum.APP_REGISTER.getCode());
+		map.put("appDownloaded", count>0?true:false);
 		int shareCount = phShareRecordService.countByUnionidAndProductId(unionid, productId);
 		//是否分享
 		map.put("isShare", shareCount>0?true:false);

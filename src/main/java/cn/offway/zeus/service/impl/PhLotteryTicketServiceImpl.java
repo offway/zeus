@@ -70,6 +70,11 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 	}
 	
 	@Override
+	public int countByUnionidAndSource(String unionid,String source){
+		return phLotteryTicketRepository.countByUnionidAndSource(unionid, source);
+	}
+	
+	@Override
 	public int updateFormId(Long productId,String unionid,String formId){
 		return phLotteryTicketRepository.updateFormId(productId, unionid, formId);
 	}
@@ -209,17 +214,17 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 			int count = phLotteryTicketRepository.countBySource(TicketSourceEnum.APP_REGISTER.getCode());
 			if(count == 0){
 				//查询用户参与的正在进行的活动
-				List<Long> productIds = phLotteryTicketRepository.findProductId(unionid);
+				List<Object> productIds = phLotteryTicketRepository.findProductId(unionid);
 				List<PhLotteryTicket> phLotteryTickets = new ArrayList<>();
 				
-				for (Long productId : productIds) {
+				for (Object productId : productIds) {
 					for (int i = 0; i < 5; i++) {
 						PhLotteryTicket phLotteryTicket = new PhLotteryTicket();
 						phLotteryTicket.setCreateTime(new Date());
 						phLotteryTicket.setHeadUrl(phWxuserInfo.getHeadimgurl());
 						phLotteryTicket.setNickName(phWxuserInfo.getNickname());
 						phLotteryTicket.setUnionid(phWxuserInfo.getUnionid());
-						phLotteryTicket.setProductId(productId);
+						phLotteryTicket.setProductId(Long.parseLong(productId.toString()));
 						phLotteryTicket.setSource(TicketSourceEnum.APP_REGISTER.getCode());
 						phLotteryTicket.setRemark("APP注册");
 						phLotteryTickets.add(phLotteryTicket);

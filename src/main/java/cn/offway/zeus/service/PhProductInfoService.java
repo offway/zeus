@@ -3,6 +3,9 @@ package cn.offway.zeus.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import cn.offway.zeus.domain.PhProductInfo;
 import cn.offway.zeus.dto.ProductInfo;
 import cn.offway.zeus.dto.ProductJoin;
@@ -24,4 +27,8 @@ public interface PhProductInfoService{
 	List<ProductJoin> findProductJoinByUnionid(String unionid);
 
 	Map<String, List<ProductInfo>> list(String unionid, int channel);
+
+	Page<PhProductInfo> findByType(String type, Pageable page);
+
+	Page<ProductInfo> listByPage(String type, String unionid, int channel, int page, int size);
 }

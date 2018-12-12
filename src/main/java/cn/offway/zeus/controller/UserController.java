@@ -40,7 +40,7 @@ public class UserController {
 	
 	@ApiOperation("微信用户信息保存")
 	@PostMapping("/wx")
-	public JsonResult wx(@ApiParam("微信用户信息") @RequestBody WxuserInfo wxuserInfo){
+	public JsonResult wx(@ApiParam("微信用户信息") WxuserInfo wxuserInfo){
 		try {
 			
 			PhWxuserInfo phWxuserInfo = phWxuserInfoService.findByUnionid(wxuserInfo.getUnionid());
