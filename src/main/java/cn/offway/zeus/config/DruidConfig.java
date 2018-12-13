@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
  
 import javax.sql.DataSource;
- 
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -19,6 +20,14 @@ import com.alibaba.druid.support.http.WebStatFilter; //这个包容易导入错�
 @Configuration
 public class DruidConfig {
  
+	
+	@Value("${security.user.name}")
+	private String DRUID_USERNAME;
+	
+	@Value("${security.user.password}")
+	private String DRUID_PASSWORD;
+	
+	
     @ConfigurationProperties(prefix = "spring.datasource")
     @Bean
     public DataSource druid() {
@@ -34,10 +43,10 @@ public class DruidConfig {
         Map<String, String> initParams = new HashMap<>();
         // 监控页面登录用户名  
  
-        initParams.put("loginUsername", "admin");
+        initParams.put("loginUsername", DRUID_USERNAME);
  
         // 监控页面登录用户密码
-        initParams.put("loginPassword", "123456");
+        initParams.put("loginPassword", DRUID_PASSWORD);
  
         // ip白名单（没有配置或者为空，则允许所有访问）
         initParams.put("allow", "");
