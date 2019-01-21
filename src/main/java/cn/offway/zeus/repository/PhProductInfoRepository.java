@@ -55,6 +55,6 @@ public interface PhProductInfoRepository extends JpaRepository<PhProductInfo,Lon
 	@Query(nativeQuery=true,value="select i.* from ph_product_info i where i.id in (select DISTINCT(t.product_id) from ph_lottery_ticket t where t.source='0' and t.unionid = ?1)")
 	List<PhProductInfo> findByUnionid(String unionid);
 	
-	@Query(value="select new cn.offway.zeus.dto.ProductJoin(p.id,p.image,p.name,t.createTime,p.beginTime,p.endTime,p.shareImage,p.shareTitle,p.shareDesc) from PhLotteryTicket t,PhProductInfo p where p.id=t.productId and t.unionid=?1 and source='0'")
-	List<ProductJoin> findProductJoinByUnionid(String unionid);
+	@Query(value="select new cn.offway.zeus.dto.ProductJoin(p.id,p.image,p.name,t.createTime,p.beginTime,p.endTime,p.shareImage,p.shareTitle,p.shareDesc) from PhLotteryTicket t,PhProductInfo p where p.id=t.productId and t.unionid=?1 and t.source='0' and bitand(p.channel,?2)=?2")
+	List<ProductJoin> findProductJoinByUnionid(String unionid,int channel);
 }

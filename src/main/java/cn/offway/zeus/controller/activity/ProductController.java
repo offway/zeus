@@ -74,9 +74,13 @@ public class ProductController {
 	
 	@ApiOperation(value = "用户参与活动列表")
 	@GetMapping("/user")
-	public JsonResult user(@ApiParam("用户unionid") @RequestParam String unionid){
+	public JsonResult user(
+			@ApiParam("用户unionid") @RequestParam String unionid,
+			@ApiParam("渠道,该字段为二进制位运算标识,0否1是,从右到左第一位表示H5,第二位表示小程序,第三位表示APP,第四位表示其他活动。如要查询APP则传参为0100,查询H5和小程序则传参0011以此类推") @RequestParam(required = false) String channel
+			){
 		try {
-			return jsonResultHelper.buildSuccessJsonResult(phProductInfoService.findProductJoinByUnionid(unionid));
+			channel = StringUtils.isBlank(channel)?"0":channel;
+			return jsonResultHelper.buildSuccessJsonResult(phProductInfoService.findProductJoinByUnionid(unionid,Integer.parseInt(channel,2)));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("用户参与活动列表异常,unionid:{}",unionid,e);

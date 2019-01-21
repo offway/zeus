@@ -113,8 +113,8 @@ public class PhProductInfoServiceImpl implements PhProductInfoService {
 	}
 
 	@Override
-	public List<ProductJoin> findProductJoinByUnionid(String unionid) {
-		return phProductInfoRepository.findProductJoinByUnionid(unionid);
+	public List<ProductJoin> findProductJoinByUnionid(String unionid,int channel) {
+		return phProductInfoRepository.findProductJoinByUnionid(unionid,channel);
 	}
 	
 	@Override

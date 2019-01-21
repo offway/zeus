@@ -24,11 +24,11 @@ public interface PhProductInfoService{
 
 	List<PhProductInfo> findByUnionid(String unionid);
 
-	List<ProductJoin> findProductJoinByUnionid(String unionid);
-
 	Map<String, List<ProductInfo>> list(String unionid, int channel);
 
 	Page<PhProductInfo> findByType(String type, Pageable page);
 
 	Page<ProductInfo> listByPage(String type, String unionid, int channel, int page, int size);
+
+	List<ProductJoin> findProductJoinByUnionid(String unionid, int channel);
 }
