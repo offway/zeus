@@ -3,7 +3,10 @@ package cn.offway.zeus.domain;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 
 import java.util.Date;
 
@@ -58,7 +61,16 @@ public class PhWxuserInfo implements Serializable {
 
     /** 备注 **/
     private String remark;
-
+    
+    /** 姓名 **/
+    private String realName;
+    
+    /** 年龄 **/
+    private Long age;
+    
+    /** 星座 **/
+    private String constellation;
+    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -189,5 +201,34 @@ public class PhWxuserInfo implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    @Column(name = "real_name", length = 50)
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	@Column(name = "age", length = 11)
+	public Long getAge() {
+		return age;
+	}
+
+	public void setAge(Long age) {
+		this.age = age;
+	}
+
+	@Column(name = "constellation", length = 20)
+	public String getConstellation() {
+		return constellation;
+	}
+
+	public void setConstellation(String constellation) {
+		this.constellation = constellation;
+	}
+	
+	
 
 }
