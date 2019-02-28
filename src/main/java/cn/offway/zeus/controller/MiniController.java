@@ -90,7 +90,7 @@ public class MiniController {
 	
 	@ApiOperation("解密小程序用户信息")
 	@PostMapping("/sendDecode")
-	public JsonResult sendDecode(@ApiParam("session_key") @RequestParam String sessionKey,@ApiParam("encryptedData") @RequestParam String encryptedData, @ApiParam("iv") String iv){
+	public JsonResult sendDecode(@ApiParam("session_key") @RequestParam String sessionKey,@ApiParam("encryptedData") @RequestParam String encryptedData, @ApiParam("iv") @RequestParam String iv){
 		
 		try {
 			String result = AesCbcUtil.decrypt(encryptedData, sessionKey, iv, "UTF-8");

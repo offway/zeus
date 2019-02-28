@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ import cn.offway.zeus.service.PhShareRecordService;
 import cn.offway.zeus.service.PhWinningRecordService;
 import cn.offway.zeus.service.PhWxuserInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
+import cn.offway.zeus.utils.HttpClientUtil;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.ApiOperation;
@@ -66,6 +68,9 @@ public class LotteryController {
 	private PhShareRecordService phShareRecordService;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Value("${app.url}")
+	private String appUrl;
 
 	/**
 	 * 登记抽奖
@@ -145,8 +150,11 @@ public class LotteryController {
 		map.put("beginTime", phProductInfo.getBeginTime());
 		map.put("endTime", phProductInfo.getEndTime());
 		//查询是否下载APP
-		int count = phLotteryTicketService.countByUnionidAndSource(unionid, TicketSourceEnum.APP_REGISTER.getCode());
-		map.put("appDownloaded", count>0?true:false);
+		
+		String result = HttpClientUtil.get(appUrl+"/api/user/isExistsByUnionid?unionid="+unionid);
+		//int count = phLotteryTicketService.countByUnionidAndSource(unionid, TicketSourceEnum.APP_REGISTER.getCode());
+		//map.put("appDownloaded", count>0?true:false);
+		map.put("appDownloaded", "1".equals(result)?true:false);
 		int shareCount = phShareRecordService.countByUnionidAndProductId(unionid, productId);
 		//是否分享
 		map.put("isShare", shareCount>0?true:false);
