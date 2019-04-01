@@ -17,6 +17,22 @@ public class JsonResult implements Serializable{
 	
 	/** 返回数据 **/
 	private Object data;
+	
+	
+
+	public JsonResult() {
+	}
+	
+	public JsonResult(String code, String msg) {
+		this.code = code;
+		this.msg = msg;
+	}
+
+	public JsonResult(String code, String msg, Object data) {
+		this.code = code;
+		this.msg = msg;
+		this.data = data;
+	}
 
 	public String getCode() {
 		return code;

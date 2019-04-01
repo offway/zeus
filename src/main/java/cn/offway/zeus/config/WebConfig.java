@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.sensorsdata.analytics.javasdk.SensorsAnalytics;
+import com.yunpian.sdk.YunpianClient;
 
 /**
  * 配置
@@ -20,6 +21,10 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 	/** 从神策分析获取的数据接收的 URL **/
 	@Value("${sa.server.url}")
 	private String SA_SERVER_URL;
+	
+	/** 云片APIKEY **/
+	@Value("${yunpian.apikey}")
+	private String APIKEY;
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
@@ -37,6 +42,11 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 		return new SensorsAnalytics(
 				//使用 Debug 模式，并且导入 Debug 模式下所发送的数据
 				new SensorsAnalytics.DebugConsumer(SA_SERVER_URL, true));
+	}
+	
+	@Bean
+	public YunpianClient yunpianClient(){
+		return new YunpianClient(APIKEY).init();
 	}
 
 }

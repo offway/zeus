@@ -34,6 +34,17 @@ public enum CommonResultCode implements ResultCode {
     /** 中奖信息不存在 */
     PRIZE_NOT_EXISTS("1007", "PRIZE_NOT_EXISTS"),
     
+    /** 短信验证码错误  */
+    SMS_CODE_ERROR("1008", "SMS_CODE_ERROR"),
+    
+    /** 短信验证码失效  */
+    SMS_CODE_INVALID("1009", "SMS_CODE_INVALID"),
+    
+    /** 短信验证码发送失败  */
+    SMS_CODE_FAIL("1010", "SMS_CODE_FAIL"),
+    
+    /** 用户已存在 */
+    USER_EXISTS("1011", "USER_EXISTS"),
     ;
 	
 	
