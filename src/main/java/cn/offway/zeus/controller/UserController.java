@@ -231,8 +231,14 @@ public class UserController {
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
 		}
-		
-		return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
+		phUserInfo.setBirthday(userInfo.getBirthday());
+		phUserInfo.setHeadimgurl(userInfo.getHeadimgurl());
+		phUserInfo.setHeight(userInfo.getHeight());
+		phUserInfo.setNickname(userInfo.getNickname());
+		phUserInfo.setSex(userInfo.getSex());
+		phUserInfo.setWeight(userInfo.getWeight());
+		PhUserInfo phUserInfo1 = phUserInfoService.save(phUserInfo);
+		return jsonResultHelper.buildSuccessJsonResult(phUserInfo1);
 
 	}
 	

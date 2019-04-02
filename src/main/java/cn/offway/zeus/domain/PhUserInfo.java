@@ -34,7 +34,7 @@ public class PhUserInfo implements Serializable {
     @ApiModelProperty("用户的性别，值为1时是男性，值为2时是女性，值为0时是未知")
     private String sex;
 
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    //@DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty("生日")
     private Date birthday;
 
@@ -107,7 +107,7 @@ public class PhUserInfo implements Serializable {
         this.sex = sex;
     }
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "birthday")
     public Date getBirthday() {
         return birthday;

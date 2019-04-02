@@ -13,6 +13,9 @@ import com.qiniu.util.StringMap;
 
 import cn.offway.zeus.properties.QiniuProperties;
 import cn.offway.zeus.service.QiniuService;
+import cn.offway.zeus.utils.CommonResultCode;
+import cn.offway.zeus.utils.JsonResult;
+import cn.offway.zeus.utils.JsonResultHelper;
 
 
 
@@ -32,25 +35,32 @@ public class QiniuController {
 	
 	@Autowired
 	private QiniuService qiniuService;
+	
+	@Autowired
+	private JsonResultHelper jsonResultHelper;
 
 	@GetMapping("/token")
-	public String token(){
+	public JsonResult token(){
 		try {
 			Auth auth = Auth.create(qiniuProperties.getAccessKey(), qiniuProperties.getSecretKey());
 			StringMap putPolicy = new StringMap();
 			putPolicy.put("returnBody", "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"bucket\":\"$(bucket)\",\"fsize\":$(fsize),\"fname\":$(fname),\"param\":\"$(x:param)\"}");
 			String upToken = auth.uploadToken(qiniuProperties.getBucket(), null, qiniuProperties.getExpireSeconds(), putPolicy);
-			return upToken;
+			return jsonResultHelper.buildSuccessJsonResult(upToken);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("获取七牛上传文件token异常",e);
-			return "";
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
 		
 	}
 	
 	@PostMapping("/delete")
-	public boolean delete(String url){
-		return qiniuService.qiniuDelete(url.replace(qiniuProperties.getUrl()+"/", ""));
+	public JsonResult delete(String url){
+		 if(qiniuService.qiniuDelete(url.replace(qiniuProperties.getUrl()+"/", ""))){
+			return jsonResultHelper.buildSuccessJsonResult(null);
+		 }else{
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		 }
 	}
 }
