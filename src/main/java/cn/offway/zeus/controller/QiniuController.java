@@ -16,6 +16,7 @@ import cn.offway.zeus.service.QiniuService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
+import io.swagger.annotations.Api;
 
 
 
@@ -24,6 +25,7 @@ import cn.offway.zeus.utils.JsonResultHelper;
  * @author wn
  *
  */
+@Api(tags={"七牛"})
 @RestController
 @RequestMapping("/qiniu")
 public class QiniuController {

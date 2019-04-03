@@ -53,6 +53,12 @@ public class PhGoods implements Serializable {
     /** 备注 **/
     private String remark;
 
+    /** 浏览数 **/
+    private Long viewCount;
+
+    /** 销量 **/
+    private Long saleCount;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -172,6 +178,24 @@ public class PhGoods implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Column(name = "view_count", length = 11)
+    public Long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Long viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    @Column(name = "sale_count", length = 11)
+    public Long getSaleCount() {
+        return saleCount;
+    }
+
+    public void setSaleCount(Long saleCount) {
+        this.saleCount = saleCount;
     }
 
 }

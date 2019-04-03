@@ -19,6 +19,7 @@ import cn.offway.zeus.service.PhProductInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -27,6 +28,7 @@ import io.swagger.annotations.ApiParam;
  * @author wn
  *
  */
+@Api(tags={"活动产品"})
 @RestController
 @RequestMapping("/product")
 public class ProductController {

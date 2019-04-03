@@ -58,6 +58,12 @@ public class PhUserInfo implements Serializable {
     
     @ApiModelProperty("余额")
     private Double balance;
+    
+    @ApiModelProperty("收藏数量")
+    private Long collectCount;
+    
+    @ApiModelProperty("优惠券数量")
+    private Long voucherCount;
 
     @ApiModelProperty("创建时间")
     private Date createTime;
@@ -163,7 +169,6 @@ public class PhUserInfo implements Serializable {
 	}
 
     @Column(name = "qqid", length = 200)
-
 	public String getQqid() {
 		return qqid;
 	}
@@ -181,7 +186,25 @@ public class PhUserInfo implements Serializable {
         this.balance = balance;
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "collect_count", length = 11)
+    public Long getCollectCount() {
+		return collectCount;
+	}
+
+	public void setCollectCount(Long collectCount) {
+		this.collectCount = collectCount;
+	}
+
+	@Column(name = "voucher_count", length = 11)
+	public Long getVoucherCount() {
+		return voucherCount;
+	}
+
+	public void setVoucherCount(Long voucherCount) {
+		this.voucherCount = voucherCount;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_time")
     public Date getCreateTime() {
         return createTime;

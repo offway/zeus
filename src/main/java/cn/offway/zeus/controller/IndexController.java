@@ -1,6 +1,8 @@
 package cn.offway.zeus.controller;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -8,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.convert.IndexedData;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,12 +21,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.offway.zeus.domain.PhGoods;
+import cn.offway.zeus.domain.PhStarsameImage;
 import cn.offway.zeus.domain.PhWxuserInfo;
+import cn.offway.zeus.service.PhBannerService;
+import cn.offway.zeus.service.PhGoodsService;
+import cn.offway.zeus.service.PhStarsameImageService;
 import cn.offway.zeus.service.PhWxuserInfoService;
 import cn.offway.zeus.service.WxService;
 import cn.offway.zeus.utils.HttpClientUtil;
+import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import cn.offway.zeus.utils.WechatUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -33,6 +43,7 @@ import io.swagger.annotations.ApiParam;
  *
  */
 @Controller
+@Api(tags={"首页"})
 public class IndexController {
 
 	@Value("${wx.appid}")
@@ -51,6 +62,15 @@ public class IndexController {
 	
 	@Autowired
 	private WxService wxService;
+	
+	@Autowired
+	private PhBannerService phBannerService;
+	
+	@Autowired
+	private PhStarsameImageService phStarsameImageService;
+	
+	@Autowired
+	private PhGoodsService phGoodsService;
 
 	@ResponseBody
 	@GetMapping("/")
@@ -117,6 +137,25 @@ public class IndexController {
 
 		logger.info("用户核实结果-标识:{},结果:{}",state,accessTokenResult);
 		return "中奖用户核实操作已完成";
+	}
+	
+	@ApiOperation(value = "首页banner")
+	@GetMapping("/banners")
+	@ResponseBody
+	public JsonResult banners(){
+		return jsonResultHelper.buildSuccessJsonResult(phBannerService.banners());
+	}
+	
+	@ApiOperation(value = "首页乱七八糟的数据")
+	@GetMapping("/data")
+	@ResponseBody
+	public JsonResult data(){
+		Map<String, Object> map = new HashMap<>();
+		List<PhStarsameImage> phStarsameImages = phStarsameImageService.indexData();
+		map.put("star", phStarsameImages);
+		List<PhGoods> phGoods = phGoodsService.indexData();
+		map.put("goods", phGoods);
+		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 	
 }

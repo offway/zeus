@@ -33,6 +33,7 @@ import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.HttpClientUtil;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -42,6 +43,7 @@ import io.swagger.annotations.ApiParam;
  * @author wn
  *
  */
+@Api(tags={"限时豪礼"})
 @RestController
 @RequestMapping("/activity/lottery")
 public class LotteryController {

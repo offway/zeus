@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import cn.offway.zeus.domain.PhBanner;
 
 /**
@@ -13,4 +15,6 @@ public interface PhBannerService{
 	PhBanner save(PhBanner phBanner);
 	
 	PhBanner findOne(Long id);
+
+	List<PhBanner> banners();
 }

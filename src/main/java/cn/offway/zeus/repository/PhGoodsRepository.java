@@ -1,7 +1,10 @@
 package cn.offway.zeus.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.offway.zeus.domain.PhGoods;
 
@@ -13,5 +16,6 @@ import cn.offway.zeus.domain.PhGoods;
  */
 public interface PhGoodsRepository extends JpaRepository<PhGoods,Long>,JpaSpecificationExecutor<PhGoods> {
 
-	/** 此处写一些自定义的方法 **/
+	@Query(nativeQuery=true,value="select g.* from ph_goods g ,ph_brand b where g.brand_id = b.id and b.type='0' order by g.sale_count desc limit 10")
+	List<PhGoods> indexData();
 }

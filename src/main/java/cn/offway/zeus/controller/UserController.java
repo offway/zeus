@@ -1,6 +1,7 @@
 package cn.offway.zeus.controller;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,11 +14,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.domain.PhWxuserInfo;
@@ -29,6 +34,7 @@ import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.IpUtil;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -37,6 +43,7 @@ import io.swagger.annotations.ApiParam;
  * @author wn
  *
  */
+@Api(tags={"用户"})
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -158,6 +165,8 @@ public class UserController {
 		phUserInfo.setBalance(0D);
 		phUserInfo.setSex("1");
 		phUserInfo.setVersion(0L);
+		phUserInfo.setVoucherCount(0L);
+		phUserInfo.setCollectCount(0L);
 		phUserInfo.setCreateTime(new Date());
 		phUserInfo = phUserInfoService.save(phUserInfo);
 		return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
@@ -192,6 +201,8 @@ public class UserController {
 				phUserInfo.setBalance(0D);
 				phUserInfo.setSex("1");
 				phUserInfo.setVersion(0L);
+				phUserInfo.setVoucherCount(0L);
+				phUserInfo.setCollectCount(0L);
 				phUserInfo.setCreateTime(new Date());
 				phUserInfo = phUserInfoService.save(phUserInfo);
 			}
@@ -259,6 +270,25 @@ public class UserController {
 		phUserInfo.setUnionid(unionid);
 		phUserInfo = phUserInfoService.save(phUserInfo);
 		return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@ApiOperation("我的")
+	@GetMapping("/info")
+	public JsonResult info(@ApiParam("用户ID") @RequestParam Long userId){
+		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		if(null==phUserInfo){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
+		}
+		String userInfo = JSON.toJSONString(phUserInfo,SerializerFeature.WriteMapNullValue);
+		Map<String, Object> map = JSON.parseObject(userInfo, Map.class);
+		//TODO 需查询订单信息
+		map.put("pendingPayment", 0L);
+		map.put("pendingShip", 0L);
+		map.put("pendingReceipt", 0L);
+		map.put("goodsReturn", 0L);
+		return jsonResultHelper.buildSuccessJsonResult(map);
 
 	}
 	

@@ -20,12 +20,14 @@ import cn.offway.zeus.dto.SaTrack;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
+import io.swagger.annotations.Api;
 
 /**
  * 神策数据相关服务
  * @author wn
  *
  */
+@Api(tags={"神策数据"})
 @RestController
 @RequestMapping("/sensors")
 public class SensorsController {

@@ -27,9 +27,11 @@ import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.HttpClientUtil;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+@Api(tags={"小程序"})
 @RestController
 @RequestMapping("/mini")
 public class MiniController {

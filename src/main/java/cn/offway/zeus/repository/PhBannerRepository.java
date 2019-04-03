@@ -1,7 +1,10 @@
 package cn.offway.zeus.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.offway.zeus.domain.PhBanner;
 
@@ -13,5 +16,6 @@ import cn.offway.zeus.domain.PhBanner;
  */
 public interface PhBannerRepository extends JpaRepository<PhBanner,Long>,JpaSpecificationExecutor<PhBanner> {
 
-	/** 此处写一些自定义的方法 **/
+	@Query(nativeQuery=true,value="select * from ph_banner where `status`='1' and NOW() BETWEEN begin_time and end_time order by sort")
+	List<PhBanner> banners();
 }
