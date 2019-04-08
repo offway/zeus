@@ -1,5 +1,8 @@
 package cn.offway.zeus.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +35,17 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	@Override
 	public PhOrderInfo findOne(Long id){
 		return phOrderInfoRepository.findOne(id);
+	}
+	
+	@Override
+	public String generateOrderNo(String prefix){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		String date = sdf.format(new Date());
+		String s = prefix+date;
+		int countSequence =  phOrderInfoRepository.countSequence(s);
+		if(countSequence==0){
+			phOrderInfoRepository.sequence(s);
+		}
+		return phOrderInfoRepository.nextval(s);
 	}
 }

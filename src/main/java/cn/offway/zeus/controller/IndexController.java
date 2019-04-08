@@ -22,11 +22,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import cn.offway.zeus.domain.PhGoods;
+import cn.offway.zeus.domain.PhStarsame;
 import cn.offway.zeus.domain.PhStarsameImage;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.service.PhBannerService;
 import cn.offway.zeus.service.PhGoodsService;
 import cn.offway.zeus.service.PhStarsameImageService;
+import cn.offway.zeus.service.PhStarsameService;
 import cn.offway.zeus.service.PhWxuserInfoService;
 import cn.offway.zeus.service.WxService;
 import cn.offway.zeus.utils.HttpClientUtil;
@@ -67,7 +69,7 @@ public class IndexController {
 	private PhBannerService phBannerService;
 	
 	@Autowired
-	private PhStarsameImageService phStarsameImageService;
+	private PhStarsameService phStarsameService;
 	
 	@Autowired
 	private PhGoodsService phGoodsService;
@@ -151,8 +153,8 @@ public class IndexController {
 	@ResponseBody
 	public JsonResult data(){
 		Map<String, Object> map = new HashMap<>();
-		List<PhStarsameImage> phStarsameImages = phStarsameImageService.indexData();
-		map.put("star", phStarsameImages);
+		List<PhStarsame> phStarsames = phStarsameService.indexData();
+		map.put("star", phStarsames);
 		List<PhGoods> phGoods = phGoodsService.indexData();
 		map.put("goods", phGoods);
 		return jsonResultHelper.buildSuccessJsonResult(map);

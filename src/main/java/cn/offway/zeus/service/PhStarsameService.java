@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import cn.offway.zeus.domain.PhStarsame;
 
 /**
@@ -13,4 +15,6 @@ public interface PhStarsameService{
 	PhStarsame save(PhStarsame phStarsame);
 	
 	PhStarsame findOne(Long id);
+
+	List<PhStarsame> indexData();
 }

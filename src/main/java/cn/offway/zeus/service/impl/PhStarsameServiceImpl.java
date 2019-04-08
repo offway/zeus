@@ -1,5 +1,7 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import cn.offway.zeus.service.PhStarsameService;
 
 import cn.offway.zeus.domain.PhStarsame;
+import cn.offway.zeus.domain.PhStarsameImage;
 import cn.offway.zeus.repository.PhStarsameRepository;
 
 
@@ -32,5 +35,10 @@ public class PhStarsameServiceImpl implements PhStarsameService {
 	@Override
 	public PhStarsame findOne(Long id){
 		return phStarsameRepository.findOne(id);
+	}
+	
+	@Override
+	public List<PhStarsame> indexData(){
+		return phStarsameRepository.indexData();
 	}
 }

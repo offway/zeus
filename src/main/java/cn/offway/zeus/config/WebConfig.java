@@ -29,7 +29,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 	/** 云片APIKEY **/
 	@Value("${yunpian.apikey}")
 	private String APIKEY;
-
+	
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
  
@@ -61,5 +61,4 @@ public class WebConfig extends WebMvcConfigurerAdapter{
                 .paths(PathSelectors.any())
                 .build();
 	}
-
 }

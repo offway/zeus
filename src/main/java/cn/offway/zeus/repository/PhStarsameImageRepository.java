@@ -16,6 +16,5 @@ import cn.offway.zeus.domain.PhStarsameImage;
  */
 public interface PhStarsameImageRepository extends JpaRepository<PhStarsameImage,Long>,JpaSpecificationExecutor<PhStarsameImage> {
 
-	@Query(nativeQuery=true,value="select * from ph_starsame_image order by sort limit 8")
-	List<PhStarsameImage> indexData();
+	
 }

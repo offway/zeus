@@ -1,7 +1,10 @@
 package cn.offway.zeus.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.offway.zeus.domain.PhStarsame;
 
@@ -13,5 +16,6 @@ import cn.offway.zeus.domain.PhStarsame;
  */
 public interface PhStarsameRepository extends JpaRepository<PhStarsame,Long>,JpaSpecificationExecutor<PhStarsame> {
 
-	/** 此处写一些自定义的方法 **/
+	@Query(nativeQuery=true,value="select * from ph_starsam order by sort limit 6")
+	List<PhStarsame> indexData();
 }

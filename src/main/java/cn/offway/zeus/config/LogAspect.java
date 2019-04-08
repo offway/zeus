@@ -43,7 +43,9 @@ public class LogAspect {
 		}
 		Object params = paramMap;
 		if(paramMap.isEmpty() && args.length == 1){
-			params = JSON.toJSONString(args[0],SerializerFeature.WriteMapNullValue);
+			if(!args[0].getClass().getName().equals("org.springframework.security.web.firewall.RequestWrapper")){
+				params = JSON.toJSONString(args[0],SerializerFeature.WriteMapNullValue);
+			}
 		}
  
         logger.info("请求地址:"+uri);

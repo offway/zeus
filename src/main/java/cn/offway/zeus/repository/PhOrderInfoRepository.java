@@ -2,6 +2,9 @@ package cn.offway.zeus.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhOrderInfo;
 
@@ -13,5 +16,15 @@ import cn.offway.zeus.domain.PhOrderInfo;
  */
 public interface PhOrderInfoRepository extends JpaRepository<PhOrderInfo,Long>,JpaSpecificationExecutor<PhOrderInfo> {
 
-	/** 此处写一些自定义的方法 **/
+	@Query(nativeQuery=true,value="select CONCAT(?1,LPAD(nextval(?1), 6, 0))")
+	String nextval(String prefix);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery = true,value="insert into sequence VALUES(?1,0,1)")
+	int sequence(String prefix);
+	
+	@Query(nativeQuery=true,value="select count(*) from sequence where name=?1 ")
+	int countSequence(String prefix);
+	
 }

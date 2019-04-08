@@ -16,5 +16,4 @@ public interface PhStarsameImageService{
 	
 	PhStarsameImage findOne(Long id);
 
-	List<PhStarsameImage> indexData();
 }
