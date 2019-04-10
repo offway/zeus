@@ -2,6 +2,8 @@ package cn.offway.zeus.dto;
 
 import java.io.Serializable;
 
+import org.springframework.data.domain.Sort.Direction;
+
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -21,10 +23,10 @@ public class GoodsDto implements Serializable {
     @ApiModelProperty(value ="品牌名称")
     private String brandName;
 
-    @ApiModelProperty(value ="类别")
+    @ApiModelProperty(value ="类别[男生，女生等]")
     private String type;
 
-    @ApiModelProperty(value ="类目")
+    @ApiModelProperty(value ="类目[卫衣，T恤等]")
     private String category;
     
     @ApiModelProperty(required = true,value ="页码,从0开始")
@@ -32,6 +34,12 @@ public class GoodsDto implements Serializable {
     
     @ApiModelProperty(required = true,value ="页大小")
     private int size;
+    
+    @ApiModelProperty(value ="排序方向[asc-顺序,desc-倒序]")
+    private String sortDir;
+    
+    @ApiModelProperty(value ="排序类型[saleCount-销量,viewCount-人气,createTime-新品,price-价格]")
+    private String sortName;
 
     public String getName() {
         return name;
@@ -89,6 +97,22 @@ public class GoodsDto implements Serializable {
 
 	public void setSize(int size) {
 		this.size = size;
+	}
+
+	public String getSortDir() {
+		return sortDir;
+	}
+
+	public void setSortDir(String sortDir) {
+		this.sortDir = sortDir;
+	}
+
+	public String getSortName() {
+		return sortName;
+	}
+
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
 	}
     
 }

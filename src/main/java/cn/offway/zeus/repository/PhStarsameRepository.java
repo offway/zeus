@@ -16,6 +16,6 @@ import cn.offway.zeus.domain.PhStarsame;
  */
 public interface PhStarsameRepository extends JpaRepository<PhStarsame,Long>,JpaSpecificationExecutor<PhStarsame> {
 
-	@Query(nativeQuery=true,value="select * from ph_starsam order by sort limit 6")
+	@Query(nativeQuery=true,value="select * from ph_starsame order by sort limit 6")
 	List<PhStarsame> indexData();
 }

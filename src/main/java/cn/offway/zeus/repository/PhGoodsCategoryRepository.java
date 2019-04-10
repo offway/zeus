@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhGoodsCategory;
+import java.lang.Long;
+import java.util.List;
 
 /**
  * 商品类目Repository接口
@@ -13,5 +15,5 @@ import cn.offway.zeus.domain.PhGoodsCategory;
  */
 public interface PhGoodsCategoryRepository extends JpaRepository<PhGoodsCategory,Long>,JpaSpecificationExecutor<PhGoodsCategory> {
 
-	/** 此处写一些自定义的方法 **/
+	List<PhGoodsCategory> findByGoodsTypeNameOrderBySortAsc(String goodsTypeName);
 }

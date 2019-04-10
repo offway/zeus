@@ -23,4 +23,6 @@ public interface PhGoodsService{
 	List<PhGoods> indexData();
 
 	Page<PhGoods> findByPage(GoodsDto goodsDto, Pageable page);
+
+	List<PhGoods> findRecommend(Long id);
 }

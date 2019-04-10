@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import cn.offway.zeus.domain.PhGoodsCategory;
 
 /**
@@ -13,4 +15,6 @@ public interface PhGoodsCategoryService{
 	PhGoodsCategory save(PhGoodsCategory phGoodsCategory);
 	
 	PhGoodsCategory findOne(Long id);
+
+	List<PhGoodsCategory> findByGoodsTypeNameOrderBySortAsc(String goodsTypeName);
 }

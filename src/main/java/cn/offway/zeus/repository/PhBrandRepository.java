@@ -1,5 +1,7 @@
 package cn.offway.zeus.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -13,5 +15,7 @@ import cn.offway.zeus.domain.PhBrand;
  */
 public interface PhBrandRepository extends JpaRepository<PhBrand,Long>,JpaSpecificationExecutor<PhBrand> {
 
-	/** 此处写一些自定义的方法 **/
+	List<PhBrand> findByIsRecommendOrderBySortAsc(String isRecommend);
+	
+	List<PhBrand> findByTypeOrderByNameAsc(String type);
 }

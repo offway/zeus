@@ -21,11 +21,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.offway.zeus.domain.PhBrand;
 import cn.offway.zeus.domain.PhGoods;
 import cn.offway.zeus.domain.PhStarsame;
 import cn.offway.zeus.domain.PhStarsameImage;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.service.PhBannerService;
+import cn.offway.zeus.service.PhBrandService;
 import cn.offway.zeus.service.PhGoodsService;
 import cn.offway.zeus.service.PhStarsameImageService;
 import cn.offway.zeus.service.PhStarsameService;
@@ -73,6 +75,9 @@ public class IndexController {
 	
 	@Autowired
 	private PhGoodsService phGoodsService;
+	
+	@Autowired
+	private PhBrandService phBrandService;
 
 	@ResponseBody
 	@GetMapping("/")
@@ -155,6 +160,8 @@ public class IndexController {
 		Map<String, Object> map = new HashMap<>();
 		List<PhStarsame> phStarsames = phStarsameService.indexData();
 		map.put("star", phStarsames);
+		List<PhBrand> brands = phBrandService.findByIsRecommendOrderBySortAsc("1");
+		map.put("brands", brands);
 		List<PhGoods> phGoods = phGoodsService.indexData();
 		map.put("goods", phGoods);
 		return jsonResultHelper.buildSuccessJsonResult(map);

@@ -28,6 +28,9 @@ public class PhGoodsCategory implements Serializable {
 
     /** 图片 **/
     private String image;
+    
+    /** 排序 **/
+    private Long sort;
 
     /** 创建时间 **/
     private Date createTime;
@@ -81,6 +84,15 @@ public class PhGoodsCategory implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
+    }
+    
+    @Column(name = "sort", length = 11)
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

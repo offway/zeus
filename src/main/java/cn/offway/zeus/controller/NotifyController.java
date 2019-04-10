@@ -50,7 +50,7 @@ public class NotifyController {
 	 */
 	@ApiOperation("支付宝支付结果通知")
 	@ResponseBody
-	@RequestMapping("/alipay")
+	@PostMapping("/alipay")
 	public String alipay(HttpServletRequest request,AlipayNotify alipayNotify){
 		try {
 			logger.info("支付宝通知:"+JSON.toJSONString(alipayNotify));

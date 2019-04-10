@@ -53,6 +53,11 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 	}
 	
 	@Override
+	public List<PhGoods> findRecommend(Long id){
+		return phGoodsRepository.findRecommend(id);
+	}
+	
+	@Override
 	public Page<PhGoods> findByPage(final GoodsDto goodsDto,Pageable page){
 		return phGoodsRepository.findAll(new Specification<PhGoods>() {
 			
@@ -85,7 +90,6 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
-                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
 				return null;
 			}
 		}, page);

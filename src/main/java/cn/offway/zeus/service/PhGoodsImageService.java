@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import cn.offway.zeus.domain.PhGoodsImage;
 
 /**
@@ -13,4 +15,8 @@ public interface PhGoodsImageService{
 	PhGoodsImage save(PhGoodsImage phGoodsImage);
 	
 	PhGoodsImage findOne(Long id);
+
+	List<PhGoodsImage> findByGoodsId(Long goodsId);
+
+	List<String> findByGoodsId(Long goodsId, String type);
 }

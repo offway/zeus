@@ -1,5 +1,7 @@
 package cn.offway.zeus.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -13,5 +15,5 @@ import cn.offway.zeus.domain.PhGoodsStock;
  */
 public interface PhGoodsStockRepository extends JpaRepository<PhGoodsStock,Long>,JpaSpecificationExecutor<PhGoodsStock> {
 
-	/** 此处写一些自定义的方法 **/
+	List<PhGoodsStock> findByGoodsId(Long goodsId);
 }

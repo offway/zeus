@@ -41,12 +41,13 @@ public class WxpayService {
 		
 		try {
 
+			String mchId = wxpayProperties.getMchId();
 			// 支付金额 **金额不能有小数点,单位是分!!**
 			BigDecimal price = new BigDecimal(1);
 			BigDecimal beishu = new BigDecimal("100");
 			BigDecimal priceFee = price.multiply(beishu);
 			// 创建 时间戳
-			String timeStamp = Long.valueOf(System.currentTimeMillis()).toString();
+			String timeStamp = Long.valueOf(System.currentTimeMillis()/1000).toString();
 			
 			// 商品描述
 			String body = "OFFWAY-支付订单";
@@ -55,7 +56,7 @@ public class WxpayService {
 			// 设置请求参数(小程序ID)
 			paraMap.put("appid", wxpayProperties.getAppid());
 			// 设置请求参数(商户号)
-			paraMap.put("mch_id", wxpayProperties.getMchId());
+			paraMap.put("mch_id", mchId);
 			
 			// 生成32位随机数
 			UUID uuid = UUID.randomUUID();
@@ -89,17 +90,18 @@ public class WxpayService {
 			Map<String, String> returnMap = new HashMap<String, String>();
 			if ("SUCCESS".equals(return_code)) {
 				// 返回的预付单信息
-				returnMap.put("appId", wxpayProperties.getAppid());
-				returnMap.put("nonceStr", nonceStr);
-				String prepay_id = (String) map.get("prepay_id");
-				returnMap.put("package", "prepay_id=" + prepay_id);
-				returnMap.put("signType", "MD5");
+				returnMap.put("appid", wxpayProperties.getAppid());
+				returnMap.put("noncestr", nonceStr);
+				returnMap.put("package", "Sign=WXPay");
+				returnMap.put("prepayid", map.get("prepay_id"));
 				// 这边要将返回的时间戳转化成字符串，不然小程序端调用wx.requestPayment方法会报签名错误
-				returnMap.put("timeStamp", timeStamp);
+				returnMap.put("timestamp", timeStamp);
+				returnMap.put("partnerid", mchId);
 				// 拼接签名需要的参数
 				// 再次签名，这个签名用于小程序端调用wx.requesetPayment方法
 				String paySign = PaymentKit.createSign(returnMap, wxpayProperties.getPaternerKey()).toUpperCase();
-				returnMap.put("paySign", paySign);
+				returnMap.put("sign", paySign);
+				
 				return jsonResultHelper.buildSuccessJsonResult(returnMap);
 			} else {
 				logger.error("微信支付下单失败，返回:{}",xmlResult);
@@ -126,10 +128,4 @@ public class WxpayService {
         }
     }
     
-    public static void main(String[] args) {
-    	// 生成32位随机数
-    				UUID uuid = UUID.randomUUID();
-    				String nonceStr = uuid.toString().replaceAll("-", "");
-    				System.out.println(nonceStr);
-	}
 }
