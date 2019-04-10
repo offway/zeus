@@ -2,6 +2,9 @@ package cn.offway.zeus.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhUserInfo;
 
@@ -20,4 +23,9 @@ public interface PhUserInfoRepository extends JpaRepository<PhUserInfo,Long>,Jpa
 	PhUserInfo findByUnionid(String unionid);
 	
 	PhUserInfo findByWeiboid(String weiboid);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_user_info set collect_count=collect_count+1 where id=?1")
+	int updateCollect(Long id);
 }

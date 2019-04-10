@@ -13,6 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,17 +28,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+import cn.offway.zeus.domain.PhGoods;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.domain.PhWxuserInfo;
+import cn.offway.zeus.domain.VCollectGoods;
 import cn.offway.zeus.dto.WxuserInfo;
+import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhWxuserInfoService;
 import cn.offway.zeus.service.SmsService;
+import cn.offway.zeus.service.VCollectBrandService;
+import cn.offway.zeus.service.VCollectGoodsService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.IpUtil;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -69,6 +79,15 @@ public class UserController {
 	private StringRedisTemplate stringRedisTemplate;
 	
 	private static final String SMS_CODE_KEY="zeus.sms.code";
+	
+	@Autowired
+	private PhCollectService phCollectService;
+	
+	@Autowired
+	private VCollectBrandService vCollectBrandService;
+	
+	@Autowired
+	private VCollectGoodsService vCollectGoodsService;
 	
 	@ApiOperation("微信用户信息保存")
 	@PostMapping("/wx")
@@ -289,6 +308,44 @@ public class UserController {
 		map.put("pendingReceipt", 0L);
 		map.put("goodsReturn", 0L);
 		return jsonResultHelper.buildSuccessJsonResult(map);
+
+	}
+	
+	@ApiOperation("加入收藏")
+	@PostMapping("/collect")
+	public JsonResult collect(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("类型[0-商品，1-品牌，2-资讯]") @RequestParam String type,
+			@ApiParam("类型相应的ID,如商品ID,品牌ID等") @RequestParam Long matchId){
+		try {
+			phCollectService.collect(userId, type, matchId);
+		}catch (DataIntegrityViolationException e) {
+			e.printStackTrace();
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.COLLECT_EXISTS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+
+		}
+		return jsonResultHelper.buildSuccessJsonResult(null);
+
+	}
+	
+	@ApiOperation("我的收藏")
+	@GetMapping("/collect")
+	public JsonResult collects(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("类型[0-商品，1-品牌，2-资讯]") @RequestParam String type,
+			@ApiParam("页码,从0开始") @RequestParam int page,
+			@ApiParam("页大小") @RequestParam int size){
+		
+		if("0".equals(type)){
+			return jsonResultHelper.buildSuccessJsonResult(vCollectGoodsService.findByPage(userId, new PageRequest(page, size)));
+		}else if("1".equals(type)){
+			return jsonResultHelper.buildSuccessJsonResult(vCollectBrandService.findByPage(userId, new PageRequest(page, size)));
+		}
+
+		return jsonResultHelper.buildSuccessJsonResult(null);
 
 	}
 	

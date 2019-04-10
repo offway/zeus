@@ -13,4 +13,6 @@ public interface PhCollectService{
 	PhCollect save(PhCollect phCollect);
 	
 	PhCollect findOne(Long id);
+
+	void collect(Long userId, String type, Long matchId) throws Exception;
 }

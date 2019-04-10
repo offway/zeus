@@ -21,4 +21,6 @@ public interface PhUserInfoService{
 	PhUserInfo findByUnionid(String unionid);
 
 	PhUserInfo findByWeiboid(String weiboid);
+
+	int updateCollect(Long id);
 }

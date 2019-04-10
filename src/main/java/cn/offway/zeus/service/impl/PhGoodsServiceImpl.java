@@ -58,6 +58,11 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 	}
 	
 	@Override
+	public int updateViewCount(Long id){
+		return phGoodsRepository.updateViewCount(id);
+	}
+	
+	@Override
 	public Page<PhGoods> findByPage(final GoodsDto goodsDto,Pageable page){
 		return phGoodsRepository.findAll(new Specification<PhGoods>() {
 			

@@ -53,4 +53,9 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	public PhUserInfo findByWeiboid(String weiboid){
 		return phUserInfoRepository.findByWeiboid(weiboid);
 	}
+	
+	@Override
+	public int updateCollect(Long id){
+		return phUserInfoRepository.updateCollect(id);
+	}
 }

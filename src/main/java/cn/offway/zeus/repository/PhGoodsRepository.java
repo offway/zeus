@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhGoods;
 import java.lang.Long;
@@ -22,4 +24,9 @@ public interface PhGoodsRepository extends JpaRepository<PhGoods,Long>,JpaSpecif
 	
 	@Query(nativeQuery=true,value="select* from ph_goods g where g.`status`='1' and g.id!=?1 and EXISTS(select 1 from ph_goods pg where pg.type = g.type and pg.category=g.category  and pg.brand_id= g.brand_id  and pg.id=?1) ORDER BY g.create_time desc limit 3")
 	List<PhGoods> findRecommend(Long id);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_goods set view_count = view_count+1 where id=?1")
+	int updateViewCount(Long id);
 }

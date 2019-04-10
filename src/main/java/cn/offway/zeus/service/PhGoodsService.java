@@ -25,4 +25,6 @@ public interface PhGoodsService{
 	Page<PhGoods> findByPage(GoodsDto goodsDto, Pageable page);
 
 	List<PhGoods> findRecommend(Long id);
+
+	int updateViewCount(Long id);
 }

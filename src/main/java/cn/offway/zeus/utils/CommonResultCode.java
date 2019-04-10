@@ -45,6 +45,9 @@ public enum CommonResultCode implements ResultCode {
     
     /** 用户已存在 */
     USER_EXISTS("1011", "USER_EXISTS"),
+    
+    /** 已经收藏 */
+    COLLECT_EXISTS("1012", "COLLECT_EXISTS"),
     ;
 	
 	

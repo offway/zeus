@@ -112,9 +112,11 @@ public class GoodsController {
 		
 		List<PhGoods> recommendGoods =  phGoodsService.findRecommend(id);
 		resultMap.put("recommendGoods", recommendGoods);
+		
+		//更新商品浏览量
+		phGoodsService.updateViewCount(id);
 
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
-	
 	
 }
