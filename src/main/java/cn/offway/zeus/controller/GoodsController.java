@@ -2,10 +2,8 @@ package cn.offway.zeus.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -138,7 +137,19 @@ public class GoodsController {
 			@ApiParam("商品库存ID") @RequestParam Long stockId,
 			@ApiParam("加入数量") @RequestParam Long goodsCount){
 		
-		phShoppingCartService.shopingCar(userId, stockId, goodsCount);
+		return phShoppingCartService.shopingCar(userId, stockId, goodsCount);
+	}
+	
+	@ApiOperation("查看购物车")
+	@GetMapping("/shopingCar")
+	public JsonResult shopingCarList(@ApiParam("用户ID") @RequestParam Long userId){
+		return phShoppingCartService.shopingCarList(userId);
+	}
+	
+	@ApiOperation("删除购物车")
+	@DeleteMapping("/shopingCar")
+	public JsonResult shopingCarDel(@ApiParam("购物车ID") @RequestParam List<Long> ids){
+		phShoppingCartService.delete(ids);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	

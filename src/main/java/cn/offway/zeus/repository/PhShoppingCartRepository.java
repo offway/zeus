@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhShoppingCart;
+import java.lang.Long;
+import java.util.List;
 
 /**
  * 购物车Repository接口
@@ -23,4 +25,13 @@ public interface PhShoppingCartRepository extends JpaRepository<PhShoppingCart,L
 	int updateShoppingCar(Long userId,Long goodsStockId,Long goodsCount);
 
 	PhShoppingCart findByUserIdAndGoodsStockId(Long userId,Long goodsStockId);
+	
+	int countByUserId(Long userId);
+	
+	List<PhShoppingCart> findByUserIdOrderByCreateTimeDesc(Long userId);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="delete from ph_shopping_cart  where id in(?1)")
+	int delete(List<Long> ids);
 }

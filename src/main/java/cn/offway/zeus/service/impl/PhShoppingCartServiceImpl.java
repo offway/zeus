@@ -1,13 +1,17 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.util.CollectionUtils;
 
 import cn.offway.zeus.domain.PhGoodsProperty;
 import cn.offway.zeus.domain.PhGoodsStock;
@@ -16,7 +20,9 @@ import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhGoodsPropertyService;
 import cn.offway.zeus.service.PhGoodsStockService;
 import cn.offway.zeus.service.PhShoppingCartService;
-import io.swagger.annotations.ApiParam;
+import cn.offway.zeus.utils.CommonResultCode;
+import cn.offway.zeus.utils.JsonResult;
+import cn.offway.zeus.utils.JsonResultHelper;
 
 
 /**
@@ -39,6 +45,10 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	@Autowired
 	private PhGoodsPropertyService phGoodsPropertyService;
 	
+	@Autowired
+	private JsonResultHelper jsonResultHelper;
+	
+	
 	@Override
 	public PhShoppingCart save(PhShoppingCart phShoppingCart){
 		return phShoppingCartRepository.save(phShoppingCart);
@@ -49,12 +59,50 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		return phShoppingCartRepository.findOne(id);
 	}
 	
+	@Override
+	public void delete(List<Long> ids){
+		phShoppingCartRepository.delete(ids);
+	}
 	
 	@Override
-	public void shopingCar(Long userId,Long stockId,Long goodsCount){
+	public JsonResult shopingCarList(Long userId){
+		
+		Map<String, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();
+		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
+		for (PhShoppingCart phShoppingCart : phShoppingCarts) {
+			String key = phShoppingCart.getBrandId()+"#####"+phShoppingCart.getBrandName();
+			List<PhShoppingCart> carts = resultMap.get(key);
+			if(CollectionUtils.isEmpty(carts)){
+				carts = new ArrayList<>();
+			}
+			carts.add(phShoppingCart);
+			resultMap.put(key, carts);
+		}
+		
+		List<Map<String, Object>> list = new ArrayList<>();
+		for (String key : resultMap.keySet()) {
+			String[] keyArray = key.split("#####");
+			Map<String, Object> s = new HashMap<>();
+			s.put("brandId", keyArray[0]);
+			s.put("brandName", keyArray[1]);
+			s.put("goods", resultMap.get(key));
+			list.add(s);
+		}
+		return jsonResultHelper.buildSuccessJsonResult(list);
+
+	}
+	
+	
+	@Override
+	public JsonResult shopingCar(Long userId,Long stockId,Long goodsCount){
 		
 		int count = phShoppingCartRepository.updateShoppingCar(userId,stockId,goodsCount);
 		if(count==0){
+			
+			int cc = phShoppingCartRepository.countByUserId(userId);
+			if(cc>=120){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.SHOPPING_CAR_LIMIT);
+			}
 			PhShoppingCart phShoppingCart = new PhShoppingCart();
 			phShoppingCart.setCreateTime(new Date());
 			phShoppingCart.setGoodsCount(goodsCount);
@@ -80,6 +128,8 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			
 			save(phShoppingCart);
 		}
+		
+		return jsonResultHelper.buildSuccessJsonResult(null);
 		
 		
 	}

@@ -48,6 +48,9 @@ public enum CommonResultCode implements ResultCode {
     
     /** 已经收藏 */
     COLLECT_EXISTS("1012", "COLLECT_EXISTS"),
+    
+    /** 购物车上线  */
+    SHOPPING_CAR_LIMIT("1013", "SHOPPING_CAR_LIMIT"),
     ;
 	
 	
