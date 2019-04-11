@@ -49,6 +49,9 @@ public class PhGoodsStock implements Serializable {
 
     /** 颜色 **/
     private String color;
+    
+    /** 价格 **/
+    private Double price;
 
     /** 库存余量 **/
     private Long stock;
@@ -168,6 +171,15 @@ public class PhGoodsStock implements Serializable {
 
     public void setColor(String color) {
         this.color = color;
+    }
+    
+    @Column(name = "price", precision = 15, scale = 2)
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     @Column(name = "stock", length = 11)

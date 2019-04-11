@@ -14,6 +14,9 @@ import java.util.Date;
 @Table(name = "v_collect_goods")
 public class VCollectGoods implements Serializable {
 
+	/** 收藏ID **/
+	private Long collectId;
+	
     /** 用户ID **/
     private Long userId;
 
@@ -50,8 +53,8 @@ public class VCollectGoods implements Serializable {
     /** 类目 **/
     private String category;
 
-    /** 价格 **/
-    private Double price;
+    /** 价格范围 **/
+    private Double priceRange;
 
     /** 材质 **/
     private String material;
@@ -72,7 +75,16 @@ public class VCollectGoods implements Serializable {
     private String remark;
 
 
-    @Column(name = "user_id", length = 11)
+	@Column(name = "collect_id", length = 11)
+    public Long getCollectId() {
+		return collectId;
+	}
+
+	public void setCollectId(Long collectId) {
+		this.collectId = collectId;
+	}
+
+	@Column(name = "user_id", length = 11)
     public Long getUserId() {
         return userId;
     }
@@ -181,14 +193,14 @@ public class VCollectGoods implements Serializable {
         this.category = category;
     }
 
-    @Column(name = "price", precision = 15, scale = 2)
-    public Double getPrice() {
-        return price;
-    }
+    @Column(name = "price_range", length = 50)
+    public Double getPriceRange() {
+		return priceRange;
+	}
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+	public void setPriceRange(Double priceRange) {
+		this.priceRange = priceRange;
+	}
 
     @Column(name = "material", length = 20)
     public String getMaterial() {

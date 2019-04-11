@@ -14,6 +14,9 @@ import java.util.Date;
 @Table(name = "v_collect_brand")
 public class VCollectBrand implements Serializable {
 
+	/** 收藏ID **/
+	private Long collectId;
+	
     /** 用户ID **/
     private Long userId;
 
@@ -66,6 +69,15 @@ public class VCollectBrand implements Serializable {
     private String remark;
 
 
+    @Column(name = "collect_id", length = 11)
+    public Long getCollectId() {
+		return collectId;
+	}
+
+	public void setCollectId(Long collectId) {
+		this.collectId = collectId;
+	}
+	
     @Column(name = "user_id", length = 11)
     public Long getUserId() {
         return userId;

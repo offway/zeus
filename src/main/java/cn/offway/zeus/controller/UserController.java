@@ -14,10 +14,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,10 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
-import cn.offway.zeus.domain.PhGoods;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.domain.PhWxuserInfo;
-import cn.offway.zeus.domain.VCollectGoods;
 import cn.offway.zeus.dto.WxuserInfo;
 import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhUserInfoService;
@@ -44,7 +41,6 @@ import cn.offway.zeus.utils.IpUtil;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -347,6 +343,13 @@ public class UserController {
 
 		return jsonResultHelper.buildSuccessJsonResult(null);
 
+	}
+	
+	@ApiOperation("删除收藏")
+	@DeleteMapping("/collect")
+	public JsonResult collect(@ApiParam("收藏ID") @RequestParam Long collectId){
+		phCollectService.delete(collectId);
+		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	
 	

@@ -42,6 +42,11 @@ public class PhCollectServiceImpl implements PhCollectService {
 	}
 	
 	@Override
+	public void delete(Long id){
+		phCollectRepository.delete(id);
+	}
+	
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
 	public void collect(Long userId,String type,Long matchId) throws Exception{
 		int count = phCollectRepository.insert(userId, type, matchId);
