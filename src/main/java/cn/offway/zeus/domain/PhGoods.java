@@ -48,7 +48,7 @@ public class PhGoods implements Serializable {
     private String category;
 
     /** 价格范围 **/
-    private Double priceRange;
+    private String priceRange;
 
     /** 材质 **/
     private String material;
@@ -153,11 +153,11 @@ public class PhGoods implements Serializable {
     }
     
     @Column(name = "price_range", length = 50)
-    public Double getPriceRange() {
+    public String getPriceRange() {
 		return priceRange;
 	}
 
-	public void setPriceRange(Double priceRange) {
+	public void setPriceRange(String priceRange) {
 		this.priceRange = priceRange;
 	}
 

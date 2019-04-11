@@ -13,4 +13,6 @@ public interface PhShoppingCartService{
 	PhShoppingCart save(PhShoppingCart phShoppingCart);
 	
 	PhShoppingCart findOne(Long id);
+
+	void shopingCar(Long userId, Long stockId, Long goodsCount);
 }

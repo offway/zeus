@@ -22,12 +22,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.offway.zeus.domain.PhGoods;
+import cn.offway.zeus.domain.PhGoodsProperty;
 import cn.offway.zeus.domain.PhGoodsStock;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.service.PhGoodsCategoryService;
 import cn.offway.zeus.service.PhGoodsImageService;
+import cn.offway.zeus.service.PhGoodsPropertyService;
 import cn.offway.zeus.service.PhGoodsService;
 import cn.offway.zeus.service.PhGoodsStockService;
+import cn.offway.zeus.service.PhShoppingCartService;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
@@ -55,6 +58,13 @@ public class GoodsController {
 	
 	@Autowired
 	private PhGoodsCategoryService phGoodsCategoryService;
+	
+	@Autowired
+	private PhGoodsPropertyService phGoodsPropertyService;
+	
+	@Autowired
+	private PhShoppingCartService phShoppingCartService;
+	
 	
 	
 	@ApiOperation("查询商品类目")
@@ -85,30 +95,32 @@ public class GoodsController {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		List<PhGoodsStock> phGoodsStocks = phGoodsStockService.findByGoodsId(id);
-		Set<String> sizes = new HashSet<>();
-		Set<String> colors = new HashSet<>();
+		List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsId(id);
 		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("size", phGoodsStock.getSize());
-			map.put("color", phGoodsStock.getColor());
+			map.put("id", phGoodsStock.getId());
 			map.put("stock", phGoodsStock.getStock());
 			map.put("img", phGoodsStock.getImage());
-			list.add(map);
-			sizes.add(phGoodsStock.getSize());
-			colors.add(phGoodsStock.getColor());
+			map.put("price", phGoodsStock.getPrice());
 			
+			List<Map<String, Object>> attributes = new ArrayList<>();
+			for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
+				if(phGoodsProperty.getGoodsStockId().longValue()==phGoodsStock.getId().longValue()){
+					Map<String, Object> attr = new HashMap<>();
+					attr.put("key", phGoodsProperty.getName());
+					attr.put("value", phGoodsProperty.getValue());
+					attributes.add(attr);
+				}
+			}
+			
+			map.put("attributes",attributes );
+			list.add(map);
 		}
 		
 		resultMap.put("goods", phGoods);
 		resultMap.put("banners", banners);
 		resultMap.put("contents", contents);
-		
-		
-		Map<String, Object> stock = new HashMap<>();
-		stock.put("sizes", sizes);
-		stock.put("colors", colors);
-		stock.put("details", list);
-		resultMap.put("stock", stock);
+		resultMap.put("skus", list);
 		
 		List<PhGoods> recommendGoods =  phGoodsService.findRecommend(id);
 		resultMap.put("recommendGoods", recommendGoods);
@@ -117,6 +129,17 @@ public class GoodsController {
 		phGoodsService.updateViewCount(id);
 
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
+	}
+	
+	@ApiOperation("加入购物车")
+	@PostMapping("/shopingCar")
+	public JsonResult shopingCar(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("商品库存ID") @RequestParam Long stockId,
+			@ApiParam("加入数量") @RequestParam Long goodsCount){
+		
+		phShoppingCartService.shopingCar(userId, stockId, goodsCount);
+		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	
 }
