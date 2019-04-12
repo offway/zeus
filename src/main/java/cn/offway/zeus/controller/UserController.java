@@ -314,7 +314,8 @@ public class UserController {
 			@ApiParam("类型[0-商品，1-品牌，2-资讯]") @RequestParam String type,
 			@ApiParam("类型相应的ID,如商品ID,品牌ID等") @RequestParam Long matchId){
 		try {
-			phCollectService.collect(userId, type, matchId);
+			Long id = phCollectService.collect(userId, type, matchId);
+			return jsonResultHelper.buildSuccessJsonResult(id);
 		}catch (DataIntegrityViolationException e) {
 			e.printStackTrace();
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.COLLECT_EXISTS);
@@ -323,7 +324,6 @@ public class UserController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 
 		}
-		return jsonResultHelper.buildSuccessJsonResult(null);
 
 	}
 	

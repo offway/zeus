@@ -24,5 +24,5 @@ public interface PhCollectRepository extends JpaRepository<PhCollect,Long>,JpaSp
 	@Query(nativeQuery=true,value="insert into ph_collect values(null,?1,?2,?3,now(),null)")
 	int insert(Long userId,String type,Long matchId);
 	
-	int countByUserIdAndTypeAndMatchId(Long userId,String type,Long matchId);
+	PhCollect findByUserIdAndTypeAndMatchId(Long userId,String type,Long matchId);
 }

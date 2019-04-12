@@ -52,9 +52,12 @@ public class VCollectGoods implements Serializable {
 
     /** 类目 **/
     private String category;
+    
+    /** 价格范围 **/
+    private Double price;
 
     /** 价格范围 **/
-    private Double priceRange;
+    private String priceRange;
 
     /** 材质 **/
     private String material;
@@ -192,13 +195,22 @@ public class VCollectGoods implements Serializable {
     public void setCategory(String category) {
         this.category = category;
     }
+    
+    @Column(name = "price",precision = 15, scale = 2 )
+    public Double getPrice() {
+		return price;
+	}
 
-    @Column(name = "price_range", length = 50)
-    public Double getPriceRange() {
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	@Column(name = "price_range", length = 50)
+    public String getPriceRange() {
 		return priceRange;
 	}
 
-	public void setPriceRange(Double priceRange) {
+	public void setPriceRange(String priceRange) {
 		this.priceRange = priceRange;
 	}
 

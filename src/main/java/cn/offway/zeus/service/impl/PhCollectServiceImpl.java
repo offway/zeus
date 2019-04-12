@@ -1,5 +1,7 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,20 +50,24 @@ public class PhCollectServiceImpl implements PhCollectService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
-	public void collect(Long userId,String type,Long matchId) throws Exception{
-		int count = phCollectRepository.insert(userId, type, matchId);
-		if(count>0){
-			phUserInfoService.updateCollect(userId);
-		}
+	public Long collect(Long userId,String type,Long matchId) throws Exception{
+		PhCollect phCollect = new PhCollect();
+		phCollect.setCreateTime(new Date());
+		phCollect.setMatchId(matchId);
+		phCollect.setType(type);
+		phCollect.setUserId(userId);
+		phCollect = save(phCollect);
+		phUserInfoService.updateCollect(userId);
+		return phCollect.getId();
 	}
 	
 	@Override
-	public boolean isCollect(Long userId,String type,Long matchId){
-		int count = phCollectRepository.countByUserIdAndTypeAndMatchId(userId, type, matchId);
-		if(count>0){
-			return true;
+	public Long isCollect(Long userId,String type,Long matchId){
+		PhCollect phCollect = phCollectRepository.findByUserIdAndTypeAndMatchId(userId, type, matchId);
+		if(null !=phCollect){
+			return phCollect.getId();
 		}
-		return false;
+		return null;
 
 	}
 }
