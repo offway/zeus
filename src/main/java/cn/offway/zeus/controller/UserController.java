@@ -352,6 +352,15 @@ public class UserController {
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	
+	@ApiOperation("查看是否收藏")
+	@GetMapping("/isCollect")
+	public JsonResult isCollect(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("类型[0-商品，1-品牌，2-资讯]") @RequestParam String type,
+			@ApiParam("对应的ID,如商品ID、品牌ID等") @RequestParam Long matchId){
+		return jsonResultHelper.buildSuccessJsonResult(phCollectService.isCollect(userId, type, matchId));
+	}
+	
 	
 	
 }

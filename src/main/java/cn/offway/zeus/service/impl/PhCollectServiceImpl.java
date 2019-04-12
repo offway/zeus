@@ -54,4 +54,14 @@ public class PhCollectServiceImpl implements PhCollectService {
 			phUserInfoService.updateCollect(userId);
 		}
 	}
+	
+	@Override
+	public boolean isCollect(Long userId,String type,Long matchId){
+		int count = phCollectRepository.countByUserIdAndTypeAndMatchId(userId, type, matchId);
+		if(count>0){
+			return true;
+		}
+		return false;
+
+	}
 }

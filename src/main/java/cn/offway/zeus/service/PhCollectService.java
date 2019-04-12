@@ -17,4 +17,6 @@ public interface PhCollectService{
 	void collect(Long userId, String type, Long matchId) throws Exception;
 
 	void delete(Long id);
+
+	boolean isCollect(Long userId, String type, Long matchId);
 }
