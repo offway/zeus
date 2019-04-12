@@ -1,5 +1,7 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +34,15 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	@Override
 	public PhVoucherInfo findOne(Long id){
 		return phVoucherInfoRepository.findOne(id);
+	}
+	
+	@Override
+	public List<PhVoucherInfo> list(Long userId,Long goodsId,Long brandId){
+		return phVoucherInfoRepository.list(userId, goodsId, brandId);
+	}
+	
+	@Override
+	public List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId){
+		return phVoucherInfoRepository.findByUserIdOrderByCreateTimeDesc(userId);
 	}
 }

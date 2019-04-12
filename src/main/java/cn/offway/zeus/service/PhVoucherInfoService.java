@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import cn.offway.zeus.domain.PhVoucherInfo;
 
 /**
@@ -13,4 +15,8 @@ public interface PhVoucherInfoService{
 	PhVoucherInfo save(PhVoucherInfo phVoucherInfo);
 	
 	PhVoucherInfo findOne(Long id);
+
+	List<PhVoucherInfo> list(Long userId, Long goodsId, Long brandId);
+
+	List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId);
 }
