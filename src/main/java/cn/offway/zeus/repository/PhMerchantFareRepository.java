@@ -13,5 +13,5 @@ import cn.offway.zeus.domain.PhMerchantFare;
  */
 public interface PhMerchantFareRepository extends JpaRepository<PhMerchantFare,Long>,JpaSpecificationExecutor<PhMerchantFare> {
 
-	/** 此处写一些自定义的方法 **/
+	PhMerchantFare findByProvinceAndCityAndCounty(String province,String city,String county);
 }

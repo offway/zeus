@@ -33,4 +33,9 @@ public class PhMerchantFareServiceImpl implements PhMerchantFareService {
 	public PhMerchantFare findOne(Long id){
 		return phMerchantFareRepository.findOne(id);
 	}
+	
+	@Override
+	public PhMerchantFare findByProvinceAndCityAndCounty(String province,String city,String county){
+		return phMerchantFareRepository.findByProvinceAndCityAndCounty(province, city, county);
+	}
 }
