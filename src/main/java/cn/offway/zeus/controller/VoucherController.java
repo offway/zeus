@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.offway.zeus.domain.PhGoods;
+import cn.offway.zeus.domain.PhGoodsStock;
 import cn.offway.zeus.domain.PhVoucherInfo;
 import cn.offway.zeus.service.PhGoodsService;
+import cn.offway.zeus.service.PhGoodsStockService;
 import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
@@ -36,26 +38,25 @@ public class VoucherController {
 	private PhVoucherInfoService phVoucherInfoService;
 	
 	@Autowired
-	private PhGoodsService phGoodsService;
+	private PhGoodsStockService phGoodsStockService;
 	
 	
 	@ApiOperation("优惠券列表")
 	@GetMapping("/list")
 	public JsonResult list(
 			@ApiParam("用户ID") @RequestParam Long userId,
-			@ApiParam("商品ID") @RequestParam(required = false) Long goodsId){
+			@ApiParam("商品库存ID") @RequestParam(required = false) Long goodsStockId){
 		
 		List<PhVoucherInfo> list = new ArrayList<>();
-		if(null == goodsId){
+		if(null == goodsStockId){
 			list = phVoucherInfoService.findByUserIdOrderByCreateTimeDesc(userId);
 		}else{
-			PhGoods phGoods = phGoodsService.findOne(goodsId);
-			if(null==phGoods){
+			PhGoodsStock phGoodsStock = phGoodsStockService.findOne(goodsStockId);
+			if(null==phGoodsStock){
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 
 			}
-			Long brandId = phGoods.getBrandId();
-			list = phVoucherInfoService.list(userId, goodsId, brandId);
+			list = phVoucherInfoService.list(userId, phGoodsStock.getGoodsId(), phGoodsStock.getBrandId(),phGoodsStock.getPrice());
 		}
 		return jsonResultHelper.buildSuccessJsonResult(list);
 

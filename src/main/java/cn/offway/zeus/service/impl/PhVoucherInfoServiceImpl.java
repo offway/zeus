@@ -37,8 +37,8 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
-	public List<PhVoucherInfo> list(Long userId,Long goodsId,Long brandId){
-		return phVoucherInfoRepository.list(userId, goodsId, brandId);
+	public List<PhVoucherInfo> list(Long userId,Long goodsId,Long brandId,Double amount){
+		return phVoucherInfoRepository.list(userId, goodsId, brandId,amount);
 	}
 	
 	@Override

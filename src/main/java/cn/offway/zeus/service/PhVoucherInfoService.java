@@ -16,7 +16,7 @@ public interface PhVoucherInfoService{
 	
 	PhVoucherInfo findOne(Long id);
 
-	List<PhVoucherInfo> list(Long userId, Long goodsId, Long brandId);
-
 	List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId);
+
+	List<PhVoucherInfo> list(Long userId, Long goodsId, Long brandId, Double amount);
 }
