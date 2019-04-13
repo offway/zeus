@@ -48,7 +48,7 @@ public class VoucherController {
 			@ApiParam("商品库存ID") @RequestParam(required = false) List<Long> goodsStockIds){
 		
 		List<PhVoucherInfo> list = new ArrayList<>();
-		if(goodsStockIds.size()==0){
+		if(null ==goodsStockIds || goodsStockIds.size()==0){
 			list = phVoucherInfoService.findByUserIdOrderByCreateTimeDesc(userId);
 		}else if(goodsStockIds.size()==1){
 			PhGoodsStock phGoodsStock = phGoodsStockService.findOne(goodsStockIds.get(0));
