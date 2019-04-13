@@ -16,9 +16,12 @@ import org.springframework.util.CollectionUtils;
 import cn.offway.zeus.domain.PhGoodsProperty;
 import cn.offway.zeus.domain.PhGoodsStock;
 import cn.offway.zeus.domain.PhShoppingCart;
+import cn.offway.zeus.dto.OrderInitDto;
+import cn.offway.zeus.dto.OrderInitStockDto;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhGoodsPropertyService;
 import cn.offway.zeus.service.PhGoodsStockService;
+import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.service.PhShoppingCartService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
@@ -48,6 +51,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	@Autowired
 	private JsonResultHelper jsonResultHelper;
 	
+	@Autowired
+	private PhMerchantService phMerchantService;
+	
 	
 	@Override
 	public PhShoppingCart save(PhShoppingCart phShoppingCart){
@@ -70,7 +76,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		Map<String, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();
 		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
 		for (PhShoppingCart phShoppingCart : phShoppingCarts) {
-			String key = phShoppingCart.getBrandId()+"#####"+phShoppingCart.getBrandName();
+			String key = phShoppingCart.getBrandId()+"#####"+phShoppingCart.getMerchantId()+"#####"+phShoppingCart.getMerchantName();
 			List<PhShoppingCart> carts = resultMap.get(key);
 			if(CollectionUtils.isEmpty(carts)){
 				carts = new ArrayList<>();
@@ -83,9 +89,78 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		for (String key : resultMap.keySet()) {
 			String[] keyArray = key.split("#####");
 			Map<String, Object> s = new HashMap<>();
+			Long merchantId = Long.valueOf(keyArray[1]);
 			s.put("brandId", keyArray[0]);
-			s.put("brandName", keyArray[1]);
+			s.put("merchantId", merchantId);
+			s.put("merchantName", keyArray[2]);
 			s.put("goods", resultMap.get(key));
+			list.add(s);
+		}
+		return jsonResultHelper.buildSuccessJsonResult(list);
+
+	}
+	
+	@Override
+	public JsonResult orderInit(OrderInitDto orderInitDto){
+		
+		Map<Long, Long> param = new HashMap<>();
+		for (OrderInitStockDto  stock : orderInitDto.getStocks()) {
+			param.put(stock.getStockId(), stock.getNum());
+		}
+		Long addrId = orderInitDto.getAddrId();
+		
+		List<PhGoodsStock>  phGoodsStocks = phGoodsStockService.findByIdIn(param.keySet());
+		
+		Map<Long, Integer> brandGoodsNum = new HashMap<>();
+		Map<String, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();
+		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
+			
+			Long id = phGoodsStock.getId();
+			PhShoppingCart phShoppingCart = new PhShoppingCart();
+			phShoppingCart.setMerchantId(phGoodsStock.getMerchantId());
+			phShoppingCart.setMerchantLogo(phGoodsStock.getMerchantLogo());
+			phShoppingCart.setMerchantName(phGoodsStock.getMerchantName());
+			phShoppingCart.setBrandId(phGoodsStock.getBrandId());
+			phShoppingCart.setBrandLogo(phGoodsStock.getBrandLogo());
+			phShoppingCart.setBrandName(phGoodsStock.getBrandName());
+			phShoppingCart.setGoodsCount(param.get(id));
+			phShoppingCart.setGoodsId(phGoodsStock.getGoodsId());
+			phShoppingCart.setGoodsImage(phGoodsStock.getGoodsImage());
+			phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
+			phShoppingCart.setGoodsStockId(id);
+			phShoppingCart.setPrice(phGoodsStock.getPrice());
+			
+			List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsStockIdOrderBySortAsc(id);
+			StringBuilder sb = new StringBuilder();
+			for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
+				sb.append(phGoodsProperty.getName()+":"+phGoodsProperty.getValue());
+				sb.append("#");
+			}
+			phShoppingCart.setProperty(sb.toString());
+			
+			
+			String key = phShoppingCart.getBrandId()+"#####"+phShoppingCart.getMerchantId()+"#####"+phShoppingCart.getMerchantName();
+			List<PhShoppingCart> carts = resultMap.get(key);
+			if(CollectionUtils.isEmpty(carts)){
+				carts = new ArrayList<>();
+			}
+			carts.add(phShoppingCart);
+			resultMap.put(key, carts);
+			
+			Integer num = brandGoodsNum.get(phGoodsStock.getMerchantId());
+			brandGoodsNum.put(phGoodsStock.getMerchantId(), (num==null?0:num.intValue())+phShoppingCart.getGoodsCount().intValue());
+		}
+		
+		List<Map<String, Object>> list = new ArrayList<>();
+		for (String key : resultMap.keySet()) {
+			String[] keyArray = key.split("#####");
+			Map<String, Object> s = new HashMap<>();
+			Long merchantId = Long.valueOf(keyArray[1]);
+			s.put("brandId", keyArray[0]);
+			s.put("merchantId", merchantId);
+			s.put("merchantName", keyArray[2]);
+			s.put("goods", resultMap.get(key));
+			s.put("fare", phMerchantService.calculateFare(merchantId, brandGoodsNum.get(merchantId), addrId));
 			list.add(s);
 		}
 		return jsonResultHelper.buildSuccessJsonResult(list);
@@ -110,6 +185,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setGoodsStockId(stockId);
 			PhGoodsStock phGoodsStock = phGoodsStockService.findOne(stockId);
 			
+			phShoppingCart.setMerchantId(phGoodsStock.getMerchantId());
+			phShoppingCart.setMerchantLogo(phGoodsStock.getMerchantLogo());
+			phShoppingCart.setMerchantName(phGoodsStock.getMerchantName());
 			phShoppingCart.setBrandId(phGoodsStock.getBrandId());
 			phShoppingCart.setBrandLogo(phGoodsStock.getBrandLogo());
 			phShoppingCart.setBrandName(phGoodsStock.getBrandName());

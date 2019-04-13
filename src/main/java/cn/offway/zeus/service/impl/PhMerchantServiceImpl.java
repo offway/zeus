@@ -52,6 +52,7 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 	 * @param addrId
 	 * @return
 	 */
+	@Override
 	public double calculateFare(Long id,int num,Long addrId){
 		
 		double amount = 0D;
@@ -59,6 +60,11 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 		int fareNextNum = 0;
 		double fareFirstPrice = 0D;
 		double fareNextPrice = 0D;
+		
+		PhMerchant phMerchant = findOne(id);
+		if("1".equals(phMerchant.getIsFreeFare())){
+			return amount;
+		}
 		
 		PhAddress phAddress = phAddressService.findOne(addrId);
 		PhMerchantFare phMerchantFare = phMerchantFareService.findByProvinceAndCityAndCounty(phAddress.getProvince(), phAddress.getCity(), phAddress.getCounty());
@@ -69,7 +75,6 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 			phMerchantFare = phMerchantFareService.findByProvinceAndCityAndCounty(phAddress.getProvince(), null, null);
 		}
 		if(null == phMerchantFare){
-			PhMerchant phMerchant = findOne(id);
 			fareFirstNum = phMerchant.getFareFirstNum().intValue();
 			fareNextNum = phMerchant.getFareNextNum().intValue();
 			fareFirstPrice = phMerchant.getFareFirstPrice();

@@ -1,6 +1,7 @@
 package cn.offway.zeus.service;
 
 import java.util.List;
+import java.util.Set;
 
 import cn.offway.zeus.domain.PhGoodsStock;
 
@@ -17,4 +18,6 @@ public interface PhGoodsStockService{
 	PhGoodsStock findOne(Long id);
 
 	List<PhGoodsStock> findByGoodsId(Long goodsId);
+
+	List<PhGoodsStock> findByIdIn(Set<Long> ids);
 }
