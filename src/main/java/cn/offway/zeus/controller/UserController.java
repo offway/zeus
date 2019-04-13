@@ -1,6 +1,7 @@
 package cn.offway.zeus.controller;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -27,9 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+import cn.offway.zeus.domain.PhShoppingCart;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.WxuserInfo;
+import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhWxuserInfoService;
@@ -84,6 +87,9 @@ public class UserController {
 	
 	@Autowired
 	private VCollectGoodsService vCollectGoodsService;
+	
+	@Autowired
+	private PhShoppingCartRepository phShoppingCartRepository;
 	
 	@ApiOperation("微信用户信息保存")
 	@PostMapping("/wx")
@@ -303,6 +309,8 @@ public class UserController {
 		map.put("pendingShip", 0L);
 		map.put("pendingReceipt", 0L);
 		map.put("goodsReturn", 0L);
+		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
+		map.put("shoppingCartNum", phShoppingCarts.size());
 		return jsonResultHelper.buildSuccessJsonResult(map);
 
 	}
