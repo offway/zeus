@@ -42,7 +42,17 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
+	public List<Long> ids(Long userId,Long goodsId,Long brandId,Double amount){
+		return phVoucherInfoRepository.ids(userId, goodsId, brandId, amount);
+	}
+	
+	@Override
 	public List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId){
 		return phVoucherInfoRepository.findByUserIdOrderByCreateTimeDesc(userId);
+	}
+	
+	@Override
+	public List<PhVoucherInfo> findByIdInOrderByCreateTimeDesc(List<Long> ids){
+		return phVoucherInfoRepository.findByIdInOrderByCreateTimeDesc(ids);
 	}
 }

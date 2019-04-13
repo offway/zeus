@@ -10,6 +10,9 @@ public class OrderInitDto implements Serializable{
 	@ApiModelProperty(value ="地址ID")
 	private Long addrId;
 	
+	@ApiModelProperty(value ="用户ID")
+	private Long userId;
+	
 	@ApiModelProperty(value ="购买详情")
 	private List<OrderInitStockDto> stocks;
 	
@@ -27,6 +30,14 @@ public class OrderInitDto implements Serializable{
 
 	public void setStocks(List<OrderInitStockDto> stocks) {
 		this.stocks = stocks;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 	
 }

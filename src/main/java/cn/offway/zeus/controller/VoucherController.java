@@ -45,18 +45,30 @@ public class VoucherController {
 	@GetMapping("/list")
 	public JsonResult list(
 			@ApiParam("用户ID") @RequestParam Long userId,
-			@ApiParam("商品库存ID") @RequestParam(required = false) Long goodsStockId){
+			@ApiParam("商品库存ID") @RequestParam(required = false) List<Long> goodsStockIds){
 		
 		List<PhVoucherInfo> list = new ArrayList<>();
-		if(null == goodsStockId){
+		if(goodsStockIds.size()==0){
 			list = phVoucherInfoService.findByUserIdOrderByCreateTimeDesc(userId);
-		}else{
-			PhGoodsStock phGoodsStock = phGoodsStockService.findOne(goodsStockId);
+		}else if(goodsStockIds.size()==1){
+			PhGoodsStock phGoodsStock = phGoodsStockService.findOne(goodsStockIds.get(0));
 			if(null==phGoodsStock){
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 
 			}
 			list = phVoucherInfoService.list(userId, phGoodsStock.getGoodsId(), phGoodsStock.getBrandId(),phGoodsStock.getPrice());
+		}else{
+			List<Long> ids = new ArrayList<>();
+			for (Long goodsStockId : goodsStockIds) {
+				PhGoodsStock phGoodsStock = phGoodsStockService.findOne(goodsStockId);
+				if(null==phGoodsStock){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+
+				}
+				ids.addAll(phVoucherInfoService.ids(userId, phGoodsStock.getGoodsId(), phGoodsStock.getBrandId(),phGoodsStock.getPrice()));
+			}
+			
+			list = phVoucherInfoService.findByIdInOrderByCreateTimeDesc(ids);
 		}
 		return jsonResultHelper.buildSuccessJsonResult(list);
 

@@ -3,9 +3,11 @@ package cn.offway.zeus.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 import cn.offway.zeus.domain.PhGoodsProperty;
 import cn.offway.zeus.domain.PhGoodsStock;
 import cn.offway.zeus.domain.PhShoppingCart;
+import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.dto.OrderInitDto;
 import cn.offway.zeus.dto.OrderInitStockDto;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
@@ -23,6 +26,8 @@ import cn.offway.zeus.service.PhGoodsPropertyService;
 import cn.offway.zeus.service.PhGoodsStockService;
 import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.service.PhShoppingCartService;
+import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -53,6 +58,12 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	
 	@Autowired
 	private PhMerchantService phMerchantService;
+	
+	@Autowired
+	private PhVoucherInfoService phVoucherInfoService;
+	
+	@Autowired
+	private PhUserInfoService phUserInfoService;
 	
 	
 	@Override
@@ -103,15 +114,18 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	@Override
 	public JsonResult orderInit(OrderInitDto orderInitDto){
 		
+		Map<String, Object> result = new HashMap<>();
 		Map<Long, Long> param = new HashMap<>();
 		for (OrderInitStockDto  stock : orderInitDto.getStocks()) {
 			param.put(stock.getStockId(), stock.getNum());
 		}
 		Long addrId = orderInitDto.getAddrId();
+		Long userId = orderInitDto.getUserId();
 		
 		List<PhGoodsStock>  phGoodsStocks = phGoodsStockService.findByIdIn(param.keySet());
 		
 		Map<Long, Integer> brandGoodsNum = new HashMap<>();
+		Set<Long> ids = new HashSet<>();
 		Map<String, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();
 		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
 			
@@ -149,6 +163,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			
 			Integer num = brandGoodsNum.get(phGoodsStock.getMerchantId());
 			brandGoodsNum.put(phGoodsStock.getMerchantId(), (num==null?0:num.intValue())+phShoppingCart.getGoodsCount().intValue());
+			
+			ids.addAll(phVoucherInfoService.ids(userId, phGoodsStock.getGoodsId(), phGoodsStock.getBrandId(),phGoodsStock.getPrice()));
+
 		}
 		
 		List<Map<String, Object>> list = new ArrayList<>();
@@ -163,10 +180,15 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			s.put("fare", phMerchantService.calculateFare(merchantId, brandGoodsNum.get(merchantId), addrId));
 			list.add(s);
 		}
-		return jsonResultHelper.buildSuccessJsonResult(list);
+		
+		result.put("merchants", list);
+		result.put("voucherCount", ids.size());
+		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		result.put("balance", phUserInfo.getBalance());
+		
+		return jsonResultHelper.buildSuccessJsonResult(result);
 
 	}
-	
 	
 	@Override
 	public JsonResult shopingCar(Long userId,Long stockId,Long goodsCount){
