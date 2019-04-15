@@ -140,7 +140,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setGoodsImage(phGoodsStock.getGoodsImage());
 			phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
 			phShoppingCart.setGoodsStockId(id);
-			phShoppingCart.setPrice(phGoodsStock.getPrice());
+			phShoppingCart.setPrice(phGoodsStock.getPrice()*phShoppingCart.getGoodsCount());
 			
 			List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsStockIdOrderBySortAsc(id);
 			StringBuilder sb = new StringBuilder();
