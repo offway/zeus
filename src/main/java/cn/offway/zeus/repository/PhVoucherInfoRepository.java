@@ -17,14 +17,20 @@ import java.lang.Long;
  */
 public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Long>,JpaSpecificationExecutor<PhVoucherInfo> {
 
-	@Query(nativeQuery=true,value="select * from ph_voucher_info where user_id =?1  and is_lock='0' and used_min_amount<=?4 and (used_type='0' or (used_type='1' and `condition`='0' and LOCATE(CONCAT(',',?2,','),match_ids)>0 ) or (used_type='1' and `condition`='1' and LOCATE(CONCAT(',',?2,','),match_ids)=0 ) or (used_type='2' and `condition`='0' and LOCATE(CONCAT(',',?3,','),match_ids)>0 ) or (used_type='2' and `condition`='1' and LOCATE(CONCAT(',',?3,','),match_ids)=0 )) order by create_time desc")
-	List<PhVoucherInfo> list(Long userId,Long goodsId,Long brandId,Double amount);
-	
-	@Query(nativeQuery=true,value="select id from ph_voucher_info where user_id =?1  and is_lock='0' and used_min_amount<=?4 and (used_type='0' or (used_type='1' and `condition`='0' and LOCATE(CONCAT(',',?2,','),match_ids)>0 ) or (used_type='1' and `condition`='1' and LOCATE(CONCAT(',',?2,','),match_ids)=0 ) or (used_type='2' and `condition`='0' and LOCATE(CONCAT(',',?3,','),match_ids)>0 ) or (used_type='2' and `condition`='1' and LOCATE(CONCAT(',',?3,','),match_ids)=0 )) order by create_time desc")
-	List<Long> ids(Long userId,Long goodsId,Long brandId,Double amount);
-	
-	
 	List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId);
 	
 	List<PhVoucherInfo> findByIdInOrderByCreateTimeDesc(List<Long> ids);
+	
+	@Query(nativeQuery=true,value="select * from ph_voucher_info where user_id=?1 and `status`='0' and type='1' and merchant_id=?2 and NOW() BETWEEN begin_time and end_time and used_min_amount <= ?3")
+	List<PhVoucherInfo> findUseByMerchant(Long userId,Long merchantId,Double amount);
+	
+	@Query(nativeQuery=true,value="select * from ph_voucher_info where user_id=?1 and `status`='0' and type='0' and NOW() BETWEEN begin_time and end_time and used_min_amount <= ?2")
+	List<PhVoucherInfo> findUseByPlatform(Long userId,Double amount);
+	
+	@Query(nativeQuery=true,value="select count(*) from ph_voucher_info where user_id=?1 and `status`='0' and type='1' and merchant_id=?2 and NOW() BETWEEN begin_time and end_time and used_min_amount <= ?3")
+	int countUseByMerchant(Long userId,Long merchantId,Double amount);
+	
+	@Query(nativeQuery=true,value="select count(*) from ph_voucher_info where user_id=?1 and `status`='0' and type='0' and NOW() BETWEEN begin_time and end_time and used_min_amount <= ?2")
+	int countUseByPlatform(Long userId,Double amount);
+	
 }

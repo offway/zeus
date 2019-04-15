@@ -3,11 +3,9 @@ package cn.offway.zeus.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,8 +122,8 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		
 		List<PhGoodsStock>  phGoodsStocks = phGoodsStockService.findByIdIn(param.keySet());
 		
+		double sumAmount = 0D;
 		Map<Long, Integer> brandGoodsNum = new HashMap<>();
-		Set<Long> ids = new HashSet<>();
 		Map<String, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();
 		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
 			
@@ -163,26 +161,35 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			
 			Integer num = brandGoodsNum.get(phGoodsStock.getMerchantId());
 			brandGoodsNum.put(phGoodsStock.getMerchantId(), (num==null?0:num.intValue())+phShoppingCart.getGoodsCount().intValue());
-			
-			ids.addAll(phVoucherInfoService.ids(userId, phGoodsStock.getGoodsId(), phGoodsStock.getBrandId(),phGoodsStock.getPrice()));
 
+			sumAmount+=phShoppingCart.getPrice();
 		}
+		
 		
 		List<Map<String, Object>> list = new ArrayList<>();
 		for (String key : resultMap.keySet()) {
 			String[] keyArray = key.split("#####");
 			Map<String, Object> s = new HashMap<>();
 			Long merchantId = Long.valueOf(keyArray[1]);
+			List<PhShoppingCart> carts = resultMap.get(key);
 			s.put("brandId", keyArray[0]);
 			s.put("merchantId", merchantId);
 			s.put("merchantName", keyArray[2]);
-			s.put("goods", resultMap.get(key));
+			s.put("goods", carts);
 			s.put("fare", phMerchantService.calculateFare(merchantId, brandGoodsNum.get(merchantId), addrId));
+			
+			//查询可用店铺券
+			double merchantSumAmount = 0D;
+			for (PhShoppingCart c : carts) {
+				merchantSumAmount+=c.getPrice();
+			}
+			s.put("merchantVoucherCount", phVoucherInfoService.countUseByMerchant(userId, merchantId, merchantSumAmount));
+			
 			list.add(s);
 		}
 		
 		result.put("merchants", list);
-		result.put("voucherCount", ids.size());
+		result.put("platformVoucherCount", phVoucherInfoService.countUseByPlatform(userId, sumAmount));
 		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
 		result.put("balance", phUserInfo.getBalance());
 		

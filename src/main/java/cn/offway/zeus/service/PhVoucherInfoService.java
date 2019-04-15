@@ -3,6 +3,7 @@ package cn.offway.zeus.service;
 import java.util.List;
 
 import cn.offway.zeus.domain.PhVoucherInfo;
+import cn.offway.zeus.dto.VoucherDto;
 
 /**
  * 优惠券Service接口
@@ -18,9 +19,16 @@ public interface PhVoucherInfoService{
 
 	List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId);
 
-	List<PhVoucherInfo> list(Long userId, Long goodsId, Long brandId, Double amount);
-
-	List<Long> ids(Long userId, Long goodsId, Long brandId, Double amount);
-
 	List<PhVoucherInfo> findByIdInOrderByCreateTimeDesc(List<Long> ids);
+	
+	List<PhVoucherInfo> findUseByMerchant(Long userId,Long merchantId,Double amount);
+	
+	List<PhVoucherInfo> findUseByPlatform(Long userId,Double amount);
+	
+	int countUseByMerchant(Long userId,Long merchantId,Double amount);
+	
+	int countUseByPlatform(Long userId,Double amount);
+
+	List<PhVoucherInfo> findAll(VoucherDto voucherDto);
+
 }
