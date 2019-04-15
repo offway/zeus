@@ -8,7 +8,7 @@ import java.util.Date;
  * 订单商品
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-01 11:26:00 Exp $
+ * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
  */
 @Entity
 @Table(name = "ph_order_goods")
@@ -55,6 +55,18 @@ public class PhOrderGoods implements Serializable {
 
     /** 备注 **/
     private String remark;
+
+    /** 商户ID **/
+    private Long merchantId;
+
+    /** 商户LOGO **/
+    private String merchantLogo;
+
+    /** 商户名称 **/
+    private String merchantName;
+
+    /** 商品库存ID **/
+    private Long goodsStockId;
 
 
     @Id
@@ -184,6 +196,42 @@ public class PhOrderGoods implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Column(name = "merchant_id", length = 11)
+    public Long getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Long merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    @Column(name = "merchant_logo", length = 100)
+    public String getMerchantLogo() {
+        return merchantLogo;
+    }
+
+    public void setMerchantLogo(String merchantLogo) {
+        this.merchantLogo = merchantLogo;
+    }
+
+    @Column(name = "merchant_name", length = 100)
+    public String getMerchantName() {
+        return merchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
+    }
+
+    @Column(name = "goods_stock_id", length = 11)
+    public Long getGoodsStockId() {
+        return goodsStockId;
+    }
+
+    public void setGoodsStockId(Long goodsStockId) {
+        this.goodsStockId = goodsStockId;
     }
 
 }

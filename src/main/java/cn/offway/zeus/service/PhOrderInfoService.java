@@ -1,6 +1,8 @@
 package cn.offway.zeus.service;
 
 import cn.offway.zeus.domain.PhOrderInfo;
+import cn.offway.zeus.dto.OrderAddDto;
+import cn.offway.zeus.utils.JsonResult;
 
 /**
  * 订单Service接口
@@ -15,4 +17,6 @@ public interface PhOrderInfoService{
 	PhOrderInfo findOne(Long id);
 
 	String generateOrderNo(String prefix);
+
+	JsonResult add(OrderAddDto orderAddDto) throws Exception;
 }

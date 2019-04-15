@@ -29,6 +29,7 @@ import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
+import cn.offway.zeus.utils.MathUtils;
 
 
 /**
@@ -223,7 +224,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setGoodsId(phGoodsStock.getGoodsId());
 			phShoppingCart.setGoodsImage(phGoodsStock.getGoodsImage());
 			phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
-			phShoppingCart.setPrice(phGoodsStock.getPrice());
+			phShoppingCart.setPrice(MathUtils.mul(phGoodsStock.getPrice(), goodsCount));
 			
 			List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsStockIdOrderBySortAsc(stockId);
 			StringBuilder sb = new StringBuilder();
