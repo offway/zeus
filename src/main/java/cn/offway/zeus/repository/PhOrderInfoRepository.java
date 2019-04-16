@@ -31,4 +31,9 @@ public interface PhOrderInfoRepository extends JpaRepository<PhOrderInfo,Long>,J
 	
 	List<PhOrderInfo> findByPreorderNoAndStatus(String preorderno,String status);
 	
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery = true,value="update ph_order_info set status=?3,pay_channel=?4,version=version+1 where preorder_no=?1 and status=?2")
+	int updateStatusByPreOrderNo(String preorderno,String fromstauts,String tostauts,String payChannel);
 }

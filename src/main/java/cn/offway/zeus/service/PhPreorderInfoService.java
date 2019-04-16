@@ -16,5 +16,9 @@ public interface PhPreorderInfoService{
 
 	PhPreorderInfo findByOrderNoAndStatus(String orderno, String status);
 
-	void alipay(String status, String preorderNo);
+	void alipay(String status, String preorderNo) throws Exception;
+
+	void wxpay(String status, String preorderNo) throws Exception;
+
+	void cancelOrder(String preorderNo) throws Exception;
 }

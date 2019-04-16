@@ -64,6 +64,9 @@ public class PhPreorderInfo implements Serializable {
 
     /** 版本号 **/
     private Long version;
+    
+    /** 支付渠道[wxpay,alipay] **/
+    private String payChannel;
 
 
     @Id
@@ -196,4 +199,12 @@ public class PhPreorderInfo implements Serializable {
         this.version = version;
     }
 
+    @Column(name = "pay_channel", length = 2)
+    public String getPayChannel() {
+        return payChannel;
+    }
+
+    public void setPayChannel(String payChannel) {
+        this.payChannel = payChannel;
+    }
 }

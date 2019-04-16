@@ -88,25 +88,27 @@ public class NotifyController {
 	@ResponseBody
     public String notify(@RequestBody String xmlMsg){
         // 支付结果通用通知文档: https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_7
-        System.out.println("支付通知="+xmlMsg);
-        Map<String, String> params = PaymentKit.xmlToMap(xmlMsg);
-        String result_code  = params.get("result_code");
+        try {
+			System.out.println("支付通知="+xmlMsg);
+			Map<String, String> params = PaymentKit.xmlToMap(xmlMsg);
+			String result_code  = params.get("result_code");
 
 
-        //校验返回来的支付结果,根据已经配置的密钥
-        if(PaymentKit.verifyNotify(params, wxpayProperties.getPaternerKey())){
-        	//校验通过. 更改订单状态为已支付, 修改库存
-        	String mch_id = params.get("mch_id"); //商户号
-        	String openid = params.get("openid");  //用户标识
-        	String out_trade_no = params.get("out_trade_no"); //商户订单号
-        	
-             if ("SUCCESS".equals(result_code)) {
-            	 
-                 return "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>" + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
-             }else{
-            	 
-             }
-        }
+			//校验返回来的支付结果,根据已经配置的密钥
+			if(PaymentKit.verifyNotify(params, wxpayProperties.getPaternerKey())){
+				//校验通过. 更改订单状态为已支付, 修改库存
+				String mch_id = params.get("mch_id"); //商户号
+				String openid = params.get("openid");  //用户标识
+				String out_trade_no = params.get("out_trade_no"); //商户订单号
+				
+				phPreorderInfoService.wxpay(result_code, out_trade_no);
+			    return "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>" + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("微信支付结果通知异常，请求参数：{}",e,xmlMsg);
+
+		}
         return "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>" + "<return_msg><![CDATA[系统异常]]></return_msg>" + "</xml> ";
 
     }

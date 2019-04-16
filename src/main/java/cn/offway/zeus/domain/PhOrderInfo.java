@@ -84,6 +84,9 @@ public class PhOrderInfo implements Serializable {
 
     /** 商户名称 **/
     private String merchantName;
+    
+    /** 支付渠道[wxpay,alipay] **/
+    private String payChannel;
 
 
     @Id
@@ -296,6 +299,15 @@ public class PhOrderInfo implements Serializable {
 
     public void setMerchantName(String merchantName) {
         this.merchantName = merchantName;
+    }
+    
+    @Column(name = "pay_channel", length = 2)
+    public String getPayChannel() {
+        return payChannel;
+    }
+
+    public void setPayChannel(String payChannel) {
+        this.payChannel = payChannel;
     }
 
 }

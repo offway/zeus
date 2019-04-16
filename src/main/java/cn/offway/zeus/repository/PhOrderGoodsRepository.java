@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhOrderGoods;
+import java.lang.String;
+import java.util.List;
 
 /**
  * 订单商品Repository接口
@@ -13,5 +15,5 @@ import cn.offway.zeus.domain.PhOrderGoods;
  */
 public interface PhOrderGoodsRepository extends JpaRepository<PhOrderGoods,Long>,JpaSpecificationExecutor<PhOrderGoods> {
 
-	/** 此处写一些自定义的方法 **/
+	List<PhOrderGoods> findByPreorderNo(String preorderno);
 }
