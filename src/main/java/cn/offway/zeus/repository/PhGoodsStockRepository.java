@@ -5,6 +5,9 @@ import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhGoodsStock;
 
@@ -19,4 +22,9 @@ public interface PhGoodsStockRepository extends JpaRepository<PhGoodsStock,Long>
 	List<PhGoodsStock> findByGoodsId(Long goodsId);
 	
 	List<PhGoodsStock> findByIdIn(Set<Long> ids);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_goods_stock s set s.stock =  s.stock-?2 where  s.id=?1  and s.stock>=?2")
+	int updateStock(Long stockId,Long count);
 }

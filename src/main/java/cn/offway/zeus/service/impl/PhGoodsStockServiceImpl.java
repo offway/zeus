@@ -46,4 +46,9 @@ public class PhGoodsStockServiceImpl implements PhGoodsStockService {
 	public List<PhGoodsStock> findByGoodsId(Long goodsId){
 		return phGoodsStockRepository.findByGoodsId(goodsId);
 	}
+	
+	@Override
+	public int updateStock(Long stockId,Long count){
+		return phGoodsStockRepository.updateStock(stockId,count);
+	}
 }

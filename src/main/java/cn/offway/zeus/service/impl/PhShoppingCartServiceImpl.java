@@ -177,7 +177,11 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			s.put("merchantId", merchantId);
 			s.put("merchantName", keyArray[2]);
 			s.put("goods", carts);
-			s.put("fare", phMerchantService.calculateFare(merchantId, brandGoodsNum.get(merchantId), addrId));
+			double fare = 0D;
+			if(null !=addrId){
+				fare = phMerchantService.calculateFare(merchantId, brandGoodsNum.get(merchantId), addrId);
+			}
+			s.put("fare", fare);
 			
 			//查询可用店铺券
 			double merchantSumAmount = 0D;

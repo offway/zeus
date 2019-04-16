@@ -20,4 +20,6 @@ public interface PhGoodsStockService{
 	List<PhGoodsStock> findByGoodsId(Long goodsId);
 
 	List<PhGoodsStock> findByIdIn(Set<Long> ids);
+
+	int updateStock(Long stockId, Long count);
 }
