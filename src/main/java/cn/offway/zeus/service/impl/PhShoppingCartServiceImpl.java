@@ -188,13 +188,13 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			for (PhShoppingCart c : carts) {
 				merchantSumAmount+=c.getPrice();
 			}
-			s.put("merchantVoucherCount", phVoucherInfoService.countUseByMerchant(userId, merchantId, merchantSumAmount));
+			s.put("merchantVouchers", phVoucherInfoService.findUseByMerchant(userId, merchantId, merchantSumAmount));
 			
 			list.add(s);
 		}
 		
 		result.put("merchants", list);
-		result.put("platformVoucherCount", phVoucherInfoService.countUseByPlatform(userId, sumAmount));
+		result.put("platformVouchers", phVoucherInfoService.findUseByPlatform(userId, sumAmount));
 		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
 		result.put("balance", phUserInfo.getBalance());
 		
