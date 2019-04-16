@@ -141,7 +141,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setGoodsImage(phGoodsStock.getGoodsImage());
 			phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
 			phShoppingCart.setGoodsStockId(id);
-			phShoppingCart.setPrice(phGoodsStock.getPrice()*phShoppingCart.getGoodsCount());
+			phShoppingCart.setPrice(phGoodsStock.getPrice());
 			
 			List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsStockIdOrderBySortAsc(id);
 			StringBuilder sb = new StringBuilder();
@@ -228,7 +228,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setGoodsId(phGoodsStock.getGoodsId());
 			phShoppingCart.setGoodsImage(phGoodsStock.getGoodsImage());
 			phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
-			phShoppingCart.setPrice(MathUtils.mul(phGoodsStock.getPrice(), goodsCount));
+			phShoppingCart.setPrice(phGoodsStock.getPrice());
 			
 			List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsStockIdOrderBySortAsc(stockId);
 			StringBuilder sb = new StringBuilder();

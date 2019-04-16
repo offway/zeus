@@ -37,20 +37,18 @@ public class WxpayService {
 	@Autowired
 	private JsonResultHelper jsonResultHelper;
 	
-	public JsonResult trade(String outtradeno,String ip){
+	public JsonResult trade(String outtradeno,String ip,String body,double amount){
 		
 		try {
 
 			String mchId = wxpayProperties.getMchId();
 			// 支付金额 **金额不能有小数点,单位是分!!**
-			BigDecimal price = new BigDecimal(1);
+			BigDecimal price = new BigDecimal(amount);
 			BigDecimal beishu = new BigDecimal("100");
 			BigDecimal priceFee = price.multiply(beishu);
 			// 创建 时间戳
 			String timeStamp = Long.valueOf(System.currentTimeMillis()/1000).toString();
 			
-			// 商品描述
-			String body = "OFFWAY-支付订单";
 			// 创建hashmap(用户获得签名)
 			SortedMap<String, String> paraMap = new TreeMap<String, String>();
 			// 设置请求参数(小程序ID)

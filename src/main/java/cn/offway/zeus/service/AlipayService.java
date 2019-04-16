@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
@@ -40,26 +41,26 @@ public class AlipayService {
 	 * 生成 APP支付订单信息
 	 * @return
 	 */
-	public String trade(String outtradeno){
+	public AlipayTradeAppPayResponse trade(String outtradeno,String body,String subject,Double amount){
 		
 		//实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
 		AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
 		//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
 		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-		model.setBody("我是测试数据");
-		model.setSubject("App支付测试Java");
+		model.setBody(body);
+		model.setSubject(subject);
 		model.setOutTradeNo(outtradeno);
 		model.setTimeoutExpress("30m");
-		model.setTotalAmount("0.01");
+		model.setTotalAmount(""+amount);
 		model.setProductCode("QUICK_MSECURITY_PAY");
 		request.setBizModel(model);
 		request.setNotifyUrl(systemUrl+"/notify/alipay");
 		try {
 		        //这里和普通的接口调用不同，使用的是sdkExecute
 		        AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
-		        String order = response.getBody();//就是orderString 可以直接给客户端请求，无需再做处理。
-		        logger.info("支付宝生成 APP支付订单信息响应:{}",order);
-		        return order;
+		        //就是orderString 可以直接给客户端请求，无需再做处理。
+		        logger.info("支付宝生成 APP支付订单信息响应:{}",JSON.toJSONString(response));
+		        return response;
 		    } catch (AlipayApiException e) {
 		        e.printStackTrace();
 		}

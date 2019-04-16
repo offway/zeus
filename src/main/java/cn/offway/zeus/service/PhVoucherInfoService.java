@@ -31,4 +31,8 @@ public interface PhVoucherInfoService{
 
 	List<PhVoucherInfo> findAll(VoucherDto voucherDto);
 
+	int updateStatus(Long voucherId, Double amount);
+
+	int updateStatusBym(Long voucherId, Double amount, Long merchant_id);
+
 }

@@ -5,26 +5,35 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * 订单商品
+ * 预生成订单商品
  *
  * @author wn
  * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
  */
 @Entity
-@Table(name = "ph_order_goods")
-public class PhOrderGoods implements Serializable {
+@Table(name = "ph_preorder_goods")
+public class PhPreorderGoods implements Serializable {
 
     /** ID **/
     private Long id;
 
-    /** 预生成订单号 **/
-    private String preorderNo;
-
     /** 订单号 **/
     private String orderNo;
 
-    /** 价格 **/
+    /** 总价格 **/
     private Double price;
+
+    /** 商户ID **/
+    private Long merchantId;
+
+    /** 商户LOGO **/
+    private String merchantLogo;
+
+    /** 商户名称 **/
+    private String merchantName;
+
+    /** 商品库存ID **/
+    private Long goodsStockId;
 
     /** 商品ID **/
     private Long goodsId;
@@ -47,23 +56,14 @@ public class PhOrderGoods implements Serializable {
     /** 商品数量 **/
     private Long goodsCount;
 
+    /** 商品属性 **/
+    private String property;
+
     /** 创建时间 **/
     private Date createTime;
 
     /** 备注 **/
     private String remark;
-
-    /** 商户ID **/
-    private Long merchantId;
-
-    /** 商户LOGO **/
-    private String merchantLogo;
-
-    /** 商户名称 **/
-    private String merchantName;
-
-    /** 商品库存ID **/
-    private Long goodsStockId;
 
 
     @Id
@@ -75,15 +75,6 @@ public class PhOrderGoods implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @Column(name = "preorder_no", length = 50)
-    public String getPreorderNo() {
-        return preorderNo;
-    }
-
-    public void setPreorderNo(String preorderNo) {
-        this.preorderNo = preorderNo;
     }
 
     @Column(name = "order_no", length = 50)
@@ -102,6 +93,42 @@ public class PhOrderGoods implements Serializable {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    @Column(name = "merchant_id", length = 11)
+    public Long getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Long merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    @Column(name = "merchant_logo", length = 100)
+    public String getMerchantLogo() {
+        return merchantLogo;
+    }
+
+    public void setMerchantLogo(String merchantLogo) {
+        this.merchantLogo = merchantLogo;
+    }
+
+    @Column(name = "merchant_name", length = 100)
+    public String getMerchantName() {
+        return merchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
+    }
+
+    @Column(name = "goods_stock_id", length = 11)
+    public Long getGoodsStockId() {
+        return goodsStockId;
+    }
+
+    public void setGoodsStockId(Long goodsStockId) {
+        this.goodsStockId = goodsStockId;
     }
 
     @Column(name = "goods_id", length = 11)
@@ -130,7 +157,6 @@ public class PhOrderGoods implements Serializable {
     public void setGoodsImage(String goodsImage) {
         this.goodsImage = goodsImage;
     }
-
 
     @Column(name = "brand_id", length = 11)
     public Long getBrandId() {
@@ -168,6 +194,15 @@ public class PhOrderGoods implements Serializable {
         this.goodsCount = goodsCount;
     }
 
+    @Column(name = "property", length = 2000)
+    public String getProperty() {
+        return property;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
+    }
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_time")
     public Date getCreateTime() {
@@ -185,42 +220,6 @@ public class PhOrderGoods implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    @Column(name = "merchant_id", length = 11)
-    public Long getMerchantId() {
-        return merchantId;
-    }
-
-    public void setMerchantId(Long merchantId) {
-        this.merchantId = merchantId;
-    }
-
-    @Column(name = "merchant_logo", length = 100)
-    public String getMerchantLogo() {
-        return merchantLogo;
-    }
-
-    public void setMerchantLogo(String merchantLogo) {
-        this.merchantLogo = merchantLogo;
-    }
-
-    @Column(name = "merchant_name", length = 100)
-    public String getMerchantName() {
-        return merchantName;
-    }
-
-    public void setMerchantName(String merchantName) {
-        this.merchantName = merchantName;
-    }
-
-    @Column(name = "goods_stock_id", length = 11)
-    public Long getGoodsStockId() {
-        return goodsStockId;
-    }
-
-    public void setGoodsStockId(Long goodsStockId) {
-        this.goodsStockId = goodsStockId;
     }
 
 }

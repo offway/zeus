@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhOrderInfo;
+import java.lang.String;
+import java.util.List;
 
 /**
  * 订单Repository接口
@@ -26,5 +28,7 @@ public interface PhOrderInfoRepository extends JpaRepository<PhOrderInfo,Long>,J
 	
 	@Query(nativeQuery=true,value="select count(*) from sequence where name=?1 ")
 	int countSequence(String prefix);
+	
+	List<PhOrderInfo> findByPreorderNoAndStatus(String preorderno,String status);
 	
 }

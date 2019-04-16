@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.jpay.ext.kit.PaymentKit;
 
+import cn.offway.zeus.domain.PhPreorderInfo;
 import cn.offway.zeus.dto.AlipayNotify;
 import cn.offway.zeus.properties.WxpayProperties;
 import cn.offway.zeus.service.AlipayService;
+import cn.offway.zeus.service.PhPreorderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -41,6 +43,9 @@ public class NotifyController {
 	
 	@Autowired
 	private WxpayProperties wxpayProperties;
+	
+	@Autowired
+	private PhPreorderInfoService phPreorderInfoService;
 	
 
 	/**
@@ -66,6 +71,8 @@ public class NotifyController {
 			
 			String out_trade_no = alipayNotify.getOut_trade_no();
 			
+			phPreorderInfoService.alipay(trade_status, out_trade_no);
+
 			
 			return "success";
 		} catch (Exception e) {

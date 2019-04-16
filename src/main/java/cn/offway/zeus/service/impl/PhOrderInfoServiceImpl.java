@@ -18,6 +18,7 @@ import cn.offway.zeus.domain.PhGoodsStock;
 import cn.offway.zeus.domain.PhMerchant;
 import cn.offway.zeus.domain.PhOrderGoods;
 import cn.offway.zeus.domain.PhOrderInfo;
+import cn.offway.zeus.domain.PhPreorderInfo;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.domain.PhVoucherInfo;
 import cn.offway.zeus.dto.OrderAddDto;
@@ -29,6 +30,7 @@ import cn.offway.zeus.service.PhGoodsPropertyService;
 import cn.offway.zeus.service.PhGoodsStockService;
 import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.service.PhOrderInfoService;
+import cn.offway.zeus.service.PhPreorderInfoService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.JsonResult;
@@ -71,6 +73,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	@Autowired
 	private PhUserInfoService phUserInfoService;
 	
+	@Autowired
+	private PhPreorderInfoService phPreorderInfoService;
+	
 	@Override
 	public PhOrderInfo save(PhOrderInfo phOrderInfo){
 		return phOrderInfoRepository.save(phOrderInfo);
@@ -106,13 +111,25 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			phUserInfo.setBalance(phUserInfo.getBalance()-walletAmount);
 			phUserInfoService.save(phUserInfo);
 		}
+		
+		double sumVoucherAmount= 0D;
+		double sumMailFee= 0D;
+		double sumAllAmount= 0D;
+		double sumALlPrice= 0D;
+		
+		
 		double pVoucherAmount = 0D;
 		if(null!=pVoucherId){
 			PhVoucherInfo pphVoucherInfo =  phVoucherInfoService.findOne(pVoucherId);
 			pVoucherAmount = pphVoucherInfo.getAmount();
+			sumVoucherAmount+=pVoucherAmount;
 		}
 
 		Date now = new Date();
+		
+		//总订单号
+		String preorderNo = generateOrderNo("PH");
+		
 		List<PhOrderInfo> phOrderInfos = new ArrayList<>();
 		List<PhOrderGoods> orderGoodss = new ArrayList<>();
 
@@ -139,6 +156,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				}
 				
 				PhOrderGoods phOrderGoods = new PhOrderGoods();
+				phOrderGoods.setPreorderNo(preorderNo);
 				phOrderGoods.setBrandId(phGoodsStock.getBrandId());
 				phOrderGoods.setBrandLogo(phGoodsStock.getBrandLogo());
 				phOrderGoods.setBrandName(phGoodsStock.getBrandName());
@@ -170,11 +188,12 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			PhVoucherInfo mphVoucherInfo = null;
 			if(null!=mVoucherId){
 				mphVoucherInfo =  phVoucherInfoService.findOne(mVoucherId);
+				sumVoucherAmount+=mphVoucherInfo.getAmount();
 			}
 			
 			PhOrderInfo phOrderInfo = new PhOrderInfo();
 			phOrderInfo.setCreateTime(now);
-			
+			phOrderInfo.setPreorderNo(preorderNo);
 			double mailFee =phMerchantService.calculateFare(merchantId, sumCount, addrId);
 			
 			phOrderInfo.setMailFee(mailFee);
@@ -200,18 +219,56 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			phOrderInfo.setWalletAmount(pWAmount);
 			walletAmount -= sumPrice-pVAmount;
 			
-			phOrderInfo.setAmount(MathUtils.sub(MathUtils.sub(MathUtils.sub(MathUtils.sub(phOrderInfo.getPrice(), phOrderInfo.getMailFee()), phOrderInfo.getMVoucherAmount()), phOrderInfo.getPVoucherAmount()), phOrderInfo.getWalletAmount()));
-
+			phOrderInfo.setAmount(
+					MathUtils.add(
+							MathUtils.sub(
+									MathUtils.sub(
+											MathUtils.sub(phOrderInfo.getPrice(),phOrderInfo.getMVoucherAmount()),
+									phOrderInfo.getPVoucherAmount()),
+							phOrderInfo.getWalletAmount()),
+					phOrderInfo.getMailFee()) );
 			phOrderInfo.setStatus("0");
 			phOrderInfo.setUserId(userId);
 			phOrderInfo.setVersion(0L);
+			phOrderInfo.setAddrId(addrId);
 			phOrderInfos.add(phOrderInfo);
+			
+			sumAllAmount += phOrderInfo.getAmount();
+			sumALlPrice += phOrderInfo.getPrice();
+			sumMailFee += phOrderInfo.getMailFee();
+			
+			int c = phVoucherInfoService.updateStatusBym(mVoucherId, phOrderInfo.getPrice(), phOrderInfo.getMerchantId());
+			if(c!=1){
+				throw new Exception("锁定加息券异常");
+			}
 			
 		}
 		phOrderInfoRepository.save(phOrderInfos);
 		phOrderGoodsRepository.save(orderGoodss);
 		
+
+		int c = phVoucherInfoService.updateStatus(pVoucherId,sumALlPrice);
+		if(c!=1){
+			throw new Exception("锁定加息券异常");
+		}
 		
-		return jsonResultHelper.buildSuccessJsonResult(null);
+		PhPreorderInfo phPreorderInfo = new PhPreorderInfo();
+		phPreorderInfo.setAmount(sumAllAmount);
+		phPreorderInfo.setCreateTime(now);
+		phPreorderInfo.setAddrId(addrId);
+		phPreorderInfo.setMailFee(sumMailFee);
+		phPreorderInfo.setOrderNo(preorderNo);
+		phPreorderInfo.setPrice(sumALlPrice);
+		phPreorderInfo.setPVoucherId(pVoucherId);
+		phPreorderInfo.setStatus("0");
+		phPreorderInfo.setUserId(userId);
+		phPreorderInfo.setVersion(0L);
+		phPreorderInfo.setVoucherAmount(sumVoucherAmount);
+		phPreorderInfo.setWalletAmount(orderAddDto.getWalletAmount());
+		phPreorderInfoService.save(phPreorderInfo);
+		
+		return jsonResultHelper.buildSuccessJsonResult(preorderNo);
 	}
+	
+	
 }

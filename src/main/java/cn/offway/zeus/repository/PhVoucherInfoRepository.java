@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhVoucherInfo;
 import java.lang.Long;
@@ -33,4 +35,13 @@ public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Lon
 	@Query(nativeQuery=true,value="select count(*) from ph_voucher_info where user_id=?1 and `status`='0' and type='0' and NOW() BETWEEN begin_time and end_time and used_min_amount <= ?2")
 	int countUseByPlatform(Long userId,Double amount);
 	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_voucher_info set status='1' where id=?1 and type='0' and status='0' and used_min_amount<=?2 and NOW() BETWEEN begin_time and end_time")
+	int updateStatus(Long voucherId,Double amount);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_voucher_info set status='1' where id=?1 and type='1' and status='0' and used_min_amount<=?2 and merchant_id=?3 and NOW() BETWEEN begin_time and end_time")
+	int updateStatusBym(Long voucherId,Double amount,Long merchant_id);
 }

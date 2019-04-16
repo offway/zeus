@@ -1,16 +1,19 @@
 package cn.offway.zeus.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Date;
 
-import org.springframework.data.annotation.Version;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.RequestParam;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
-
-import java.util.Date;
 
 /**
  * 用户信息

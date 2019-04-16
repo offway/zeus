@@ -78,6 +78,16 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
+	public int updateStatus(Long voucherId,Double amount){
+		return phVoucherInfoRepository.updateStatus(voucherId,amount);
+	}
+	
+	@Override
+	public int updateStatusBym(Long voucherId,Double amount,Long merchant_id){
+		return phVoucherInfoRepository.updateStatusBym(voucherId, amount, merchant_id);
+	}
+	
+	@Override
 	public List<PhVoucherInfo> findAll(final VoucherDto voucherDto){
 		return phVoucherInfoRepository.findAll(new Specification<PhVoucherInfo>() {
 			
