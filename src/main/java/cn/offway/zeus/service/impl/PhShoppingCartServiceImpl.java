@@ -147,7 +147,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			StringBuilder sb = new StringBuilder();
 			for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
 				sb.append(phGoodsProperty.getName()+":"+phGoodsProperty.getValue());
-				sb.append("#");
+				sb.append(" ");
 			}
 			phShoppingCart.setProperty(sb.toString());
 			
@@ -234,7 +234,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			StringBuilder sb = new StringBuilder();
 			for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
 				sb.append(phGoodsProperty.getName()+":"+phGoodsProperty.getValue());
-				sb.append("#");
+				sb.append(" ");
 			}
 			phShoppingCart.setProperty(sb.toString());
 			

@@ -176,7 +176,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				StringBuilder sb = new StringBuilder();
 				for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
 					sb.append(phGoodsProperty.getName()+":"+phGoodsProperty.getValue());
-					sb.append("#");
+					sb.append(" ");
 				}
 				phOrderGoods.setRemark(sb.toString());
 				orderGoodss.add(phOrderGoods);
