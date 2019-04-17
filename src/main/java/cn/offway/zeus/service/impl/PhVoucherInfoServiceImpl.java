@@ -78,13 +78,13 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
-	public int updateStatus(Long voucherId,Double amount){
-		return phVoucherInfoRepository.updateStatus(voucherId,amount);
+	public int updateStatus(Long voucherId,Double amount,Long userId){
+		return phVoucherInfoRepository.updateStatus(voucherId,amount,userId);
 	}
 	
 	@Override
-	public int updateStatusBym(Long voucherId,Double amount,Long merchant_id){
-		return phVoucherInfoRepository.updateStatusBym(voucherId, amount, merchant_id);
+	public int updateStatusBym(Long voucherId,Double amount,Long merchant_id,Long userId){
+		return phVoucherInfoRepository.updateStatusBym(voucherId, amount, merchant_id,userId);
 	}
 	
 	@Override

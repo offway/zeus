@@ -37,13 +37,13 @@ public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Lon
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="update ph_voucher_info set status='1' where id=?1 and type='0' and status='0' and used_min_amount<=?2 and NOW() BETWEEN begin_time and end_time")
-	int updateStatus(Long voucherId,Double amount);
+	@Query(nativeQuery=true,value="update ph_voucher_info set status='1' where id=?1 and user_id=?3 and type='0' and status='0' and used_min_amount<=?2 and NOW() BETWEEN begin_time and end_time")
+	int updateStatus(Long voucherId,Double amount,Long userId);
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="update ph_voucher_info set status='1' where id=?1 and type='1' and status='0' and used_min_amount<=?2 and merchant_id=?3 and NOW() BETWEEN begin_time and end_time")
-	int updateStatusBym(Long voucherId,Double amount,Long merchant_id);
+	@Query(nativeQuery=true,value="update ph_voucher_info set status='1' where id=?1 and user_id=?4 and type='1' and status='0' and used_min_amount<=?2 and merchant_id=?3 and NOW() BETWEEN begin_time and end_time")
+	int updateStatusBym(Long voucherId,Double amount,Long merchant_id,Long userId);
 	
 	@Transactional
 	@Modifying

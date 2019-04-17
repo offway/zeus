@@ -6,14 +6,12 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.CriteriaBuilder.In;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +34,9 @@ import cn.offway.zeus.domain.PhVoucherInfo;
 import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.dto.OrderInitStockDto;
 import cn.offway.zeus.dto.OrderMerchantDto;
+import cn.offway.zeus.exception.StockException;
+import cn.offway.zeus.exception.VoucherException;
+import cn.offway.zeus.repository.PhAddressRepository;
 import cn.offway.zeus.repository.PhOrderGoodsRepository;
 import cn.offway.zeus.repository.PhOrderInfoRepository;
 import cn.offway.zeus.service.PhGoodsPropertyService;
@@ -88,6 +89,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	@Autowired
 	private PhPreorderInfoService phPreorderInfoService;
 	
+	@Autowired
+	private PhAddressRepository phAddressRepository;
+	
 	@Override
 	public PhOrderInfo save(PhOrderInfo phOrderInfo){
 		return phOrderInfoRepository.save(phOrderInfo);
@@ -122,16 +126,25 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	}
 	
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
-	public JsonResult add(OrderAddDto orderAddDto) throws Exception{
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class,StockException.class})
+	public JsonResult add(OrderAddDto orderAddDto) throws Exception,StockException{
 		Long addrId = orderAddDto.getAddrId();
 		Long userId = orderAddDto.getUserId();
 		Long pVoucherId = orderAddDto.getVoucherId();
 		Double walletAmount = orderAddDto.getWalletAmount();
 		
+		int addrcount = phAddressRepository.countByIdAndUserId(addrId,userId);
+		if(addrcount==0){
+			throw new Exception("地址错误");
+		}
+		
 		if(walletAmount>0){
 			PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
-			phUserInfo.setBalance(phUserInfo.getBalance()-walletAmount);
+			double balance = phUserInfo.getBalance()==null?0D:phUserInfo.getBalance()-walletAmount;
+			if(balance<0){
+				throw new Exception("余额不足");
+			}
+			phUserInfo.setBalance(balance);
 			phUserInfoService.save(phUserInfo);
 		}
 		
@@ -175,7 +188,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				
 				int c = phGoodsStockService.updateStock(stockId, stock.getNum());
 				if(c==0){
-					throw new Exception("减库存失败stockId:{}"+stockId+"num:"+stock.getNum());
+					throw new StockException("减库存失败stockId:{}"+stockId+"num:"+stock.getNum());
 				}
 				
 				PhOrderGoods phOrderGoods = new PhOrderGoods();
@@ -260,19 +273,22 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			sumALlPrice += phOrderInfo.getPrice();
 			sumMailFee += phOrderInfo.getMailFee();
 			
-			int c = phVoucherInfoService.updateStatusBym(mVoucherId, phOrderInfo.getPrice(), phOrderInfo.getMerchantId());
-			if(c!=1){
-				throw new Exception("锁定加息券异常");
+			if(null !=mVoucherId){
+				int c = phVoucherInfoService.updateStatusBym(mVoucherId, phOrderInfo.getPrice(), phOrderInfo.getMerchantId(),userId);
+				if(c!=1){
+					throw new Exception("锁定加息券异常");
+				}
 			}
 			
 		}
 		phOrderInfoRepository.save(phOrderInfos);
 		phOrderGoodsRepository.save(orderGoodss);
 		
-
-		int c = phVoucherInfoService.updateStatus(pVoucherId,sumALlPrice);
-		if(c!=1){
-			throw new Exception("锁定加息券异常");
+		if(null !=pVoucherId){
+			int c = phVoucherInfoService.updateStatus(pVoucherId,sumALlPrice,userId);
+			if(c!=1){
+				throw new Exception("锁定加息券异常");
+			}
 		}
 		
 		PhPreorderInfo phPreorderInfo = new PhPreorderInfo();

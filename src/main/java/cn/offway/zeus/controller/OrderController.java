@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +27,8 @@ import cn.offway.zeus.domain.PhPreorderInfo;
 import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.dto.OrderInfoDto;
 import cn.offway.zeus.dto.PreorderDto;
+import cn.offway.zeus.exception.StockException;
+import cn.offway.zeus.exception.VoucherException;
 import cn.offway.zeus.service.Kuaidi100Service;
 import cn.offway.zeus.service.PhAddressService;
 import cn.offway.zeus.service.PhOrderGoodsService;
@@ -42,6 +46,8 @@ import io.swagger.annotations.ApiParam;
 @RestController
 @RequestMapping("/order")
 public class OrderController {
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private JsonResultHelper jsonResultHelper;
@@ -68,7 +74,11 @@ public class OrderController {
 	public JsonResult add(@RequestBody @ApiParam("请求参数") OrderAddDto orderAddDto){
 		try {
 			return phOrderInfoService.add(orderAddDto);
-		} catch (Exception e) {
+		}catch (StockException e) {
+			e.printStackTrace();
+			logger.info("减库存失败",e);
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.STOCK_SHORTAGE);
+		}catch (Exception e) {
 			e.printStackTrace();
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}

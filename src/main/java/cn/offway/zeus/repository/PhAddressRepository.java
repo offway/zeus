@@ -28,4 +28,6 @@ public interface PhAddressRepository extends JpaRepository<PhAddress,Long>,JpaSp
 	int updatePhAddress(Long userId);
 	
 	List<PhAddress> findByUserIdAndIsDefault(Long userId,String isDefault);
+	
+	int countByIdAndUserId(Long id,Long userId);
 }

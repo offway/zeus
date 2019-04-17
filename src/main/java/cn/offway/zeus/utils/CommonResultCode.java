@@ -51,6 +51,10 @@ public enum CommonResultCode implements ResultCode {
     
     /** 购物车上线  */
     SHOPPING_CAR_LIMIT("1013", "SHOPPING_CAR_LIMIT"),
+    
+    /** 库存不足  */
+    STOCK_SHORTAGE("1016", "STOCK_SHORTAGE"),
+    
     ;
 	
 	
