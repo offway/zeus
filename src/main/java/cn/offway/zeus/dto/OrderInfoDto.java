@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import cn.offway.zeus.domain.PhAddress;
 import cn.offway.zeus.domain.PhOrderGoods;
 
 public class OrderInfoDto implements Serializable{
@@ -80,8 +81,20 @@ public class OrderInfoDto implements Serializable{
     /** 支付渠道[wxpay,alipay] **/
     private String payChannel;
     
+    /** 快递公司编码 **/
+    private String expressCode;
+
+    /** 快递单号 **/
+    private String mailNo;
+    
     /** 订单商品详情  **/
     private List<PhOrderGoods> goods;
+    
+    /** 地址详情  **/
+    private PhAddress address;
+    
+    /** 快递详情  **/
+    private Object mailContent;
 
 	public Long getId() {
 		return id;
@@ -282,5 +295,38 @@ public class OrderInfoDto implements Serializable{
 	public void setGoods(List<PhOrderGoods> goods) {
 		this.goods = goods;
 	}
+
+	public PhAddress getAddress() {
+		return address;
+	}
+
+	public void setAddress(PhAddress address) {
+		this.address = address;
+	}
+
+	public String getExpressCode() {
+		return expressCode;
+	}
+
+	public void setExpressCode(String expressCode) {
+		this.expressCode = expressCode;
+	}
+
+	public String getMailNo() {
+		return mailNo;
+	}
+
+	public void setMailNo(String mailNo) {
+		this.mailNo = mailNo;
+	}
+
+	public Object getMailContent() {
+		return mailContent;
+	}
+
+	public void setMailContent(Object mailContent) {
+		this.mailContent = mailContent;
+	}
+	
     
 }

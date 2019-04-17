@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import cn.offway.zeus.domain.PhAddress;
+
 public class PreorderDto implements Serializable{
 
 	 /** ID **/
@@ -53,6 +55,9 @@ public class PreorderDto implements Serializable{
     
     /** 订单详情 **/
     private List<OrderInfoDto> orderInfos;
+    
+    /** 收货地址详情  **/
+    private PhAddress address;
 
 	public Long getId() {
 		return id;
@@ -180,6 +185,14 @@ public class PreorderDto implements Serializable{
 
 	public void setOrderInfos(List<OrderInfoDto> orderInfos) {
 		this.orderInfos = orderInfos;
+	}
+
+	public PhAddress getAddress() {
+		return address;
+	}
+
+	public void setAddress(PhAddress address) {
+		this.address = address;
 	}
 
 }

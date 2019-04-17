@@ -3,6 +3,7 @@ package cn.offway.zeus.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,12 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
+
+import cn.offway.zeus.domain.PhAddress;
 import cn.offway.zeus.domain.PhOrderGoods;
 import cn.offway.zeus.domain.PhOrderInfo;
 import cn.offway.zeus.domain.PhPreorderInfo;
 import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.dto.OrderInfoDto;
 import cn.offway.zeus.dto.PreorderDto;
+import cn.offway.zeus.service.Kuaidi100Service;
+import cn.offway.zeus.service.PhAddressService;
 import cn.offway.zeus.service.PhOrderGoodsService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
@@ -48,6 +54,13 @@ public class OrderController {
 	
 	@Autowired
 	private PhOrderGoodsService phOrderGoodsService;
+	
+	@Autowired
+	private PhAddressService phAddressService;
+	
+	@Autowired
+	private Kuaidi100Service kuaidi100Service;
+	
 	
 
 	@ApiOperation("下订单")
@@ -144,6 +157,7 @@ public class OrderController {
 		}
 		BeanUtils.copyProperties(phPreorderInfo, preorderDto);
 		preorderDto.setOrderInfos(dtos);
+		preorderDto.setAddress(phAddressService.findOne(phPreorderInfo.getAddrId()));
 		
 		return jsonResultHelper.buildSuccessJsonResult(preorderDto);
 
@@ -157,6 +171,14 @@ public class OrderController {
 		List<PhOrderGoods> goods = phOrderGoodsService.findByOrderNo(orderNo);
 		BeanUtils.copyProperties(phOrderInfo, dto);
 		dto.setGoods(goods);
+		PhAddress phAddress = phAddressService.findOne(phOrderInfo.getAddrId());
+		dto.setAddress(phAddress);
+		if(StringUtils.isNotBlank(phOrderInfo.getMailNo())){
+			//kuaidi100Service.query(phOrderInfo.getExpressCode(), phOrderInfo.getMailNo(), phAddress.getPhone())
+			//String result = "{\"message\":\"ok\",\"nu\":\"805283162742333582\",\"ischeck\":\"0\",\"condition\":\"00\",\"com\":\"yuantong\",\"status\":\"200\",\"state\":\"0\",\"data\":[{\"time\":\"2019-04-10 02:38:48\",\"ftime\":\"2019-04-10 02:38:48\",\"context\":\"【江门转运中心】 已发出 下一站 【上海转运中心】\"},{\"time\":\"2019-04-10 02:37:46\",\"ftime\":\"2019-04-10 02:37:46\",\"context\":\"【江门转运中心】 已收入\"},{\"time\":\"2019-04-10 02:22:42\",\"ftime\":\"2019-04-10 02:22:42\",\"context\":\"【广东省中山市板芙镇公司】 已收件\"},{\"time\":\"2019-04-09 19:34:30\",\"ftime\":\"2019-04-09 19:34:30\",\"context\":\"【广东省中山市板芙镇公司】 取件人: 朱华文 已收件\"}]}";
+			String result = kuaidi100Service.query("yuantong", "805283162742333582", "18621866390");
+			dto.setMailContent(JSON.parse(result));
+		}
 		return jsonResultHelper.buildSuccessJsonResult(dto);
 
 	}
