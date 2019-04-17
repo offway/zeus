@@ -150,17 +150,18 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			phUserInfoService.save(phUserInfo);
 		}
 		
-		double sumVoucherAmount= 0D;
+		double sumMVoucherAmount= 0D;
 		double sumMailFee= 0D;
 		double sumAllAmount= 0D;
 		double sumALlPrice= 0D;
+		double sumpVoucherAmout = 0D;
 		
 		
 		double pVoucherAmount = 0D;
 		if(null!=pVoucherId){
 			PhVoucherInfo pphVoucherInfo =  phVoucherInfoService.findOne(pVoucherId);
 			pVoucherAmount = pphVoucherInfo.getAmount();
-			sumVoucherAmount+=pVoucherAmount;
+			sumpVoucherAmout = pVoucherAmount;
 		}
 
 		Date now = new Date();
@@ -226,7 +227,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			PhVoucherInfo mphVoucherInfo = null;
 			if(null!=mVoucherId){
 				mphVoucherInfo =  phVoucherInfoService.findOne(mVoucherId);
-				sumVoucherAmount+=mphVoucherInfo.getAmount();
+				sumMVoucherAmount = MathUtils.add(sumMVoucherAmount, mphVoucherInfo.getAmount());
 			}
 			
 			PhOrderInfo phOrderInfo = new PhOrderInfo();
@@ -243,28 +244,39 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			phOrderInfo.setMVoucherId(mVoucherId);
 			phOrderInfo.setOrderNo(orderNo);
 			phOrderInfo.setPrice(sumPrice);
+			
+			//需要支付金额=商品总价+运费-商户优惠券金额
+			double laveAmount = MathUtils.sub(MathUtils.add(sumPrice, mailFee), sumMVoucherAmount);
 			double pVAmount =0D;
 			if(pVoucherAmount>0){
-				pVAmount = pVoucherAmount>sumPrice?sumPrice:pVoucherAmount;
+				if(pVoucherAmount<=laveAmount){
+					pVAmount = pVoucherAmount;
+					pVoucherAmount = 0D;
+				}else{
+					pVAmount = laveAmount;
+					pVoucherAmount = MathUtils.sub(pVoucherAmount, laveAmount);
+				}
 			}
+			
 			phOrderInfo.setPVoucherAmount(pVAmount);
-			pVoucherAmount -= sumPrice;
+			//需要支付金额=需要支付金额-平台优惠金额
+			laveAmount = MathUtils.sub(laveAmount, pVAmount);
 			phOrderInfo.setPVoucherId(pVoucherId);
 			double pWAmount =0D;
 			if(walletAmount>0){
-				pWAmount = walletAmount>sumPrice-pVAmount?sumPrice-pVAmount:walletAmount;
+				if(walletAmount<=laveAmount){
+					pWAmount = walletAmount;
+					walletAmount = 0D;
+				}else{
+					pWAmount = laveAmount;
+					walletAmount=MathUtils.sub(walletAmount, laveAmount);
+				}
 			}
+			//需要支付金额=需要支付金额-钱包金额
+			laveAmount = MathUtils.sub(laveAmount, pWAmount);
 			phOrderInfo.setWalletAmount(pWAmount);
-			walletAmount -= sumPrice-pVAmount;
 			
-			phOrderInfo.setAmount(
-					MathUtils.add(
-							MathUtils.sub(
-									MathUtils.sub(
-											MathUtils.sub(phOrderInfo.getPrice(),phOrderInfo.getMVoucherAmount()),
-									phOrderInfo.getPVoucherAmount()),
-							phOrderInfo.getWalletAmount()),
-					phOrderInfo.getMailFee()) );
+			phOrderInfo.setAmount(laveAmount);
 			phOrderInfo.setStatus("0");
 			phOrderInfo.setUserId(userId);
 			phOrderInfo.setVersion(0L);
@@ -305,19 +317,19 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		phPreorderInfo.setPVoucherId(pVoucherId);
 		if(sumAllAmount>0D){
 			phPreorderInfo.setStatus("0");
-			resultMap.put("isPay", false);
+			resultMap.put("paid", false);
 		}else if(sumAllAmount==0D){
 			//支付成功
 			phPreorderInfo.setStatus("1");
 			//更新订单状态
 			phOrderInfoRepository.updateStatusByPreOrderNo(preorderNo,"0","1",null);
-			resultMap.put("isPay", true);
+			resultMap.put("paid", true);
 		}else{
 			throw new Exception("金额计算错误");
 		}
 		phPreorderInfo.setUserId(userId);
 		phPreorderInfo.setVersion(0L);
-		phPreorderInfo.setVoucherAmount(sumVoucherAmount);
+		phPreorderInfo.setVoucherAmount(MathUtils.add(sumMVoucherAmount, sumpVoucherAmout));
 		phPreorderInfo.setWalletAmount(orderAddDto.getWalletAmount());
 		phPreorderInfoService.save(phPreorderInfo);
 		
