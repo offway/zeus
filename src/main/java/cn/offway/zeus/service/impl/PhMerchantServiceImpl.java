@@ -86,11 +86,15 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 			fareNextPrice = phMerchantFare.getFareNextPrice();
 		}
 		
-		num -= fareFirstNum;
-		amount += fareFirstPrice;
-		
-		int c = num%fareNextNum == 0 ? (num/fareNextNum) : (num/fareNextNum)+1;
-		amount +=c*fareNextPrice;
+		if(num<fareFirstNum){
+			amount = fareFirstPrice;
+		}else{
+			num -= fareFirstNum;
+			amount += fareFirstPrice;
+			
+			int c = num%fareNextNum == 0 ? (num/fareNextNum) : (num/fareNextNum)+1;
+			amount +=c*fareNextPrice;
+		}
 
 		return amount;
 	}
