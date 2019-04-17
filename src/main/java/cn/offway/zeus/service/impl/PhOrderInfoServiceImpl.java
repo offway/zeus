@@ -3,7 +3,9 @@ package cn.offway.zeus.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
@@ -291,6 +293,8 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			}
 		}
 		
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("preorderNo", preorderNo);
 		PhPreorderInfo phPreorderInfo = new PhPreorderInfo();
 		phPreorderInfo.setAmount(sumAllAmount);
 		phPreorderInfo.setCreateTime(now);
@@ -299,14 +303,25 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		phPreorderInfo.setOrderNo(preorderNo);
 		phPreorderInfo.setPrice(sumALlPrice);
 		phPreorderInfo.setPVoucherId(pVoucherId);
-		phPreorderInfo.setStatus("0");
+		if(sumAllAmount>0D){
+			phPreorderInfo.setStatus("0");
+			resultMap.put("isPay", false);
+		}else if(sumAllAmount==0D){
+			//支付成功
+			phPreorderInfo.setStatus("1");
+			//更新订单状态
+			phOrderInfoRepository.updateStatusByPreOrderNo(preorderNo,"0","1",null);
+			resultMap.put("isPay", true);
+		}else{
+			throw new Exception("金额计算错误");
+		}
 		phPreorderInfo.setUserId(userId);
 		phPreorderInfo.setVersion(0L);
 		phPreorderInfo.setVoucherAmount(sumVoucherAmount);
 		phPreorderInfo.setWalletAmount(orderAddDto.getWalletAmount());
 		phPreorderInfoService.save(phPreorderInfo);
 		
-		return jsonResultHelper.buildSuccessJsonResult(preorderNo);
+		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 	
 	@Override
