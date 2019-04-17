@@ -11,7 +11,10 @@ import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.domain.PhAddress;
 import cn.offway.zeus.domain.PhMerchant;
 import cn.offway.zeus.domain.PhMerchantFare;
+import cn.offway.zeus.domain.PhMerchantFareSpecial;
 import cn.offway.zeus.repository.PhAddressRepository;
+import cn.offway.zeus.repository.PhMerchantFareRepository;
+import cn.offway.zeus.repository.PhMerchantFareSpecialRepository;
 import cn.offway.zeus.repository.PhMerchantRepository;
 
 
@@ -30,10 +33,13 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 	private PhMerchantRepository phMerchantRepository;
 	
 	@Autowired
-	private PhMerchantFareService phMerchantFareService;
+	private PhMerchantFareRepository phMerchantFareRepository;
 	
 	@Autowired
 	private PhAddressService phAddressService;
+	
+	@Autowired
+	private PhMerchantFareSpecialRepository phMerchantFareSpecialRepository;
 	
 	@Override
 	public PhMerchant save(PhMerchant phMerchant){
@@ -66,24 +72,25 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 			return amount;
 		}
 		
+		PhMerchantFare phMerchantFare = phMerchantFareRepository.findByMerchantIdAndIsDefault(id, "1");
 		PhAddress phAddress = phAddressService.findOne(addrId);
-		PhMerchantFare phMerchantFare = phMerchantFareService.findByProvinceAndCityAndCounty(phAddress.getProvince(), phAddress.getCity(), phAddress.getCounty());
-		if(null == phMerchantFare){
-			phMerchantFare = phMerchantFareService.findByProvinceAndCityAndCounty(phAddress.getProvince(), phAddress.getCity(), null);
+		PhMerchantFareSpecial phMerchantFareSpecial = phMerchantFareSpecialRepository.findByProvinceAndCityAndCounty(phAddress.getProvince(), phAddress.getCity(), phAddress.getCounty());
+		if(null == phMerchantFareSpecial){
+			phMerchantFareSpecial = phMerchantFareSpecialRepository.findByProvinceAndCityAndCounty(phAddress.getProvince(), phAddress.getCity(), null);
 		}
-		if(null == phMerchantFare){
-			phMerchantFare = phMerchantFareService.findByProvinceAndCityAndCounty(phAddress.getProvince(), null, null);
+		if(null == phMerchantFareSpecial){
+			phMerchantFareSpecial = phMerchantFareSpecialRepository.findByProvinceAndCityAndCounty(phAddress.getProvince(), null, null);
 		}
-		if(null == phMerchantFare){
-			fareFirstNum = phMerchant.getFareFirstNum().intValue();
-			fareNextNum = phMerchant.getFareNextNum().intValue();
-			fareFirstPrice = phMerchant.getFareFirstPrice();
-			fareNextPrice = phMerchant.getFareNextPrice();
-		}else{
+		if(null == phMerchantFareSpecial){
 			fareFirstNum = phMerchantFare.getFareFirstNum().intValue();
 			fareNextNum = phMerchantFare.getFareNextNum().intValue();
 			fareFirstPrice = phMerchantFare.getFareFirstPrice();
 			fareNextPrice = phMerchantFare.getFareNextPrice();
+		}else{
+			fareFirstNum = phMerchantFareSpecial.getFareFirstNum().intValue();
+			fareNextNum = phMerchantFareSpecial.getFareNextNum().intValue();
+			fareFirstPrice = phMerchantFareSpecial.getFareFirstPrice();
+			fareNextPrice = phMerchantFareSpecial.getFareNextPrice();
 		}
 		
 		if(num<fareFirstNum){

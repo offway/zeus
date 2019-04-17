@@ -34,6 +34,7 @@ import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.WxuserInfo;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhCollectService;
+import cn.offway.zeus.service.PhPreorderInfoService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhWxuserInfoService;
 import cn.offway.zeus.service.SmsService;
@@ -90,6 +91,9 @@ public class UserController {
 	
 	@Autowired
 	private PhShoppingCartRepository phShoppingCartRepository;
+	
+	@Autowired
+	private PhPreorderInfoService phPreorderInfoService;
 	
 	@ApiOperation("微信用户信息保存")
 	@PostMapping("/wx")

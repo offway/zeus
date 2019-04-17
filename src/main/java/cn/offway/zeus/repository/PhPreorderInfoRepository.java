@@ -14,4 +14,6 @@ import cn.offway.zeus.domain.PhPreorderInfo;
 public interface PhPreorderInfoRepository extends JpaRepository<PhPreorderInfo,Long>,JpaSpecificationExecutor<PhPreorderInfo> {
 
 	PhPreorderInfo findByOrderNoAndStatus(String orderno,String status);
+	
+	int countByUserIdAndStatus(Long userId,String status);
 }

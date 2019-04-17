@@ -14,5 +14,4 @@ public interface PhMerchantFareService{
 	
 	PhMerchantFare findOne(Long id);
 
-	PhMerchantFare findByProvinceAndCityAndCounty(String province, String city, String county);
 }
