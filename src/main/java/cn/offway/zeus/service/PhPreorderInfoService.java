@@ -1,5 +1,8 @@
 package cn.offway.zeus.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import cn.offway.zeus.domain.PhPreorderInfo;
 
 /**
@@ -21,4 +24,6 @@ public interface PhPreorderInfoService{
 	void wxpay(String status, String preorderNo) throws Exception;
 
 	void cancelOrder(String preorderNo) throws Exception;
+
+	Page<PhPreorderInfo> findByPage(Long userId, Pageable page);
 }

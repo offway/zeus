@@ -1,5 +1,10 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import cn.offway.zeus.domain.PhOrderInfo;
 import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.utils.JsonResult;
@@ -19,4 +24,10 @@ public interface PhOrderInfoService{
 	String generateOrderNo(String prefix);
 
 	JsonResult add(OrderAddDto orderAddDto) throws Exception;
+
+	Page<PhOrderInfo> findByPage(Long userId, String status, Pageable page);
+
+	List<PhOrderInfo> findByPreorderNoAndStatus(String preorderno, String status);
+
+	PhOrderInfo findByOrderNo(String orderNo);
 }

@@ -16,4 +16,6 @@ import java.util.List;
 public interface PhOrderGoodsRepository extends JpaRepository<PhOrderGoods,Long>,JpaSpecificationExecutor<PhOrderGoods> {
 
 	List<PhOrderGoods> findByPreorderNo(String preorderno);
+	
+	List<PhOrderGoods> findByOrderNo(String orderNo);
 }

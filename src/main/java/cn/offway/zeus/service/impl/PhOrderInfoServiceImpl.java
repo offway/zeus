@@ -5,9 +5,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder.In;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -85,6 +97,17 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	public PhOrderInfo findOne(Long id){
 		return phOrderInfoRepository.findOne(id);
 	}
+	
+	@Override
+	public List<PhOrderInfo> findByPreorderNoAndStatus(String preorderno,String status){
+		return phOrderInfoRepository.findByPreorderNoAndStatus(preorderno, status);
+	}
+	
+	@Override
+	public PhOrderInfo findByOrderNo(String orderNo){
+		return phOrderInfoRepository.findByOrderNo(orderNo);
+	}
+
 	
 	@Override
 	public String generateOrderNo(String prefix){
@@ -270,5 +293,37 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		return jsonResultHelper.buildSuccessJsonResult(preorderNo);
 	}
 	
+	@Override
+	public Page<PhOrderInfo> findByPage(final Long userId,final String status,Pageable page){
+		return phOrderInfoRepository.findAll(new Specification<PhOrderInfo>() {
+			
+			@Override
+			public Predicate toPredicate(Root<PhOrderInfo> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+				List<Predicate> params = new ArrayList<Predicate>();
+				
+				if(StringUtils.isNotBlank(status)){
+					if("-1".equals(status)){
+						//全部:交易关闭和交易完成
+						In<String> in = criteriaBuilder.in(root.get("status"));
+						in.value("3");
+						in.value("4");
+						params.add(in);
+					}else{
+						params.add(criteriaBuilder.equal(root.get("status"), status));
+					}
+				}
+				
+				if(null != userId){
+					params.add(criteriaBuilder.equal(root.get("userId"), userId));
+				}
+				
+				
+                Predicate[] predicates = new Predicate[params.size()];
+                criteriaQuery.where(params.toArray(predicates));
+                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
+				return null;
+			}
+		}, page);
+	}
 	
 }

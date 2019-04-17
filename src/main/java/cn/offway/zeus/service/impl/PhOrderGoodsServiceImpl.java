@@ -1,5 +1,7 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +34,10 @@ public class PhOrderGoodsServiceImpl implements PhOrderGoodsService {
 	@Override
 	public PhOrderGoods findOne(Long id){
 		return phOrderGoodsRepository.findOne(id);
+	}
+	
+	@Override
+	public List<PhOrderGoods> findByOrderNo(String orderNo){
+		return phOrderGoodsRepository.findByOrderNo(orderNo);
 	}
 }

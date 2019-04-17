@@ -26,7 +26,7 @@ public class OrderAddDto implements Serializable{
 	private Double walletAmount;
 	
 	@ApiModelProperty(value ="店铺详情")
-	List<OrderMerchantDto> merchantDtos;
+	private List<OrderMerchantDto> merchantDtos;
 
 	public Long getAddrId() {
 		return addrId;
