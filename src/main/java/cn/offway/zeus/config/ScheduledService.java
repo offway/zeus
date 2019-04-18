@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import cn.offway.zeus.service.PhOrderInfoService;
+import cn.offway.zeus.service.PhCapitalFlowService;
 import cn.offway.zeus.service.PhPreorderInfoService;
 
 @Component
@@ -18,11 +18,15 @@ public class ScheduledService {
 	
 	@Autowired
 	private PhPreorderInfoService phPreorderInfoService;
+	
+	@Autowired
+	private PhCapitalFlowService phCapitalFlowService;
+	
 	/**
 	 * 订单超时关闭
 	 */
 	@Scheduled(cron = "0 0/5 * * * ?")
-	public void dailyOpen() {
+	public void orderTimeOut() {
 		logger.info("订单超时关闭定时任务开始");
 		try {
 			
@@ -36,5 +40,21 @@ public class ScheduledService {
 			logger.error("订单超时关闭定时任务异常",e);
 		}
 		logger.info("订单超时关闭定时任务结束");
+	}
+	
+	/**
+	 * 返现
+	 */
+	@Scheduled(cron = "0 0 1 * * ?")
+	public void dailyOpen() {
+		logger.info("返现定时任务开始");
+		try {
+			
+			phCapitalFlowService.calculateReturnAmount();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("返现定时任务异常",e);
+		}
+		logger.info("返现定时任务结束");
 	}
 }

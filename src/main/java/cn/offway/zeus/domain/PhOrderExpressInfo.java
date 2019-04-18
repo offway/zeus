@@ -25,6 +25,9 @@ public class PhOrderExpressInfo implements Serializable {
 
     /** 快递运单号 **/
     private String mailNo;
+    
+    /** 快递公司编码 **/
+    private String expressCode;
 
     /** 寄件方手机 **/
     private String fromPhone;
@@ -244,6 +247,15 @@ public class PhOrderExpressInfo implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+    
+    @Column(name = "express_code", length = 50)
+    public String getExpressCode() {
+        return expressCode;
+    }
+
+    public void setExpressCode(String expressCode) {
+        this.expressCode = expressCode;
     }
 
 }

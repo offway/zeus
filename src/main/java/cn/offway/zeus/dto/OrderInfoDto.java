@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import cn.offway.zeus.domain.PhAddress;
+import cn.offway.zeus.domain.PhOrderExpressInfo;
 import cn.offway.zeus.domain.PhOrderGoods;
 
 public class OrderInfoDto implements Serializable{
@@ -91,7 +92,7 @@ public class OrderInfoDto implements Serializable{
     private List<PhOrderGoods> goods;
     
     /** 地址详情  **/
-    private PhAddress address;
+    private PhOrderExpressInfo address;
     
     /** 快递详情  **/
     private Object mailContent;
@@ -296,11 +297,11 @@ public class OrderInfoDto implements Serializable{
 		this.goods = goods;
 	}
 
-	public PhAddress getAddress() {
+	public PhOrderExpressInfo getAddress() {
 		return address;
 	}
 
-	public void setAddress(PhAddress address) {
+	public void setAddress(PhOrderExpressInfo address) {
 		this.address = address;
 	}
 

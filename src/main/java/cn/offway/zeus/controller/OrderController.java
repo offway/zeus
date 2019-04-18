@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 
 import cn.offway.zeus.domain.PhAddress;
+import cn.offway.zeus.domain.PhOrderExpressInfo;
 import cn.offway.zeus.domain.PhOrderGoods;
 import cn.offway.zeus.domain.PhOrderInfo;
 import cn.offway.zeus.domain.PhPreorderInfo;
@@ -31,6 +32,7 @@ import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.exception.VoucherException;
 import cn.offway.zeus.service.Kuaidi100Service;
 import cn.offway.zeus.service.PhAddressService;
+import cn.offway.zeus.service.PhOrderExpressInfoService;
 import cn.offway.zeus.service.PhOrderGoodsService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
@@ -66,6 +68,9 @@ public class OrderController {
 	
 	@Autowired
 	private Kuaidi100Service kuaidi100Service;
+	
+	@Autowired
+	private PhOrderExpressInfoService phOrderExpressInfoService;
 	
 	
 
@@ -212,9 +217,10 @@ public class OrderController {
 		List<PhOrderGoods> goods = phOrderGoodsService.findByOrderNo(orderNo);
 		BeanUtils.copyProperties(phOrderInfo, dto);
 		dto.setGoods(goods);
-		PhAddress phAddress = phAddressService.findOne(phOrderInfo.getAddrId());
-		dto.setAddress(phAddress);
-		if(StringUtils.isNotBlank(phOrderInfo.getMailNo())){
+		PhOrderExpressInfo phOrderExpressInfo = phOrderExpressInfoService.findByOrderNoAndType(orderNo, "0");
+		dto.setAddress(phOrderExpressInfo);
+		if(null!=phOrderExpressInfo){
+			
 			//kuaidi100Service.query(phOrderInfo.getExpressCode(), phOrderInfo.getMailNo(), phAddress.getPhone())
 			//String result = "{\"message\":\"ok\",\"nu\":\"805283162742333582\",\"ischeck\":\"0\",\"condition\":\"00\",\"com\":\"yuantong\",\"status\":\"200\",\"state\":\"0\",\"data\":[{\"time\":\"2019-04-10 02:38:48\",\"ftime\":\"2019-04-10 02:38:48\",\"context\":\"【江门转运中心】 已发出 下一站 【上海转运中心】\"},{\"time\":\"2019-04-10 02:37:46\",\"ftime\":\"2019-04-10 02:37:46\",\"context\":\"【江门转运中心】 已收入\"},{\"time\":\"2019-04-10 02:22:42\",\"ftime\":\"2019-04-10 02:22:42\",\"context\":\"【广东省中山市板芙镇公司】 已收件\"},{\"time\":\"2019-04-09 19:34:30\",\"ftime\":\"2019-04-09 19:34:30\",\"context\":\"【广东省中山市板芙镇公司】 取件人: 朱华文 已收件\"}]}";
 			String result = kuaidi100Service.query("yuantong", "805283162742333582", "18621866390");

@@ -13,4 +13,6 @@ public interface PhCapitalFlowService{
 	PhCapitalFlow save(PhCapitalFlow phCapitalFlow);
 	
 	PhCapitalFlow findOne(Long id);
+
+	void calculateReturnAmount() throws Exception;
 }

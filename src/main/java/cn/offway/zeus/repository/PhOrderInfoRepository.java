@@ -40,4 +40,7 @@ public interface PhOrderInfoRepository extends JpaRepository<PhOrderInfo,Long>,J
 	PhOrderInfo findByOrderNo(String orderNo);
 	
 	int countByUserIdAndStatusAndIsHidden(Long userId,String status,String isHidden);
+	
+	@Query(nativeQuery=true,value="select * from ph_order_info o where o.`status`='3' and DATE_FORMAT(NOW(),'%Y-%m-%d') = DATE_FORMAT(DATE_ADD(o.receipt_time,INTERVAL 8 DAY),'%Y-%m-%d') and exists(select 1 from ph_invite_info i where i.invite_user_id=o.user_id)")
+	List<PhOrderInfo> returnAmountOrders();
 }
