@@ -300,8 +300,8 @@ public class UserController {
 	
 	@SuppressWarnings("unchecked")
 	@ApiOperation("我的")
-	@GetMapping("/info")
-	public JsonResult info(@ApiParam("用户ID") @RequestParam Long userId){
+	@GetMapping("/home")
+	public JsonResult home(@ApiParam("用户ID") @RequestParam Long userId){
 		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
@@ -316,6 +316,17 @@ public class UserController {
 		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
 		map.put("shoppingCartNum", phShoppingCarts.size());
 		return jsonResultHelper.buildSuccessJsonResult(map);
+
+	}
+	
+	@ApiOperation("用户信息")
+	@GetMapping("/info")
+	public JsonResult info(@ApiParam("用户ID") @RequestParam Long userId){
+		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		if(null==phUserInfo){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
+		}
+		return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
 
 	}
 	

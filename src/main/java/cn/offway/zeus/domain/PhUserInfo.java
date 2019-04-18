@@ -76,6 +76,9 @@ public class PhUserInfo implements Serializable {
 
     @ApiModelProperty("备注")
     private String remark;
+    
+    @ApiModelProperty("是否赚钱达人[0-否，1-是] ")
+    private String isMm;
 
 
     @Id
@@ -234,6 +237,15 @@ public class PhUserInfo implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+    
+    @Column(name = "is_mm", length = 2)
+    public String getIsMm() {
+        return isMm;
+    }
+
+    public void setIsMm(String isMm) {
+        this.isMm = isMm;
     }
 
 }
