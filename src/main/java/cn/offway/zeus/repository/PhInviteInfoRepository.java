@@ -1,7 +1,10 @@
 package cn.offway.zeus.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.offway.zeus.domain.PhInviteInfo;
 
@@ -13,5 +16,6 @@ import cn.offway.zeus.domain.PhInviteInfo;
  */
 public interface PhInviteInfoRepository extends JpaRepository<PhInviteInfo,Long>,JpaSpecificationExecutor<PhInviteInfo> {
 
-	/** 此处写一些自定义的方法 **/
+	@Query(nativeQuery=true,value="select u.headimgurl,u.nickname from ph_invite_info i,ph_user_info u where i.user_id=?1 and i.invite_user_id= u.id order by i.create_time desc")
+	List<Object> invites(Long userId);
 }

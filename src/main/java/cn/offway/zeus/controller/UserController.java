@@ -32,6 +32,7 @@ import cn.offway.zeus.domain.PhShoppingCart;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.WxuserInfo;
+import cn.offway.zeus.repository.PhInviteInfoRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhPreorderInfoService;
@@ -94,6 +95,9 @@ public class UserController {
 	
 	@Autowired
 	private PhPreorderInfoService phPreorderInfoService;
+	
+	@Autowired
+	private PhInviteInfoRepository phInviteInfoRepository;
 	
 	@ApiOperation("微信用户信息保存")
 	@PostMapping("/wx")
@@ -376,6 +380,13 @@ public class UserController {
 		phUserInfo.setIsMm("1");
 		phUserInfoService.save(phUserInfo);
 		return jsonResultHelper.buildSuccessJsonResult(null);
+
+	}
+	
+	@ApiOperation("粉丝达人")
+	@GetMapping("/invites")
+	public  JsonResult invites(@ApiParam("用户ID") @RequestParam Long userId){
+		return jsonResultHelper.buildSuccessJsonResult(phInviteInfoRepository.invites(userId));
 
 	}
 	
