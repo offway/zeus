@@ -96,6 +96,23 @@ public class OrderController {
 		}
 	}
 	
+	@ApiOperation("确认收货")
+	@PostMapping("/receipt")
+	public JsonResult receipt(@ApiParam("订单号") @RequestParam String orderNo){
+		try {
+			PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
+			if("2".equals(phOrderInfo.getStatus())){
+				//已收货
+				phOrderInfo.setStatus("3");
+				phOrderInfoService.save(phOrderInfo);
+			}
+			return jsonResultHelper.buildSuccessJsonResult(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		}
+	}
+	
 	@ApiOperation("删除订单")
 	@PostMapping("/del")
 	public JsonResult del(@ApiParam("订单号") @RequestParam String orderNo){

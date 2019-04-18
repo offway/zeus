@@ -101,6 +101,7 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 				phInviteInfo.setNickname(inviteUserInfo.getNickname());
 				phInviteInfo.setPhone(inviteUserInfo.getPhone());
 				phInviteInfo.setInviteUserId(phUserInfo.getId());
+				phInviteInfo.setCreateTime(new Date());
 				phInviteInfoService.save(phInviteInfo);
 			}
 		}
