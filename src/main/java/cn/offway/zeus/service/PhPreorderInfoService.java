@@ -26,4 +26,6 @@ public interface PhPreorderInfoService{
 	void cancelOrder(String preorderNo) throws Exception;
 
 	Page<PhPreorderInfo> findByPage(Long userId, Pageable page);
+
+	int countByUserIdAndStatus(Long userId, String status);
 }

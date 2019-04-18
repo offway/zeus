@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+import cn.offway.zeus.domain.PhOrderInfo;
 import cn.offway.zeus.domain.PhShoppingCart;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.domain.PhWxuserInfo;
@@ -35,6 +36,7 @@ import cn.offway.zeus.dto.WxuserInfo;
 import cn.offway.zeus.repository.PhInviteInfoRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhCollectService;
+import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhWxuserInfoService;
@@ -98,6 +100,10 @@ public class UserController {
 	
 	@Autowired
 	private PhInviteInfoRepository phInviteInfoRepository;
+	
+	@Autowired
+	private PhOrderInfoService phOrderInfoService;
+	
 	
 	@ApiOperation("微信用户信息保存")
 	@PostMapping("/wx")
@@ -297,10 +303,10 @@ public class UserController {
 		}
 		String userInfo = JSON.toJSONString(phUserInfo,SerializerFeature.WriteMapNullValue);
 		Map<String, Object> map = JSON.parseObject(userInfo, Map.class);
-		//TODO 需查询订单信息
-		map.put("pendingPayment", 0L);
-		map.put("pendingShip", 0L);
-		map.put("pendingReceipt", 0L);
+		map.put("pendingPayment", phPreorderInfoService.countByUserIdAndStatus(userId, "0"));
+		//0-已下单,1-已付款,2-已发货,3-已收货,4-取消
+		map.put("pendingShip", phOrderInfoService.countByUserIdAndStatus(userId, "1"));
+		map.put("pendingReceipt", phOrderInfoService.countByUserIdAndStatus(userId, "2"));
 		map.put("goodsReturn", 0L);
 		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
 		map.put("shoppingCartNum", phShoppingCarts.size());

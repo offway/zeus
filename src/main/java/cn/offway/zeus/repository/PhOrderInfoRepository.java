@@ -38,4 +38,6 @@ public interface PhOrderInfoRepository extends JpaRepository<PhOrderInfo,Long>,J
 	int updateStatusByPreOrderNo(String preorderno,String fromstauts,String tostauts,String payChannel);
 	
 	PhOrderInfo findByOrderNo(String orderNo);
+	
+	int countByUserIdAndStatusAndIsHidden(Long userId,String status,String isHidden);
 }

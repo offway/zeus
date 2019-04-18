@@ -30,4 +30,6 @@ public interface PhOrderInfoService{
 	List<PhOrderInfo> findByPreorderNoAndStatus(String preorderno, String status);
 
 	PhOrderInfo findByOrderNo(String orderNo);
+	
+	int countByUserIdAndStatus(Long userId,String status);
 }

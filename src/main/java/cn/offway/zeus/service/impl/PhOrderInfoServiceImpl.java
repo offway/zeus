@@ -247,6 +247,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			phOrderInfo.setMVoucherId(mVoucherId);
 			phOrderInfo.setOrderNo(orderNo);
 			phOrderInfo.setPrice(sumPrice);
+			phOrderInfo.setIsHidden("0");
 			
 			//需要支付金额=商品总价+运费-商户优惠券金额
 			double laveAmount = MathUtils.sub(MathUtils.add(sumPrice, mailFee), sumMVoucherAmount);
@@ -363,6 +364,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 					params.add(criteriaBuilder.equal(root.get("userId"), userId));
 				}
 				
+				params.add(criteriaBuilder.equal(root.get("isHidden"), "0"));
+
+				
 				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
@@ -370,6 +374,11 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				return null;
 			}
 		}, page);
+	}
+
+	@Override
+	public int countByUserIdAndStatus(Long userId, String status) {
+		return phOrderInfoRepository.countByUserIdAndStatusAndIsHidden(userId, status, "0");
 	}
 	
 }

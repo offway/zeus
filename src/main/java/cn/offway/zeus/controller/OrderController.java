@@ -96,6 +96,20 @@ public class OrderController {
 		}
 	}
 	
+	@ApiOperation("删除订单")
+	@PostMapping("/del")
+	public JsonResult del(@ApiParam("订单号") @RequestParam String orderNo){
+		try {
+			PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
+			phOrderInfo.setIsHidden("1");
+			phOrderInfoService.save(phOrderInfo);
+			return jsonResultHelper.buildSuccessJsonResult(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		}
+	}
+	
 	
 	@ApiOperation("用户订单")
 	@GetMapping("/user")

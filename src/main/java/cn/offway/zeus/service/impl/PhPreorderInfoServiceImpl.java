@@ -81,6 +81,11 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	}
 	
 	@Override
+	public int countByUserIdAndStatus(Long userId,String status){
+		return phPreorderInfoRepository.countByUserIdAndStatus(userId, status);
+	}
+	
+	@Override
 	public void cancelOrder(String preorderNo) throws Exception{
 		failResult(preorderNo,"");
 	}
