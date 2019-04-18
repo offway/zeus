@@ -53,7 +53,7 @@ public class PhPreorderInfo implements Serializable {
     /** 总运费 **/
     private Double mailFee;
 
-    /** 状态[0-待付款,1-已付款,2-交易关闭] **/
+    /** 状态[0-待付款,1-已付款,2-交易关闭,,3-付款中] **/
     private String status;
 
     /** 创建时间 **/
