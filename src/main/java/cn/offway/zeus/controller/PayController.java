@@ -46,9 +46,9 @@ public class PayController {
 		if(null == phPreorderInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
-		//修改订单状态位支付中
+		/*//修改订单状态位支付中
 		phPreorderInfo.setStatus("3");
-		phPreorderInfoService.save(phPreorderInfo);
+		phPreorderInfoService.save(phPreorderInfo);*/
 		String body = "OFFWAY商品购买";
 		String subject = "OFFWAY商品购买";
 		double amount = phPreorderInfo.getAmount();
@@ -62,15 +62,15 @@ public class PayController {
 		if(null == phPreorderInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
-		//修改订单状态位支付中
+		/*//修改订单状态位支付中
 		phPreorderInfo.setStatus("3");
-		phPreorderInfoService.save(phPreorderInfo);
+		phPreorderInfoService.save(phPreorderInfo);*/
 		String body ="OFFWAY商品购买";
 		double amount = phPreorderInfo.getAmount();
 		return wxpayService.trade(preorderNo,IpUtil.getIpAddr(request),body,amount);
 	}
 	
-	@ApiOperation("取消支付")
+	/*@ApiOperation("取消支付")
 	@PostMapping("/cancel")
 	public JsonResult cancel(@ApiParam("预订单号") @RequestParam String preorderNo){
 		PhPreorderInfo phPreorderInfo = phPreorderInfoService.findByOrderNoAndStatus(preorderNo, "3");
@@ -82,7 +82,7 @@ public class PayController {
 		phPreorderInfoService.save(phPreorderInfo);
 
 		return jsonResultHelper.buildSuccessJsonResult(null);
-	}
+	}*/
 	
 	
 }
