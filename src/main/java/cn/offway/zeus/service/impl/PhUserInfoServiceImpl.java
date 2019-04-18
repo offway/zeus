@@ -1,12 +1,21 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import cn.offway.zeus.service.PhUserInfoService;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import cn.offway.zeus.service.PhInviteInfoService;
+import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.domain.PhInviteInfo;
 import cn.offway.zeus.domain.PhUserInfo;
+import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhUserInfoRepository;
 
 
@@ -23,6 +32,9 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 
 	@Autowired
 	private PhUserInfoRepository phUserInfoRepository;
+	
+	@Autowired
+	private PhInviteInfoService phInviteInfoService;
 	
 	@Override
 	public PhUserInfo save(PhUserInfo phUserInfo){
@@ -57,5 +69,41 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	@Override
 	public int updateCollect(Long id){
 		return phUserInfoRepository.updateCollect(id);
+	}
+	
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class,StockException.class})
+	public PhUserInfo register(String phone, String unionid, String weiboid, String qqid, String nickName,
+			String headimgurl, Long inviteUserId) {
+		PhUserInfo phUserInfo = new PhUserInfo();
+		phUserInfo.setPhone(phone);
+		if(StringUtils.isNotBlank(phone)){
+			nickName = StringUtils.isBlank(nickName)?"OFFWAY_"+phone.substring(5):nickName;
+		}
+		phUserInfo.setNickname(nickName);
+		phUserInfo.setHeadimgurl(headimgurl);
+		phUserInfo.setWeiboid(weiboid);
+		phUserInfo.setQqid(qqid);
+		phUserInfo.setUnionid(unionid);
+		phUserInfo.setBalance(0D);
+		phUserInfo.setSex("1");
+		phUserInfo.setVersion(0L);
+		phUserInfo.setVoucherCount(0L);
+		phUserInfo.setCollectCount(0L);
+		phUserInfo.setCreateTime(new Date());
+		phUserInfo = save(phUserInfo);
+		
+		if(null != inviteUserId){
+			PhUserInfo inviteUserInfo = findOne(inviteUserId);
+			if(null!= inviteUserInfo){
+				PhInviteInfo phInviteInfo = new PhInviteInfo();
+				phInviteInfo.setUserId(inviteUserId);
+				phInviteInfo.setNickname(inviteUserInfo.getNickname());
+				phInviteInfo.setPhone(inviteUserInfo.getPhone());
+				phInviteInfo.setInviteUserId(phUserInfo.getId());
+				phInviteInfoService.save(phInviteInfo);
+			}
+		}
+		return phUserInfo;
 	}
 }

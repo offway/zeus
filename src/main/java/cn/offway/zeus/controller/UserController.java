@@ -149,7 +149,8 @@ public class UserController {
 			@ApiParam("微博ID") @RequestParam(required=false) String weiboid,
 			@ApiParam("QQID") @RequestParam(required=false) String qqid,
 			@ApiParam("用户昵称") @RequestParam(required=false) String nickName,
-			@ApiParam("头像") @RequestParam(required=false) String headimgurl){
+			@ApiParam("头像") @RequestParam(required=false) String headimgurl,
+			@ApiParam("邀请用户ID") @RequestParam(required=false) Long inviteUserId){
 		
     	String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
     	if(StringUtils.isBlank(smsCode)){
@@ -177,26 +178,10 @@ public class UserController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
 		}
 		
-		PhUserInfo phUserInfo = new PhUserInfo();
-		phUserInfo.setPhone(phone);
-		if(StringUtils.isNotBlank(phone)){
-			nickName = StringUtils.isBlank(nickName)?"OFFWAY_"+phone.substring(5):nickName;
-		}
-		phUserInfo.setNickname(nickName);
-		phUserInfo.setHeadimgurl(headimgurl);
-		phUserInfo.setWeiboid(weiboid);
-		phUserInfo.setQqid(qqid);
-		phUserInfo.setUnionid(unionid);
-		phUserInfo.setBalance(0D);
-		phUserInfo.setSex("1");
-		phUserInfo.setVersion(0L);
-		phUserInfo.setVoucherCount(0L);
-		phUserInfo.setCollectCount(0L);
-		phUserInfo.setCreateTime(new Date());
-		phUserInfo = phUserInfoService.save(phUserInfo);
-		return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
+		return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, weiboid, qqid, nickName, headimgurl, inviteUserId));
 
 	}
+
 	
 	@ApiOperation("登录")
 	@PostMapping("/login")
@@ -384,6 +369,14 @@ public class UserController {
 		return jsonResultHelper.buildSuccessJsonResult(phCollectService.isCollect(userId, type, matchId));
 	}
 	
-	
+	@ApiOperation("成为赚钱达人")
+	@PostMapping("/mm")
+	public  JsonResult mm(@ApiParam("用户ID") @RequestParam Long userId){
+		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		phUserInfo.setIsMm("1");
+		phUserInfoService.save(phUserInfo);
+		return jsonResultHelper.buildSuccessJsonResult(null);
+
+	}
 	
 }
