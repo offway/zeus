@@ -135,6 +135,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		Long pVoucherId = orderAddDto.getVoucherId();
 		Double walletAmount = orderAddDto.getWalletAmount();
 		
+		walletAmount = null==walletAmount?0D:walletAmount;
+
+		
 		int addrcount = phAddressRepository.countByIdAndUserId(addrId,userId);
 		if(addrcount==0){
 			throw new Exception("地址错误");
