@@ -18,8 +18,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import cn.offway.zeus.domain.PhVoucherInfo;
+import cn.offway.zeus.domain.PhVoucherProject;
 import cn.offway.zeus.dto.VoucherDto;
 import cn.offway.zeus.repository.PhVoucherInfoRepository;
+import cn.offway.zeus.repository.PhVoucherProjectRepository;
 import cn.offway.zeus.service.PhVoucherInfoService;
 
 
@@ -36,6 +38,9 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 
 	@Autowired
 	private PhVoucherInfoRepository phVoucherInfoRepository;
+	
+	@Autowired
+	private PhVoucherProjectRepository phVoucherProjectRepository;
 	
 	@Override
 	public PhVoucherInfo save(PhVoucherInfo phVoucherInfo){
@@ -88,6 +93,11 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
+	public int give(Long userId,List<String> voucherProjectIds){
+		return phVoucherInfoRepository.give(userId, voucherProjectIds);
+	}
+	
+	@Override
 	public List<PhVoucherInfo> findAll(final VoucherDto voucherDto){
 		return phVoucherInfoRepository.findAll(new Specification<PhVoucherInfo>() {
 			
@@ -122,6 +132,4 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 			}
 		});
 	}
-	
-	
 }

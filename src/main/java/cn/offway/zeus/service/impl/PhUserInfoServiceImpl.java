@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,8 +12,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.offway.zeus.service.PhConfigService;
 import cn.offway.zeus.service.PhInviteInfoService;
 import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.domain.PhInviteInfo;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.exception.StockException;
@@ -35,6 +38,13 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	
 	@Autowired
 	private PhInviteInfoService phInviteInfoService;
+	
+	@Autowired
+	private PhVoucherInfoService phVoucherInfoService;
+	
+	@Autowired
+	private PhConfigService phConfigService;
+	
 	
 	@Override
 	public PhUserInfo save(PhUserInfo phUserInfo){
@@ -105,6 +115,10 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 				phInviteInfoService.save(phInviteInfo);
 			}
 		}
+		//赠送优惠券大礼包
+		String content = phConfigService.findContentByName("VP_REGISTER");
+		phVoucherInfoService.give(phUserInfo.getId(), Arrays.asList(content.split(",")));
+		
 		return phUserInfo;
 	}
 }

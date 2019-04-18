@@ -35,4 +35,6 @@ public interface PhVoucherInfoService{
 
 	int updateStatus(Long voucherId, Double amount, Long userId);
 
+	int give(Long userId, List<String> voucherProjectIds);
+
 }

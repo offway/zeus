@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhVoucherProject;
+import java.lang.Long;
+import java.util.List;
 
 /**
  * 优惠券方案Repository接口
@@ -13,5 +15,5 @@ import cn.offway.zeus.domain.PhVoucherProject;
  */
 public interface PhVoucherProjectRepository extends JpaRepository<PhVoucherProject,Long>,JpaSpecificationExecutor<PhVoucherProject> {
 
-	/** 此处写一些自定义的方法 **/
+	List<PhVoucherProject> findByIdIn(List<Long> ids);
 }
