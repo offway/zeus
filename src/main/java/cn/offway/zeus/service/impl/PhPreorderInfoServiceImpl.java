@@ -86,8 +86,14 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	}
 	
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
 	public void cancelOrder(String preorderNo) throws Exception{
 		failResult(preorderNo,"");
+	}
+	
+	@Override
+	public List<String> orderTimeOut(){
+		return phPreorderInfoRepository.orderTimeOut();
 	}
 	
 	@Override
@@ -174,7 +180,9 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 				}
 				
 			}
-			phVoucherInfoRepository.back(pvoucherIds);
+			if(pvoucherIds.size()>0){
+				phVoucherInfoRepository.back(pvoucherIds);
+			}
 			
 			//更新订单状态
 			phOrderInfoRepository.updateStatusByPreOrderNo(preorderNo,"0","4",payChannel);

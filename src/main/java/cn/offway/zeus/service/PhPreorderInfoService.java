@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -28,4 +30,6 @@ public interface PhPreorderInfoService{
 	Page<PhPreorderInfo> findByPage(Long userId, Pageable page);
 
 	int countByUserIdAndStatus(Long userId, String status);
+
+	List<String> orderTimeOut();
 }
