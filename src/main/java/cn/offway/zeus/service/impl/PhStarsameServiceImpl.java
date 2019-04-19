@@ -54,6 +54,11 @@ public class PhStarsameServiceImpl implements PhStarsameService {
 	}
 	
 	@Override
+	public int praise(Long id){
+		return phStarsameRepository.praise(id);
+	}
+	
+	@Override
 	public Page<PhStarsame> findByPage(Pageable page){
 		return phStarsameRepository.findAll(new Specification<PhStarsame>() {
 			

@@ -2,6 +2,7 @@ package cn.offway.zeus.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.offway.zeus.domain.PhStarsameImage;
 import java.lang.Long;
@@ -15,5 +16,6 @@ import java.util.List;
  */
 public interface PhStarsameImageRepository extends JpaRepository<PhStarsameImage,Long>,JpaSpecificationExecutor<PhStarsameImage> {
 
-	List<PhStarsameImage> findByStarsameIdOrderBySortAsc(Long starsameid);
+	@Query(nativeQuery=true,value="select image_url from ph_starsame_image where id=?1 order by sort")
+	List<String> findImageByStarsameIdOrderBySortAsc(Long starsameid);
 }

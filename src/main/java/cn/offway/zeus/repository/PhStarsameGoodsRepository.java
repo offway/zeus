@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhStarsameGoods;
+import java.lang.Long;
+import java.util.List;
 
 /**
  * 明星同款商品Repository接口
@@ -13,5 +15,5 @@ import cn.offway.zeus.domain.PhStarsameGoods;
  */
 public interface PhStarsameGoodsRepository extends JpaRepository<PhStarsameGoods,Long>,JpaSpecificationExecutor<PhStarsameGoods> {
 
-	/** 此处写一些自定义的方法 **/
+	List<PhStarsameGoods> findByStarsameIdOrderByCreateTimeDesc(Long starsameid);
 }
