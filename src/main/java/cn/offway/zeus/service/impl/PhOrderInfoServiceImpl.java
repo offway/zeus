@@ -145,7 +145,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		
 		if(walletAmount>0){
 			PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
-			double balance = phUserInfo.getBalance()==null?0D:phUserInfo.getBalance()-walletAmount;
+			double balance = phUserInfo.getBalance()==null?0D:MathUtils.sub(phUserInfo.getBalance(), walletAmount);
 			if(balance<0){
 				throw new Exception("余额不足");
 			}
@@ -188,7 +188,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			for (OrderInitStockDto stock : stocks) {
 				Long stockId = stock.getStockId();
 				PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stockId);
-				double price = phGoodsStock.getPrice()*stock.getNum();
+				double price = phGoodsStock.getPrice() * stock.getNum().intValue();
 				sumPrice = MathUtils.add(sumPrice, price);
 				sumCount += stock.getNum().intValue();
 				
@@ -287,9 +287,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			phOrderInfo.setAddrId(addrId);
 			phOrderInfos.add(phOrderInfo);
 			
-			sumAllAmount += phOrderInfo.getAmount();
-			sumALlPrice += phOrderInfo.getPrice();
-			sumMailFee += phOrderInfo.getMailFee();
+			sumAllAmount = MathUtils.add(sumAllAmount, phOrderInfo.getAmount());
+			sumALlPrice = MathUtils.add(sumALlPrice, phOrderInfo.getPrice());
+			sumMailFee = MathUtils.add(sumMailFee, phOrderInfo.getMailFee());
 			
 			if(null !=mVoucherId){
 				int c = phVoucherInfoService.updateStatusBym(mVoucherId, phOrderInfo.getPrice(), phOrderInfo.getMerchantId(),userId);
