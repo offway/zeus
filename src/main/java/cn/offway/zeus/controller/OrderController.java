@@ -247,6 +247,7 @@ public class OrderController {
 		Double walletAmount = 0D;
 		Long addrId = null;
 		Date receiptTime = null;
+		Date createTime = null;
 		List<PhOrderGoods> goods = new ArrayList<>();
 		Map<String, Object> addrMap = new HashMap<>();
 
@@ -264,6 +265,7 @@ public class OrderController {
 			voucherAmount = phPreorderInfo.getVoucherAmount();
 			walletAmount = phPreorderInfo.getWalletAmount();
 			addrId = phPreorderInfo.getAddrId();
+			createTime = phPreorderInfo.getCreateTime();
 			List<PhOrderInfo> orderInfos = phOrderInfoService.findByPreorderNoAndStatus(phPreorderInfo.getOrderNo(), "0");
 			for (PhOrderInfo phOrderInfo : orderInfos) {
 				goods.addAll(phOrderGoodsService.findByOrderNo(phOrderInfo.getOrderNo()));
@@ -280,6 +282,7 @@ public class OrderController {
 			voucherAmount = MathUtils.add(phOrderInfo.getMVoucherAmount(), phOrderInfo.getPVoucherAmount());
 			walletAmount = phOrderInfo.getWalletAmount();
 			addrId = phOrderInfo.getAddrId();
+			createTime = phOrderInfo.getCreateTime();
 			goods = phOrderGoodsService.findByOrderNo(orderNo);
 
 			
@@ -294,6 +297,7 @@ public class OrderController {
 		resultMap.put("voucherAmount", voucherAmount);
 		resultMap.put("walletAmount", walletAmount);
 		resultMap.put("receiptTime", receiptTime);
+		resultMap.put("createTime", createTime);
 		
 		
 		//0-已下单,1-已付款,2-已发货,3-已收货,4-取消
