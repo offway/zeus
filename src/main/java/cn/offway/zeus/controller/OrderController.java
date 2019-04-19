@@ -1,7 +1,9 @@
 package cn.offway.zeus.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,7 +31,6 @@ import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.dto.OrderInfoDto;
 import cn.offway.zeus.dto.PreorderDto;
 import cn.offway.zeus.exception.StockException;
-import cn.offway.zeus.exception.VoucherException;
 import cn.offway.zeus.service.Kuaidi100Service;
 import cn.offway.zeus.service.PhAddressService;
 import cn.offway.zeus.service.PhOrderExpressInfoService;
@@ -187,46 +188,84 @@ public class OrderController {
 		return jsonResultHelper.buildSuccessJsonResult(page3);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@ApiOperation("待付款订单详情")
 	@GetMapping("/info/pending")
 	public JsonResult infoPending(@ApiParam("预订单号") @RequestParam String preOrderNo){
-		PhPreorderInfo phPreorderInfo = phPreorderInfoService.findByOrderNoAndStatus(preOrderNo, "2");
-		PreorderDto preorderDto = new PreorderDto();
-		List<PhOrderInfo> orderInfos = phOrderInfoService.findByPreorderNoAndStatus(phPreorderInfo.getOrderNo(), "4");
-		List<OrderInfoDto> dtos = new ArrayList<>();
-		for (PhOrderInfo phOrderInfo2 : orderInfos) {
-			OrderInfoDto dto = new OrderInfoDto();
-			List<PhOrderGoods> goods = phOrderGoodsService.findByOrderNo(phOrderInfo2.getOrderNo());
-			BeanUtils.copyProperties(phOrderInfo2, dto);
-			dto.setGoods(goods);
-			dtos.add(dto);
-		}
-		BeanUtils.copyProperties(phPreorderInfo, preorderDto);
-		preorderDto.setOrderInfos(dtos);
-		preorderDto.setAddress(phAddressService.findOne(phPreorderInfo.getAddrId()));
 		
-		return jsonResultHelper.buildSuccessJsonResult(preorderDto);
+		PhPreorderInfo phPreorderInfo = phPreorderInfoService.findByOrderNoAndStatus(preOrderNo, "0");
+		Map<String, Object> resultMap = JSON.parseObject(JSON.toJSONString(phPreorderInfo), Map.class);
+		
+		
+		PhAddress phAddress = phAddressService.findOne(phPreorderInfo.getAddrId());
+		Map<String, Object> addrMap = new HashMap<>();
+		addrMap.put("city", phAddress.getCity());
+		addrMap.put("content", phAddress.getContent());
+		addrMap.put("county", phAddress.getCounty());
+		addrMap.put("phone", phAddress.getPhone());
+		addrMap.put("province", phAddress.getProvince());
+		addrMap.put("realName", phAddress.getRealName());
+		resultMap.put("address", addrMap);
+		
+		
+		List<PhOrderGoods> goods = new ArrayList<>();
+		
+		List<PhOrderInfo> orderInfos = phOrderInfoService.findByPreorderNoAndStatus(phPreorderInfo.getOrderNo(), "0");
+		for (PhOrderInfo phOrderInfo : orderInfos) {
+			goods.addAll(phOrderGoodsService.findByOrderNo(phOrderInfo.getOrderNo()));
+		}
+		
+		resultMap.put("goods", goods);
+		
+		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 
 	}
 	
+	@SuppressWarnings("unchecked")
 	@ApiOperation("订单详情")
 	@GetMapping("/info")
 	public JsonResult info(@ApiParam("订单号") @RequestParam String orderNo){
-		OrderInfoDto dto = new OrderInfoDto();
+
 		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
-		List<PhOrderGoods> goods = phOrderGoodsService.findByOrderNo(orderNo);
-		BeanUtils.copyProperties(phOrderInfo, dto);
-		dto.setGoods(goods);
-		PhOrderExpressInfo phOrderExpressInfo = phOrderExpressInfoService.findByOrderNoAndType(orderNo, "0");
-		dto.setAddress(phOrderExpressInfo);
-		if(null!=phOrderExpressInfo){
+		
+		Map<String, Object> resultMap = JSON.parseObject(JSON.toJSONString(phOrderInfo), Map.class);
+		
+		//0-已下单,1-已付款,2-已发货,3-已收货,4-取消
+		String status = phOrderInfo.getStatus();
+		if("0".equals(status) || "1".equals(status)|| "4".equals(status)){
+			PhAddress phAddress = phAddressService.findOne(phOrderInfo.getAddrId());
+			Map<String, Object> addrMap = new HashMap<>();
+			addrMap.put("city", phAddress.getCity());
+			addrMap.put("content", phAddress.getContent());
+			addrMap.put("county", phAddress.getCounty());
+			addrMap.put("phone", phAddress.getPhone());
+			addrMap.put("province", phAddress.getProvince());
+			addrMap.put("realName", phAddress.getRealName());
+			resultMap.put("address", addrMap);
+		}else{
 			
-			//kuaidi100Service.query(phOrderInfo.getExpressCode(), phOrderInfo.getMailNo(), phAddress.getPhone())
-			//String result = "{\"message\":\"ok\",\"nu\":\"805283162742333582\",\"ischeck\":\"0\",\"condition\":\"00\",\"com\":\"yuantong\",\"status\":\"200\",\"state\":\"0\",\"data\":[{\"time\":\"2019-04-10 02:38:48\",\"ftime\":\"2019-04-10 02:38:48\",\"context\":\"【江门转运中心】 已发出 下一站 【上海转运中心】\"},{\"time\":\"2019-04-10 02:37:46\",\"ftime\":\"2019-04-10 02:37:46\",\"context\":\"【江门转运中心】 已收入\"},{\"time\":\"2019-04-10 02:22:42\",\"ftime\":\"2019-04-10 02:22:42\",\"context\":\"【广东省中山市板芙镇公司】 已收件\"},{\"time\":\"2019-04-09 19:34:30\",\"ftime\":\"2019-04-09 19:34:30\",\"context\":\"【广东省中山市板芙镇公司】 取件人: 朱华文 已收件\"}]}";
-			String result = kuaidi100Service.query("yuantong", "805283162742333582", "18621866390");
-			dto.setMailContent(JSON.parse(result));
+			PhOrderExpressInfo phOrderExpressInfo = phOrderExpressInfoService.findByOrderNoAndType(orderNo, "0");
+			Map<String, Object> addrMap = new HashMap<>();
+			addrMap.put("city", phOrderExpressInfo.getToCity());
+			addrMap.put("content", phOrderExpressInfo.getToContent());
+			addrMap.put("county", phOrderExpressInfo.getToCounty());
+			addrMap.put("phone", phOrderExpressInfo.getToPhone());
+			addrMap.put("province", phOrderExpressInfo.getToProvince());
+			addrMap.put("realName", phOrderExpressInfo.getToRealName());
+			resultMap.put("address", addrMap);
+			
+			if(StringUtils.isNotBlank(phOrderExpressInfo.getMailNo())){
+				//kuaidi100Service.query(phOrderInfo.getExpressCode(), phOrderInfo.getMailNo(), phAddress.getPhone())
+				//String result = "{\"message\":\"ok\",\"nu\":\"805283162742333582\",\"ischeck\":\"0\",\"condition\":\"00\",\"com\":\"yuantong\",\"status\":\"200\",\"state\":\"0\",\"data\":[{\"time\":\"2019-04-10 02:38:48\",\"ftime\":\"2019-04-10 02:38:48\",\"context\":\"【江门转运中心】 已发出 下一站 【上海转运中心】\"},{\"time\":\"2019-04-10 02:37:46\",\"ftime\":\"2019-04-10 02:37:46\",\"context\":\"【江门转运中心】 已收入\"},{\"time\":\"2019-04-10 02:22:42\",\"ftime\":\"2019-04-10 02:22:42\",\"context\":\"【广东省中山市板芙镇公司】 已收件\"},{\"time\":\"2019-04-09 19:34:30\",\"ftime\":\"2019-04-09 19:34:30\",\"context\":\"【广东省中山市板芙镇公司】 取件人: 朱华文 已收件\"}]}";
+				String result = kuaidi100Service.query("yuantong", "805283162742333582", "18621866390");
+				resultMap.put("express", JSON.parse(result));
+			}
 		}
-		return jsonResultHelper.buildSuccessJsonResult(dto);
+		
+		List<PhOrderGoods> goods = phOrderGoodsService.findByOrderNo(orderNo);
+		resultMap.put("goods", goods);
+		
+		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 
 	}
 			
