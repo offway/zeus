@@ -260,6 +260,7 @@ public class OrderController {
 			status = "0";
 			voucherAmount = phPreorderInfo.getVoucherAmount();
 			walletAmount = phPreorderInfo.getWalletAmount();
+			addrId = phPreorderInfo.getAddrId();
 			List<PhOrderInfo> orderInfos = phOrderInfoService.findByPreorderNoAndStatus(phPreorderInfo.getOrderNo(), "0");
 			for (PhOrderInfo phOrderInfo : orderInfos) {
 				goods.addAll(phOrderGoodsService.findByOrderNo(phOrderInfo.getOrderNo()));
