@@ -170,7 +170,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		Date now = new Date();
 		
 		//总订单号
-		String preorderNo = generateOrderNo("PH");
+		String preorderNo = generateOrderNo("10");
 		
 		List<PhOrderInfo> phOrderInfos = new ArrayList<>();
 		List<PhOrderGoods> orderGoodss = new ArrayList<>();
@@ -178,7 +178,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		List<OrderMerchantDto> merchantDtos =  orderAddDto.getMerchantDtos();
 		for (OrderMerchantDto orderMerchantDto : merchantDtos) {
 			
-			String orderNo = generateOrderNo("PH");
+			String orderNo = generateOrderNo("11");
 
 			Long merchantId = orderMerchantDto.getMerchantId();
 			Long mVoucherId = orderMerchantDto.getVoucherId();
