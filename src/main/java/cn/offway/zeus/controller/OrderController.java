@@ -1,6 +1,7 @@
 package cn.offway.zeus.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,6 +112,7 @@ public class OrderController {
 			if("2".equals(phOrderInfo.getStatus())){
 				//已收货
 				phOrderInfo.setStatus("3");
+				phOrderInfo.setReceiptTime(new Date());
 				phOrderInfoService.save(phOrderInfo);
 			}
 			return jsonResultHelper.buildSuccessJsonResult(null);
@@ -244,6 +246,7 @@ public class OrderController {
 		Double voucherAmount = 0D;
 		Double walletAmount = 0D;
 		Long addrId = null;
+		Date receiptTime = null;
 		List<PhOrderGoods> goods = new ArrayList<>();
 		Map<String, Object> addrMap = new HashMap<>();
 
@@ -273,6 +276,7 @@ public class OrderController {
 			mailFee = phOrderInfo.getMailFee();
 			price = phOrderInfo.getPrice();
 			status = phOrderInfo.getStatus();
+			receiptTime = phOrderInfo.getReceiptTime();
 			voucherAmount = MathUtils.add(phOrderInfo.getMVoucherAmount(), phOrderInfo.getPVoucherAmount());
 			walletAmount = phOrderInfo.getWalletAmount();
 			addrId = phOrderInfo.getAddrId();
@@ -289,6 +293,8 @@ public class OrderController {
 		resultMap.put("status", status);
 		resultMap.put("voucherAmount", voucherAmount);
 		resultMap.put("walletAmount", walletAmount);
+		resultMap.put("receiptTime", receiptTime);
+		
 		
 		//0-已下单,1-已付款,2-已发货,3-已收货,4-取消
 		if("0".equals(status) || "1".equals(status)|| "4".equals(status)){
