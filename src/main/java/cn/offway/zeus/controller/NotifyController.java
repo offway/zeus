@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,7 @@ import cn.offway.zeus.service.AlipayService;
 import cn.offway.zeus.service.PhPreorderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 
 
@@ -54,7 +56,6 @@ public class NotifyController {
 	 * @return
 	 */
 	@ApiOperation("支付宝支付结果通知")
-	@ResponseBody
 	@PostMapping("/alipay")
 	public String alipay(HttpServletRequest request,AlipayNotify alipayNotify){
 		try {
@@ -85,7 +86,6 @@ public class NotifyController {
 	
 	@ApiOperation("微信支付结果通知")
 	@PostMapping("/wxpay")
-	@ResponseBody
     public String notify(@RequestBody String xmlMsg){
         // 支付结果通用通知文档: https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_7
         try {
@@ -112,5 +112,12 @@ public class NotifyController {
         return "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>" + "<return_msg><![CDATA[系统异常]]></return_msg>" + "</xml> ";
 
     }
+	
+	@ApiOperation("支付成功")
+	@PostMapping("/ok")
+    public String ok(@ApiParam("预订单号") @RequestParam String preorderNo) throws Exception{
+		phPreorderInfoService.wxpay("SUCCESS", preorderNo);
+	    return "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>" + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
+	}
 	
 }

@@ -2,6 +2,9 @@ package cn.offway.zeus.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import cn.offway.zeus.domain.PhStarsame;
 
 /**
@@ -17,4 +20,6 @@ public interface PhStarsameService{
 	PhStarsame findOne(Long id);
 
 	List<PhStarsame> indexData();
+
+	Page<PhStarsame> findByPage(Pageable page);
 }

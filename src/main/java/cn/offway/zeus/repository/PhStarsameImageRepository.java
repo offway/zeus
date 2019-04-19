@@ -1,12 +1,11 @@
 package cn.offway.zeus.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 
 import cn.offway.zeus.domain.PhStarsameImage;
+import java.lang.Long;
+import java.util.List;
 
 /**
  * 明星同款banner图片Repository接口
@@ -16,5 +15,5 @@ import cn.offway.zeus.domain.PhStarsameImage;
  */
 public interface PhStarsameImageRepository extends JpaRepository<PhStarsameImage,Long>,JpaSpecificationExecutor<PhStarsameImage> {
 
-	
+	List<PhStarsameImage> findByStarsameIdOrderBySortAsc(Long starsameid);
 }
