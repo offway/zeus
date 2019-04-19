@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import cn.offway.zeus.domain.PhCapitalFlow;
 
 /**
@@ -15,4 +17,6 @@ public interface PhCapitalFlowService{
 	PhCapitalFlow findOne(Long id);
 
 	void calculateReturnAmount() throws Exception;
+
+	List<PhCapitalFlow> findByBusinessTypeAndUserIdOrderByCreateTimeDesc(String businesstype, Long userId);
 }

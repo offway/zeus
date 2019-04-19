@@ -35,6 +35,7 @@ import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.WxuserInfo;
 import cn.offway.zeus.repository.PhInviteInfoRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
+import cn.offway.zeus.service.PhCapitalFlowService;
 import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
@@ -103,6 +104,10 @@ public class UserController {
 	
 	@Autowired
 	private PhOrderInfoService phOrderInfoService;
+	
+	@Autowired
+	private PhCapitalFlowService phCapitalFlowService;
+	
 	
 	
 	@ApiOperation("微信用户信息保存")
@@ -393,6 +398,13 @@ public class UserController {
 	@GetMapping("/invites")
 	public  JsonResult invites(@ApiParam("用户ID") @RequestParam Long userId){
 		return jsonResultHelper.buildSuccessJsonResult(phInviteInfoRepository.invites(userId));
+
+	}
+	
+	@ApiOperation("返现记录")
+	@GetMapping("/returnAmounts")
+	public  JsonResult returnAmounts(@ApiParam("用户ID") @RequestParam Long userId){
+		return jsonResultHelper.buildSuccessJsonResult(phCapitalFlowService.findByBusinessTypeAndUserIdOrderByCreateTimeDesc("0", userId));
 
 	}
 	
