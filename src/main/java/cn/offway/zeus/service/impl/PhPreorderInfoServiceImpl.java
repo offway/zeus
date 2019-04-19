@@ -1,6 +1,7 @@
 package cn.offway.zeus.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -24,10 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
 import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.domain.PhCapitalFlow;
 import cn.offway.zeus.domain.PhOrderGoods;
 import cn.offway.zeus.domain.PhOrderInfo;
 import cn.offway.zeus.domain.PhPreorderInfo;
 import cn.offway.zeus.domain.PhUserInfo;
+import cn.offway.zeus.repository.PhCapitalFlowRepository;
+import cn.offway.zeus.repository.PhGoodsRepository;
 import cn.offway.zeus.repository.PhGoodsStockRepository;
 import cn.offway.zeus.repository.PhOrderGoodsRepository;
 import cn.offway.zeus.repository.PhOrderInfoRepository;
@@ -64,6 +68,11 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	@Autowired
 	private PhGoodsStockRepository phGoodsStockRepository;
 	
+	@Autowired
+	private PhCapitalFlowRepository phCapitalFlowRepository;
+	
+	@Autowired
+	private PhGoodsRepository phGoodsRepository;
 	
 	@Override
 	public PhPreorderInfo save(PhPreorderInfo phPreorderInfo){
@@ -205,6 +214,24 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			save(phPreorderInfo);
 			//更新订单状态
 			phOrderInfoRepository.updateStatusByPreOrderNo(preorderNo,"0","1",payChannel);
+			
+			Double walletAmount = phPreorderInfo.getWalletAmount();
+			if(null != walletAmount && walletAmount.doubleValue()>0D){
+				//添加资金流水
+				PhCapitalFlow phCapitalFlow = new PhCapitalFlow();
+				phCapitalFlow.setAmount(walletAmount);
+				phCapitalFlow.setBusinessType("1");
+				phCapitalFlow.setCreateTime(new Date());
+				phCapitalFlow.setOrderNo(preorderNo);
+				phCapitalFlow.setType("1");
+				phCapitalFlow.setUserId(phPreorderInfo.getUserId());
+				phCapitalFlowRepository.save(phCapitalFlow);
+			}
+			
+			//更新商品销量
+			phGoodsRepository.updateSaleCount(preorderNo);
+			
+			
 		}
 	}
 }
