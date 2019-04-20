@@ -22,8 +22,11 @@ public class GoodsDto implements Serializable {
 
     @ApiModelProperty(value ="品牌名称")
     private String brandName;
+    
+    @ApiModelProperty(value ="品牌类型[0-国内品牌，1-国际品牌]")
+    private String brandType;
 
-    @ApiModelProperty(value ="类别[男生，女生等]")
+    @ApiModelProperty(value ="类别[男装，女装等]")
     private String type;
 
     @ApiModelProperty(value ="类目[卫衣，T恤等]")
@@ -113,6 +116,14 @@ public class GoodsDto implements Serializable {
 
 	public void setSortName(String sortName) {
 		this.sortName = sortName;
+	}
+
+	public String getBrandType() {
+		return brandType;
+	}
+
+	public void setBrandType(String brandType) {
+		this.brandType = brandType;
 	}
     
 }

@@ -18,10 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import cn.offway.zeus.service.PhGoodsService;
+
+import cn.offway.zeus.domain.PhBrand;
 import cn.offway.zeus.domain.PhGoods;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.repository.PhGoodsRepository;
+import cn.offway.zeus.service.PhGoodsService;
 
 
 /**
@@ -94,6 +96,17 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 					in.value(goodsDto.getType());
 					params.add(in);
 				}
+				
+				if(StringUtils.isNotBlank(goodsDto.getBrandType())){
+					Subquery<PhBrand> subquery = criteriaQuery.subquery(PhBrand.class);
+					Root<PhBrand> subRoot = subquery.from(PhBrand.class);
+					subquery.select(subRoot);
+					subquery.where(
+							criteriaBuilder.equal(root.get("brandId"), subRoot.get("id"))
+							);
+					params.add(criteriaBuilder.exists(subquery));
+				}
+				
 				
 				params.add(criteriaBuilder.equal(root.get("status"),  "1"));
 				
