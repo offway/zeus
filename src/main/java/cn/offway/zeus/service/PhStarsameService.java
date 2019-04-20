@@ -24,4 +24,6 @@ public interface PhStarsameService{
 	Page<PhStarsame> findByPage(Pageable page);
 
 	int praise(Long id);
+	
+	int praisecancel(Long id);
 }

@@ -2,9 +2,12 @@ package cn.offway.zeus.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +45,11 @@ public class StarsameController {
 	@Autowired
 	private PhStarsameGoodsRepository phStarsameGoodsRepository;
 	
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
+	
+	private static final String STARSAME_PRAISE="zeus.starsame.praise";
+	
 
 	@ApiOperation("明星同款列表")
 	@GetMapping("/list")
@@ -55,20 +63,41 @@ public class StarsameController {
 	@SuppressWarnings("unchecked")
 	@ApiOperation("明星同款详情")
 	@GetMapping("/info")
-	public JsonResult info(@ApiParam("明星同款ID") @RequestParam Long id){
+	public JsonResult info(
+			@ApiParam("用户ID") @RequestParam(required = false) Long userId,
+			@ApiParam("明星同款ID") @RequestParam Long id){
 		
 		Map<String, Object> resultMap = new HashMap<>();
 		PhStarsame phStarsame = phStarsameService.findOne(id);
 		resultMap = JSON.parseObject(JSON.toJSONString(phStarsame,SerializerFeature.WriteMapNullValue),Map.class);
 		resultMap.put("banner", phStarsameImageRepository.findImageByStarsameIdOrderBySortAsc(id));
 		resultMap.put("goods",phStarsameGoodsRepository.findByStarsameIdOrderByCreateTimeDesc(id));
+		
+		boolean praised = false;
+		String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE+"_"+id+"_"+userId);
+    	if(StringUtils.isNotBlank(starsamePraise)){
+    		praised = true;
+    	}
+    	resultMap.put("praised",praised);
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 	
-	@ApiOperation("明星同款点赞")
+	@ApiOperation("明星同款点赞/取消点赞")
 	@PostMapping("/praise")
-	public JsonResult praise(@ApiParam("明星同款ID") @RequestParam Long id){
-		phStarsameService.praise(id);
+	public JsonResult praise(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("明星同款ID") @RequestParam Long id){
+		
+		String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE+"_"+id+"_"+userId);
+    	if(StringUtils.isBlank(starsamePraise)){
+    		phStarsameService.praise(id);
+			stringRedisTemplate.opsForValue().set(STARSAME_PRAISE+"_"+id+"_"+userId, ""+id);
+
+    	}else{
+    		phStarsameService.praisecancel(id);
+			stringRedisTemplate.opsForValue().set(STARSAME_PRAISE+"_"+id+"_"+userId, null);
+    	}
+
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	

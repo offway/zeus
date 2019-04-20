@@ -73,4 +73,9 @@ public class PhStarsameServiceImpl implements PhStarsameService {
 			}
 		}, page);
 	}
+
+	@Override
+	public int praisecancel(Long id) {
+		return phStarsameRepository.praisecancel(id);
+	}
 }
