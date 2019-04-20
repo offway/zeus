@@ -133,10 +133,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		Long addrId = orderAddDto.getAddrId();
 		Long userId = orderAddDto.getUserId();
 		Long pVoucherId = orderAddDto.getVoucherId();
-		Double walletAmount = orderAddDto.getWalletAmount();
-		
-		walletAmount = null==walletAmount?0D:walletAmount;
-
+		double walletAmount = null==orderAddDto.getWalletAmount()?0D:orderAddDto.getWalletAmount();
 		
 		int addrcount = phAddressRepository.countByIdAndUserId(addrId,userId);
 		if(addrcount==0){
@@ -307,6 +304,10 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			if(c!=1){
 				throw new Exception("锁定加息券异常");
 			}
+		}
+		
+		if(walletAmount>0D){
+			throw new Exception("钱包余额没用完,异常啦！！");
 		}
 		
 		Map<String, Object> resultMap = new HashMap<>();
