@@ -16,6 +16,6 @@ import java.util.List;
  */
 public interface PhStarsameImageRepository extends JpaRepository<PhStarsameImage,Long>,JpaSpecificationExecutor<PhStarsameImage> {
 
-	@Query(nativeQuery=true,value="select image_url from ph_starsame_image where id=?1 order by sort")
+	@Query(nativeQuery=true,value="select image_url from ph_starsame_image where starsame_id=?1 order by sort")
 	List<String> findImageByStarsameIdOrderBySortAsc(Long starsameid);
 }
