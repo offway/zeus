@@ -95,7 +95,7 @@ public class StarsameController {
 
     	}else{
     		phStarsameService.praisecancel(id);
-			stringRedisTemplate.opsForValue().set(STARSAME_PRAISE+"_"+id+"_"+userId, null);
+			stringRedisTemplate.opsForValue().set(STARSAME_PRAISE+"_"+id+"_"+userId, "");
     	}
 
 		return jsonResultHelper.buildSuccessJsonResult(null);
