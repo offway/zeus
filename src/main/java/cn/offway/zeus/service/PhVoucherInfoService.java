@@ -37,4 +37,10 @@ public interface PhVoucherInfoService{
 
 	int give(Long userId, List<String> voucherProjectIds);
 
+	int giveByTime(Long userId, List<String> voucherProjectIds);
+
+	boolean giveVoucher(Long userId, Long voucherProjectId);
+
+	void giveVoucher(Long userId, List<String> voucherProjectIds);
+
 }

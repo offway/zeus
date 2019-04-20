@@ -1,5 +1,7 @@
 package cn.offway.zeus.controller;
 
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.offway.zeus.dto.VoucherDto;
+import cn.offway.zeus.service.PhConfigService;
 import cn.offway.zeus.service.PhVoucherInfoService;
+import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
@@ -30,6 +34,10 @@ public class VoucherController {
 	
 	@Autowired
 	private PhVoucherInfoService phVoucherInfoService;
+	
+	@Autowired
+	private PhConfigService phConfigService;
+	
 	
 	@ApiOperation("可用优惠券列表")
 	@PostMapping("/list")
@@ -52,4 +60,20 @@ public class VoucherController {
 		return jsonResultHelper.buildSuccessJsonResult(phVoucherInfoService.findOne(voucherId));
 
 	}
+	
+	@ApiOperation("优惠券领取")
+	@PostMapping("/give")
+	public JsonResult give(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("配置") @RequestParam String config){
+		String content = phConfigService.findContentByName(config);
+		boolean result = phVoucherInfoService.giveVoucher(userId, Long.parseLong(content));
+		if(result){
+			return jsonResultHelper.buildSuccessJsonResult(null);
+		}else{
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
+		}
+
+	}
+	
 }

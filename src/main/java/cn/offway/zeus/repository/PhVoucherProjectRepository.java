@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface PhVoucherProjectRepository extends JpaRepository<PhVoucherProject,Long>,JpaSpecificationExecutor<PhVoucherProject> {
 
-	List<PhVoucherProject> findByIdIn(List<Long> ids);
+	List<PhVoucherProject> findByIdIn(List<String> ids);
 }

@@ -98,9 +98,38 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
+	public int giveByTime(Long userId,List<String> voucherProjectIds){
+		return phVoucherInfoRepository.giveByTime(userId, voucherProjectIds);
+	}
+	
+	
+	@Override
+	public void giveVoucher(Long userId,List<String> voucherProjectIds){
+		List<PhVoucherProject> phVoucherProjects = phVoucherProjectRepository.findByIdIn(voucherProjectIds);
+		for (PhVoucherProject phVoucherProject : phVoucherProjects) {
+			if(null==phVoucherProject.getValidNum()){
+				phVoucherInfoRepository.giveByTime(userId, phVoucherProject.getId());
+			}else{
+				phVoucherInfoRepository.give(userId, phVoucherProject.getId());
+			}
+		}
+	}
+	
+	@Override
+	public boolean giveVoucher(Long userId,Long voucherProjectId){
+		int count = 0;
+		PhVoucherProject phVoucherProject = phVoucherProjectRepository.findOne(voucherProjectId);
+		if(null==phVoucherProject.getValidNum()){
+			count = phVoucherInfoRepository.giveByTime(userId, voucherProjectId);
+		}else{
+			count = phVoucherInfoRepository.give(userId, phVoucherProject.getId());
+		}
+		return count==1;
+	}
+	
+	@Override
 	public List<PhVoucherInfo> findAll(final VoucherDto voucherDto){
 		return phVoucherInfoRepository.findAll(new Specification<PhVoucherInfo>() {
-			
 			@Override
 			public Predicate toPredicate(Root<PhVoucherInfo> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 				List<Predicate> params = new ArrayList<Predicate>();

@@ -55,6 +55,9 @@ public enum CommonResultCode implements ResultCode {
     /** 库存不足  */
     STOCK_SHORTAGE("1016", "STOCK_SHORTAGE"),
     
+    /** 该优惠券已领取  */
+    VOUCHER_GIVED("1017", "VOUCHER_GIVED"),
+    
     ;
 	
 	
