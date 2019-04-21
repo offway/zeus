@@ -58,6 +58,9 @@ public enum CommonResultCode implements ResultCode {
     /** 该优惠券已领取  */
     VOUCHER_GIVED("1017", "VOUCHER_GIVED"),
     
+    /** 抽奖次数不足  */
+    LOTTERYNUM_LESS("1018", "LOTTERYNUM_LESS"),
+    
     ;
 	
 	

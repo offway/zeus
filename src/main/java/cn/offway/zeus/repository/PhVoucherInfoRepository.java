@@ -53,21 +53,21 @@ public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Lon
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,NOW(),DATE_ADD(NOW(),INTERVAL valid_num DAY),'0',NOW(),NULL from ph_voucher_project where id in(?2) and not exists(select 1 from ph_voucher_info where voucher_project_id in(?2))")
+	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,NOW(),DATE_ADD(NOW(),INTERVAL valid_num DAY),'0',NOW(),NULL from ph_voucher_project where id in(?2)")// and not exists(select 1 from ph_voucher_info where voucher_project_id in(?2))")
 	int give(Long userId,List<String> voucherProjectIds);
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,begin_time,end_time,'0',NOW(),NULL from ph_voucher_project where id in(?2) and not exists(select 1 from ph_voucher_info where voucher_project_id in(?2))")
+	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,begin_time,end_time,'0',NOW(),NULL from ph_voucher_project where id in(?2)")// and not exists(select 1 from ph_voucher_info where voucher_project_id in(?2))")
 	int giveByTime(Long userId,List<String> voucherProjectIds);
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,NOW(),DATE_ADD(NOW(),INTERVAL valid_num DAY),'0',NOW(),NULL from ph_voucher_project where id =?2 and not exists(select 1 from ph_voucher_info where voucher_project_id =?2)")
+	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,NOW(),DATE_ADD(NOW(),INTERVAL valid_num DAY),'0',NOW(),NULL from ph_voucher_project where id =?2")// and not exists(select 1 from ph_voucher_info where voucher_project_id =?2)")
 	int give(Long userId,Long voucherProjectId);
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,begin_time,end_time,'0',NOW(),NULL from ph_voucher_project where id =?2 and not exists(select 1 from ph_voucher_info where voucher_project_id =?2)")
+	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,begin_time,end_time,'0',NOW(),NULL from ph_voucher_project where id =?2")// and not exists(select 1 from ph_voucher_info where voucher_project_id =?2)")
 	int giveByTime(Long userId,Long voucherProjectId);
 }
