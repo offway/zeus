@@ -81,6 +81,9 @@ public class PhBrandServiceImpl implements PhBrandService {
 				}
 				
 				if(StringUtils.isNotBlank(brandDto.getType())){
+					if("0".equals(brandDto.getType())){
+						params.add(criteriaBuilder.equal(root.get("banner"), null));
+					}
 					params.add(criteriaBuilder.equal(root.get("type"), brandDto.getType()));
 				}
 				

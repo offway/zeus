@@ -82,7 +82,12 @@ public class GoodsController {
 		String sortDir = StringUtils.isBlank(goodsDto.getSortDir())?"desc":goodsDto.getSortDir();
 		String sortName = StringUtils.isBlank(goodsDto.getSortName())?"id":goodsDto.getSortName();
 
-		Page<PhGoods> pages = phGoodsService.findByPage(goodsDto, new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName));
+		PageRequest pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName);
+		if("saleCount".equals(sortName)){
+			pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName,"id");
+		}
+		
+		Page<PhGoods> pages = phGoodsService.findByPage(goodsDto,pageRequest);
 		
 		return jsonResultHelper.buildSuccessJsonResult(pages);
 	}
