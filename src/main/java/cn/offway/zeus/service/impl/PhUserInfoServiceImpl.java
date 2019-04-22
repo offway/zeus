@@ -82,6 +82,11 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	}
 	
 	@Override
+	public int subCollect(Long id){
+		return phUserInfoRepository.subCollect(id);
+	}
+	
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class,StockException.class})
 	public PhUserInfo register(String phone, String unionid, String weiboid, String qqid, String nickName,
 			String headimgurl, Long inviteUserId) {

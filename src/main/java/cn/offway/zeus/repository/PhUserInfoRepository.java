@@ -28,4 +28,9 @@ public interface PhUserInfoRepository extends JpaRepository<PhUserInfo,Long>,Jpa
 	@Modifying
 	@Query(nativeQuery=true,value="update ph_user_info set collect_count=collect_count+1 where id=?1")
 	int updateCollect(Long id);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_user_info set collect_count=collect_count-1 where id=?1 and collect_count >0")
+	int subCollect(Long id);
 }

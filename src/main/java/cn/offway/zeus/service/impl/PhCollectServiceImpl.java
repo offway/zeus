@@ -45,7 +45,12 @@ public class PhCollectServiceImpl implements PhCollectService {
 	
 	@Override
 	public void delete(Long id){
+		PhCollect phCollect = findOne(id);
+		if(null != phCollect){
+			phUserInfoService.subCollect(phCollect.getUserId());
+		}
 		phCollectRepository.delete(id);
+
 	}
 	
 	@Override

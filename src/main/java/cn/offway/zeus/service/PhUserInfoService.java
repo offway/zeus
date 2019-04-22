@@ -26,4 +26,6 @@ public interface PhUserInfoService{
 
 	PhUserInfo register(String phone, String unionid, String weiboid, String qqid, String nickName, String headimgurl,
 			Long inviteUserId);
+
+	int subCollect(Long id);
 }
