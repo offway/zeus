@@ -31,6 +31,12 @@ public class PhLaborLucky implements Serializable {
 
     /** 备注 **/
     private String remark;
+    
+    /** 用户头像 **/
+    private String headimgurl;
+    
+    /** 用户昵称 **/
+    private String nickname;
 
 
     @Id
@@ -88,6 +94,24 @@ public class PhLaborLucky implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+    
+    @Column(name = "nickname", length = 200)
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    @Column(name = "headimgurl", length = 500)
+    public String getHeadimgurl() {
+        return headimgurl;
+    }
+
+    public void setHeadimgurl(String headimgurl) {
+        this.headimgurl = headimgurl;
     }
 
 }

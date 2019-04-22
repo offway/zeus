@@ -14,19 +14,21 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.offway.zeus.service.PhConfigService;
-import cn.offway.zeus.service.PhLaborService;
-import cn.offway.zeus.service.PhVoucherInfoService;
-import cn.offway.zeus.utils.CommonResultCode;
-import cn.offway.zeus.utils.JsonResult;
-import cn.offway.zeus.utils.JsonResultHelper;
 import cn.offway.zeus.domain.PhLabor;
 import cn.offway.zeus.domain.PhLaborLucky;
 import cn.offway.zeus.domain.PhLaborPrize;
+import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhLaborLuckyRepository;
 import cn.offway.zeus.repository.PhLaborPrizeRepository;
 import cn.offway.zeus.repository.PhLaborRepository;
+import cn.offway.zeus.service.PhConfigService;
+import cn.offway.zeus.service.PhLaborService;
+import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.service.PhVoucherInfoService;
+import cn.offway.zeus.utils.CommonResultCode;
+import cn.offway.zeus.utils.JsonResult;
+import cn.offway.zeus.utils.JsonResultHelper;
 
 
 /**
@@ -58,6 +60,9 @@ public class PhLaborServiceImpl implements PhLaborService {
 	@Autowired
 	private JsonResultHelper jsonResultHelper;
 	
+	@Autowired
+	private PhUserInfoService phUserInfoService;
+	
 	
 	@Override
 	public PhLabor save(PhLabor phLabor){
@@ -82,6 +87,10 @@ public class PhLaborServiceImpl implements PhLaborService {
 		if(c != 1){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.LOTTERYNUM_LESS);
 		}
+		
+		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		
+		
 		Date now = new Date();
 		int random = RandomUtils.nextInt(1, 100);
 		
@@ -101,27 +110,29 @@ public class PhLaborServiceImpl implements PhLaborService {
 				phLaborLucky.setCreateTime(now);
 				phLaborLucky.setName(name);
 				phLaborLucky.setUserId(userId);
+				phLaborLucky.setNickname(phUserInfo.getNickname());
+				phLaborLucky.setHeadimgurl(phUserInfo.getHeadimgurl());
 				phLaborLucky.setVersion(0L);
 				phLaborLuckyRepository.save(phLaborLucky);
 				index = 1;
 				
 			}else if(random >=6 && random <= 70){
 				//5-200元现金礼包
-				name = voucherlist(userId, now);
+				name = voucherlist(userId, now, phUserInfo);
 				index = 2;
 			}else{
 				//5元无门槛优惠券
-				name = voucher(userId, now);
+				name = voucher(userId, now, phUserInfo);
 				index = 3;
 			}
 		}else{
 			if(random <= 70){
 				//5-200元现金礼包
-				name = voucherlist(userId, now);
+				name = voucherlist(userId, now, phUserInfo);
 				index = 2;
 			}else{
 				//5元无门槛优惠券
-				name = voucher(userId, now);
+				name = voucher(userId, now, phUserInfo);
 				index = 3;
 			}
 		}
@@ -131,7 +142,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 
-	private String voucher(Long userId, Date now) throws Exception {
+	private String voucher(Long userId, Date now,PhUserInfo phUserInfo) throws Exception {
 		String content = phConfigService.findContentByName("VP_PLATFORM_5");
 		boolean result = phVoucherInfoService.giveVoucher(userId, Long.parseLong(content));
 		if(!result){
@@ -143,11 +154,13 @@ public class PhLaborServiceImpl implements PhLaborService {
 		phLaborLucky.setName(name);
 		phLaborLucky.setUserId(userId);
 		phLaborLucky.setVersion(0L);
+		phLaborLucky.setNickname(phUserInfo.getNickname());
+		phLaborLucky.setHeadimgurl(phUserInfo.getHeadimgurl());
 		phLaborLuckyRepository.save(phLaborLucky);
 		return "5元无门槛优惠券";
 	}
 
-	private String voucherlist(Long userId, Date now) throws Exception {
+	private String voucherlist(Long userId, Date now,PhUserInfo phUserInfo) throws Exception {
 		PhLaborPrize  laborPrize = phLaborPrizeRepository.lottery("1");
 		String name = laborPrize.getName();
 		PhLaborLucky phLaborLucky = new PhLaborLucky();
@@ -155,6 +168,8 @@ public class PhLaborServiceImpl implements PhLaborService {
 		phLaborLucky.setName(name);
 		phLaborLucky.setUserId(userId);
 		phLaborLucky.setVersion(0L);
+		phLaborLucky.setNickname(phUserInfo.getNickname());
+		phLaborLucky.setHeadimgurl(phUserInfo.getHeadimgurl());
 		phLaborLuckyRepository.save(phLaborLucky);
 		
 		Long voucherProjectId = laborPrize.getVoucherProjectId();
