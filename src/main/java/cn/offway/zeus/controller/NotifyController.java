@@ -1,5 +1,7 @@
 package cn.offway.zeus.controller;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.jpay.ext.kit.PaymentKit;
 
 import cn.offway.zeus.domain.PhPreorderInfo;
@@ -56,31 +59,32 @@ public class NotifyController {
 	 * @return
 	 */
 	@ApiOperation("支付宝支付结果通知")
-	@PostMapping("/alipay")
+	@PostMapping(value="/alipay",produces="text/html;charset=UTF-8")
 	public String alipay(HttpServletRequest request,AlipayNotify alipayNotify){
 		try {
 			logger.info("支付宝通知:"+JSON.toJSONString(alipayNotify));
 			boolean validate = alipayService.validate(request);
 			logger.info("支付宝通知验证结果:"+validate);
-			String trade_status = alipayNotify.getTrade_status();
-			/**
-			 * 	WAIT_BUYER_PAY	交易创建，等待买家付款
+			if(validate){
+				String trade_status = alipayNotify.getTrade_status();
+				/**
+				 * 	WAIT_BUYER_PAY	交易创建，等待买家付款
 				TRADE_CLOSED	未付款交易超时关闭，或支付完成后全额退款
 				TRADE_SUCCESS	交易支付成功
 				TRADE_FINISHED	交易结束，不可退款
-			 */
+				 */
+				
+				String out_trade_no = alipayNotify.getOut_trade_no();
+				
+				phPreorderInfoService.alipay(trade_status, out_trade_no);
+				return "success";
+			}
 			
-			String out_trade_no = alipayNotify.getOut_trade_no();
-			
-			phPreorderInfoService.alipay(trade_status, out_trade_no);
-
-			
-			return "success";
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("支付宝通知异常",e);
-			return "fail";
 		}
+		return "fail";
 		
 	}
 	
