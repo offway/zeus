@@ -68,7 +68,7 @@ public class VoucherController {
 			@ApiParam("配置") @RequestParam String config){
 		String content = phConfigService.findContentByName(config);
 		Long voucherProjectId = Long.parseLong(content);
-		int count = phVoucherInfoService.countByVoucherProjectId(voucherProjectId);
+		int count = phVoucherInfoService.countByUserIdAndVoucherProjectId(userId,voucherProjectId);
 		if(count>0){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
 		}
