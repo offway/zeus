@@ -2,6 +2,8 @@ package cn.offway.zeus.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
@@ -75,6 +77,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class,StockException.class})
 	public JsonResult lottery(Long userId) throws Exception{
 		
+		Map<String, Object> resultMap = new HashMap<>();
 		int c = phLaborRepository.subLotteryNum(userId);
 		if(c != 1){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.LOTTERYNUM_LESS);
@@ -86,6 +89,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 		PhLaborPrize phLaborPrize = phLaborPrizeRepository.lottery("0");
 		
 		String name = "";
+		int index = 1;
 		if(null != phLaborPrize){
 			if(random <= 5){
 				//OFFWAY惊喜礼包
@@ -99,25 +103,32 @@ public class PhLaborServiceImpl implements PhLaborService {
 				phLaborLucky.setUserId(userId);
 				phLaborLucky.setVersion(0L);
 				phLaborLuckyRepository.save(phLaborLucky);
+				index = 1;
 				
 			}else if(random >=6 && random <= 70){
 				//5-200元现金礼包
 				name = voucherlist(userId, now);
+				index = 2;
 			}else{
 				//5元无门槛优惠券
 				name = voucher(userId, now);
+				index = 3;
 			}
 		}else{
 			if(random <= 70){
 				//5-200元现金礼包
 				name = voucherlist(userId, now);
+				index = 2;
 			}else{
 				//5元无门槛优惠券
 				name = voucher(userId, now);
+				index = 3;
 			}
 		}
 		
-		return jsonResultHelper.buildSuccessJsonResult(name);
+		resultMap.put("index", index);
+		resultMap.put("name", name);
+		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 
 	private String voucher(Long userId, Date now) throws Exception {
