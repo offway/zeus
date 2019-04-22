@@ -18,4 +18,6 @@ public interface PhInviteInfoRepository extends JpaRepository<PhInviteInfo,Long>
 
 	@Query(nativeQuery=true,value="select u.headimgurl,u.nickname from ph_invite_info i,ph_user_info u where i.user_id=?1 and i.invite_user_id= u.id order by i.create_time desc")
 	List<Object> invites(Long userId);
+	
+	int countByUserId(Long userId);
 }

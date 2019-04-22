@@ -33,4 +33,9 @@ public class PhInviteInfoServiceImpl implements PhInviteInfoService {
 	public PhInviteInfo findOne(Long id){
 		return phInviteInfoRepository.findOne(id);
 	}
+	
+	@Override
+	public int countByUserId(Long userId){
+		return phInviteInfoRepository.countByUserId(userId);
+	}
 }

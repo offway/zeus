@@ -108,6 +108,8 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		phUserInfo.setCreateTime(new Date());
 		phUserInfo = save(phUserInfo);
 		
+		String content = phConfigService.findContentByName("VP_REGISTER");
+				
 		if(null != inviteUserId){
 			PhUserInfo inviteUserInfo = findOne(inviteUserId);
 			if(null!= inviteUserInfo){
@@ -118,10 +120,18 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 				phInviteInfo.setInviteUserId(phUserInfo.getId());
 				phInviteInfo.setCreateTime(new Date());
 				phInviteInfoService.save(phInviteInfo);
+				
+				//查询是否第一次邀请
+				int count = phInviteInfoService.countByUserId(inviteUserId);
+				if(count == 1){
+					//赠送优惠券大礼包
+					phVoucherInfoService.give(inviteUserId, Arrays.asList(content.split(",")));
+				}
+				
+				
 			}
 		}
 		//赠送优惠券大礼包
-		String content = phConfigService.findContentByName("VP_REGISTER");
 		phVoucherInfoService.give(phUserInfo.getId(), Arrays.asList(content.split(",")));
 		
 		return phUserInfo;

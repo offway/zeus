@@ -13,4 +13,6 @@ public interface PhInviteInfoService{
 	PhInviteInfo save(PhInviteInfo phInviteInfo);
 	
 	PhInviteInfo findOne(Long id);
+
+	int countByUserId(Long userId);
 }
