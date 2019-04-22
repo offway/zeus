@@ -182,6 +182,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 					lotteryNum += 5L;
 				}
 				phLabor.setLotteryNum(lotteryNum);
+				phLabor.setSignDate(sdf.format(now));
 				save(phLabor);
 			}
 			return true;
