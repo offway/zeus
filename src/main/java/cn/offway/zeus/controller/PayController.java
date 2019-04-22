@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alipay.api.response.AlipayTradeAppPayResponse;
+
 import cn.offway.zeus.domain.PhPreorderInfo;
 import cn.offway.zeus.service.AlipayService;
 import cn.offway.zeus.service.PhPreorderInfoService;
@@ -52,7 +54,13 @@ public class PayController {
 		String body = "OFFWAY商品购买";
 		String subject = "OFFWAY商品购买";
 		double amount = phPreorderInfo.getAmount();
-		return jsonResultHelper.buildSuccessJsonResult(alipayService.trade(preorderNo, body, subject, amount));
+		AlipayTradeAppPayResponse response = alipayService.trade(preorderNo, body, subject, amount);
+		if(response.isSuccess()){
+			return jsonResultHelper.buildSuccessJsonResult(response.getBody());
+		}else{
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		}
+		
 	}
 	
 	@ApiOperation("微信-统一下单")
