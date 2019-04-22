@@ -86,9 +86,7 @@ public class AlipayService {
 	            params.put(name, valueStr);
 	        }
 	        
-	        boolean flag = AlipaySignature.rsaCheckV1(params, alipayProperties.getPublickey(), "UTF-8","RSA2");
-	        System.out.println(flag);
-			return flag;
+	        return AlipaySignature.rsaCheckV1(params, alipayProperties.getPublickey(), "UTF-8","RSA2");
 		} catch (AlipayApiException e) {
 			e.printStackTrace();
 			return false;
