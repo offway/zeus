@@ -67,11 +67,16 @@ public class VoucherController {
 			@ApiParam("用户ID") @RequestParam Long userId,
 			@ApiParam("配置") @RequestParam String config){
 		String content = phConfigService.findContentByName(config);
-		boolean result = phVoucherInfoService.giveVoucher(userId, Long.parseLong(content));
+		Long voucherProjectId = Long.parseLong(content);
+		int count = phVoucherInfoService.countByVoucherProjectId(voucherProjectId);
+		if(count>0){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
+		}
+		boolean result = phVoucherInfoService.giveVoucher(userId, voucherProjectId);
 		if(result){
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		}else{
-			return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
 
 	}

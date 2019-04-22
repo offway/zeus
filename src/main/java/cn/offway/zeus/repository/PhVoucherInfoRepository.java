@@ -70,4 +70,6 @@ public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Lon
 	@Modifying
 	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,begin_time,end_time,'0',NOW(),NULL from ph_voucher_project where id =?2")// and not exists(select 1 from ph_voucher_info where voucher_project_id =?2)")
 	int giveByTime(Long userId,Long voucherProjectId);
+	
+	int countByVoucherProjectId(Long voucherProjectId);
 }

@@ -44,8 +44,12 @@ public class LaborController {
 	@ApiOperation("签到搬砖")
 	@PostMapping("/sign")
 	public JsonResult sign(@ApiParam("用户ID") @RequestParam Long userId){
-		phLaborService.sign(userId);
-		return jsonResultHelper.buildSuccessJsonResult(null);
+		boolean result = phLaborService.sign(userId);
+		if(result){
+			return jsonResultHelper.buildSuccessJsonResult(null);
+		}
+		return jsonResultHelper.buildFailJsonResult(CommonResultCode.SIGNED);
+
 	}
 	
 	@ApiOperation("查询参与详情")

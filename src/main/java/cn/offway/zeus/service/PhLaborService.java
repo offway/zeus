@@ -15,7 +15,7 @@ public interface PhLaborService{
 	
 	PhLabor findOne(Long id);
 
-	void sign(Long userId);
+	boolean sign(Long userId);
 
 	PhLabor findByUserId(Long userId);
 

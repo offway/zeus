@@ -102,6 +102,11 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 		return phVoucherInfoRepository.giveByTime(userId, voucherProjectIds);
 	}
 	
+	@Override
+	public int countByVoucherProjectId(Long voucherProjectId){
+		return phVoucherInfoRepository.countByVoucherProjectId(voucherProjectId);
+	}
+	
 	
 	@Override
 	public void giveVoucher(Long userId,List<String> voucherProjectIds){

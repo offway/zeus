@@ -155,7 +155,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 	}
 	
 	@Override
-	public void sign(Long userId){
+	public boolean sign(Long userId){
 		Date now = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		int count = phLaborRepository.countByUserIdAndSignDate(userId, sdf.format(now));
@@ -184,6 +184,8 @@ public class PhLaborServiceImpl implements PhLaborService {
 				phLabor.setLotteryNum(lotteryNum);
 				save(phLabor);
 			}
+			return true;
 		}
+		return false;
 	}
 }

@@ -61,6 +61,9 @@ public enum CommonResultCode implements ResultCode {
     /** 抽奖次数不足  */
     LOTTERYNUM_LESS("1018", "LOTTERYNUM_LESS"),
     
+    /** 您已经签过到了  */
+    SIGNED("1019", "SIGNED"),
+    
     ;
 	
 	
