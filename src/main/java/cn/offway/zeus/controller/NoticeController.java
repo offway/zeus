@@ -1,5 +1,9 @@
 package cn.offway.zeus.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import cn.offway.zeus.domain.PhNotice;
 import cn.offway.zeus.repository.PhNoticeRepository;
 import cn.offway.zeus.service.PhNoticeService;
 import cn.offway.zeus.utils.JsonResult;
@@ -35,7 +40,18 @@ public class NoticeController {
 	@ApiOperation("通知首页数据")
 	@GetMapping("/index")
 	public JsonResult index(@ApiParam("用户ID") @RequestParam Long userId){
-		return jsonResultHelper.buildSuccessJsonResult(phNoticeService.findNoticeIndex(userId));
+		
+		Map<String, Object> resultMap = new HashMap<>();
+		
+		List<String> types = phNoticeService.findTypes();
+		for (String type : types) {
+			resultMap.put(type, null);
+		}
+		List<PhNotice> notices = phNoticeService.findNoticeIndex(userId);
+		for (PhNotice phNotice : notices) {
+			resultMap.put(phNotice.getType(), phNotice.getContent());
+		}
+		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 	
 	@ApiOperation("通知列表")

@@ -51,6 +51,11 @@ public class PhNoticeServiceImpl implements PhNoticeService {
 	}
 	
 	@Override
+	public List<String> findTypes(){
+		return phNoticeRepository.findTypes();
+	}
+	
+	@Override
 	public int countByUserIdAndIsRead(Long userId,String isRead){
 		return phNoticeRepository.countByUserIdAndIsRead(userId, isRead);
 	}

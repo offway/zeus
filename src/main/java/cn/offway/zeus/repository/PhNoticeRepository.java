@@ -21,6 +21,9 @@ public interface PhNoticeRepository extends JpaRepository<PhNotice,Long>,JpaSpec
 	@Query(nativeQuery=true,value="select * from ph_notice where id in(select MAX(id) from ph_notice where user_id=?1 GROUP BY type)")
 	List<PhNotice> findNoticeIndex(Long userId);
 	
+	@Query(nativeQuery=true,value="select distinct(type) from ph_notice ")
+	List<String> findTypes();
+	
 	@Transactional
 	@Modifying
 	@Query(nativeQuery = true,value="update ph_notice set is_read=1 where type=?1")

@@ -26,4 +26,6 @@ public interface PhNoticeService{
 	List<PhNotice> findNoticeIndex(Long userId);
 
 	int countByUserIdAndIsRead(Long userId, String isRead);
+
+	List<String> findTypes();
 }
