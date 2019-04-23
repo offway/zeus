@@ -1,5 +1,6 @@
 package cn.offway.zeus.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,17 +42,12 @@ public class NoticeController {
 	@GetMapping("/index")
 	public JsonResult index(@ApiParam("用户ID") @RequestParam Long userId){
 		
-		Map<String, Object> resultMap = new HashMap<>();
-		
-		List<String> types = phNoticeService.findTypes();
-		for (String type : types) {
-			resultMap.put(type, null);
-		}
+//		String str = "[{\"type\":\"0\",\"content\":\"#CONTENT0#\"},{\"type\":\"1\",\"content\":\"#CONTENT1#\"}]";
 		List<PhNotice> notices = phNoticeService.findNoticeIndex(userId);
-		for (PhNotice phNotice : notices) {
-			resultMap.put(phNotice.getType(), phNotice.getContent());
-		}
-		return jsonResultHelper.buildSuccessJsonResult(resultMap);
+		/*for (PhNotice phNotice : notices) {
+			str.replace("CONTENT"+phNotice.getType(), phNotice.getContent());
+		}*/
+		return jsonResultHelper.buildSuccessJsonResult(notices);
 	}
 	
 	@ApiOperation("通知列表")
