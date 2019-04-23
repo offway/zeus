@@ -254,7 +254,8 @@ public class UserController {
 			}
 		}
 		
-		return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
+		Map<String, Object> map = userData(phUserInfo);
+		return jsonResultHelper.buildSuccessJsonResult(map);
 
 	}
 	
@@ -298,7 +299,6 @@ public class UserController {
 
 	}
 	
-	@SuppressWarnings("unchecked")
 	@ApiOperation("我的")
 	@GetMapping("/home")
 	public JsonResult home(@ApiParam("用户ID") @RequestParam Long userId){
@@ -306,6 +306,14 @@ public class UserController {
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
 		}
+		Map<String, Object> map = userData(phUserInfo);
+		return jsonResultHelper.buildSuccessJsonResult(map);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> userData( PhUserInfo phUserInfo) {
+		Long userId = phUserInfo.getId();
 		String userInfo = JSON.toJSONString(phUserInfo,SerializerFeature.WriteMapNullValue);
 		Map<String, Object> map = JSON.parseObject(userInfo, Map.class);
 		map.put("pendingPayment", phPreorderInfoService.countByUserIdAndStatus(userId, "0"));
@@ -315,8 +323,7 @@ public class UserController {
 		map.put("goodsReturn", 0L);
 		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
 		map.put("shoppingCartNum", phShoppingCarts.size());
-		return jsonResultHelper.buildSuccessJsonResult(map);
-
+		return map;
 	}
 	
 	@ApiOperation("用户信息")
