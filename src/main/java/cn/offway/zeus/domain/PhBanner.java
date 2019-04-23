@@ -20,14 +20,11 @@ public class PhBanner implements Serializable {
     /** banner **/
     private String banner;
 
-    /** 类别[0-跳转URL,1-品牌,2-商品] **/
+    /** 类别[0-跳转URL,1-品牌,2-商品,3-明星同款] **/
     private String type;
 
-    /** 品牌ID **/
-    private Long brandId;
-
-    /** 商品ID **/
-    private Long goodsId;
+    /** 跳转对应ID **/
+    private Long redirectId;
 
     /** 跳转链接 **/
     private String url;
@@ -80,30 +77,22 @@ public class PhBanner implements Serializable {
         this.type = type;
     }
 
-    @Column(name = "brand_id", length = 11)
-    public Long getBrandId() {
-        return brandId;
-    }
+    @Column(name = "redirect_id", length = 11)
 
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
-    }
+    public Long getRedirectId() {
+		return redirectId;
+	}
 
-    @Column(name = "goods_id", length = 11)
-    public Long getGoodsId() {
-        return goodsId;
-    }
-
-    public void setGoodsId(Long goodsId) {
-        this.goodsId = goodsId;
-    }
+	public void setRedirectId(Long redirectId) {
+		this.redirectId = redirectId;
+	}
 
     @Column(name = "url", length = 50)
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+	public void setUrl(String url) {
         this.url = url;
     }
 
