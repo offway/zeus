@@ -321,9 +321,8 @@ public class OrderController {
 			addrMap.put("realName", phOrderExpressInfo.getToRealName());
 			
 			if(StringUtils.isNotBlank(phOrderExpressInfo.getMailNo())){
-				//kuaidi100Service.query(phOrderInfo.getExpressCode(), phOrderInfo.getMailNo(), phAddress.getPhone())
-				//String result = "{\"message\":\"ok\",\"nu\":\"805283162742333582\",\"ischeck\":\"0\",\"condition\":\"00\",\"com\":\"yuantong\",\"status\":\"200\",\"state\":\"0\",\"data\":[{\"time\":\"2019-04-10 02:38:48\",\"ftime\":\"2019-04-10 02:38:48\",\"context\":\"【江门转运中心】 已发出 下一站 【上海转运中心】\"},{\"time\":\"2019-04-10 02:37:46\",\"ftime\":\"2019-04-10 02:37:46\",\"context\":\"【江门转运中心】 已收入\"},{\"time\":\"2019-04-10 02:22:42\",\"ftime\":\"2019-04-10 02:22:42\",\"context\":\"【广东省中山市板芙镇公司】 已收件\"},{\"time\":\"2019-04-09 19:34:30\",\"ftime\":\"2019-04-09 19:34:30\",\"context\":\"【广东省中山市板芙镇公司】 取件人: 朱华文 已收件\"}]}";
-				String result = kuaidi100Service.query("yuantong", "805283162742333582", "18621866390");
+//				String result = kuaidi100Service.query("yuantong", "805283162742333582", "18621866390");
+				String result = kuaidi100Service.query(phOrderExpressInfo.getExpressCode(), phOrderExpressInfo.getMailNo(), phOrderExpressInfo.getToPhone());
 				resultMap.put("express", JSON.parse(result));
 			}
 		}
