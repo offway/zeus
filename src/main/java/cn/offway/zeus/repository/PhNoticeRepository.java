@@ -1,7 +1,12 @@
 package cn.offway.zeus.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhNotice;
 
@@ -13,5 +18,13 @@ import cn.offway.zeus.domain.PhNotice;
  */
 public interface PhNoticeRepository extends JpaRepository<PhNotice,Long>,JpaSpecificationExecutor<PhNotice> {
 
-	/** 此处写一些自定义的方法 **/
+	@Query(nativeQuery=true,value="select * from ph_notice where id in(select MAX(id) from ph_notice where user_id=?1 GROUP BY type)")
+	List<PhNotice> findNoticeIndex(Long userId);
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery = true,value="update ph_notice set is_read=1 where type=?1")
+	int read(String type);
+	
+	int countByUserIdAndIsRead(Long userId,String isRead);
 }

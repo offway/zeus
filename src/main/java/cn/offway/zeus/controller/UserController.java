@@ -37,6 +37,7 @@ import cn.offway.zeus.repository.PhInviteInfoRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhCapitalFlowService;
 import cn.offway.zeus.service.PhCollectService;
+import cn.offway.zeus.service.PhNoticeService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
 import cn.offway.zeus.service.PhUserInfoService;
@@ -107,6 +108,9 @@ public class UserController {
 	
 	@Autowired
 	private PhCapitalFlowService phCapitalFlowService;
+	
+	@Autowired
+	private PhNoticeService phNoticeService;
 	
 	
 	
@@ -323,6 +327,7 @@ public class UserController {
 		map.put("goodsReturn", 0L);
 		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
 		map.put("shoppingCartNum", phShoppingCarts.size());
+		map.put("noticeNum", phNoticeService.countByUserIdAndIsRead(userId, "0"));
 		return map;
 	}
 	

@@ -34,6 +34,9 @@ public class PhNotice implements Serializable {
 
     /** 备注 **/
     private String remark;
+    
+    /** 图片 **/
+    private String image;
 
 
     @Id
@@ -101,5 +104,16 @@ public class PhNotice implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    @Column(name = "image", length = 200)
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+    
+    
 
 }

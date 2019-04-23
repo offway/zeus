@@ -106,14 +106,15 @@ public class NotifyController {
 				String out_trade_no = params.get("out_trade_no"); //商户订单号
 				
 				phPreorderInfoService.wxpay(result_code, out_trade_no);
-			    return "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>" + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
+				
+				 return "<xml>\n<return_code><![CDATA[SUCCESS]]></return_code>\n<return_msg><![CDATA[OK]]></return_msg>\n</xml>";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("微信支付结果通知异常，请求参数：{}",e,xmlMsg);
 
 		}
-        return "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>" + "<return_msg><![CDATA[系统异常]]></return_msg>" + "</xml> ";
+		 return "<xml>\n<return_code><![CDATA[FAIL]]></return_code>\n<return_msg><![CDATA[ERROR]]></return_msg>\n</xml>";
 
     }
 	
