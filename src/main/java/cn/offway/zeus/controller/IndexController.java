@@ -167,4 +167,33 @@ public class IndexController {
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 	
+	
+	@ApiOperation(value = "分享文案")
+	@GetMapping("/share/content")
+	@ResponseBody
+	public JsonResult shareContent(@ApiParam("活动类型[0-赚钱达人,1-51活动,2-品牌日活动]") @RequestParam String type){
+		Map<String, Object> map = new HashMap<>();
+		String image = null;
+		String title = null;
+		String content = null;
+		switch (type) {
+		case "0":
+			image = "https://qn.offway.cn/image/eff3b181414d4f649ab7972ae1e5d7dc.jpg";
+			title = "送你【350元现金大礼包】，点击领取！";
+			content = "我在OFFWAY潮流电商App，送你350元新人福利，助我赢350元大礼~";
+			break;
+		case "1":
+			break;
+		case "2":
+			break;
+		default:
+			break;
+		}
+		map.put("image", image);
+		map.put("title", title);
+		map.put("content", content);
+		return jsonResultHelper.buildSuccessJsonResult(map);
+	}
+	
+	
 }

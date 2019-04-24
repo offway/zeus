@@ -107,22 +107,22 @@ public class NotifyController {
 				
 				phPreorderInfoService.wxpay(result_code, out_trade_no);
 				
-				 return "<xml>\n<return_code><![CDATA[SUCCESS]]></return_code>\n<return_msg><![CDATA[OK]]></return_msg>\n</xml>";
+				 return "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("微信支付结果通知异常，请求参数：{}",e,xmlMsg);
 
 		}
-		 return "<xml>\n<return_code><![CDATA[FAIL]]></return_code>\n<return_msg><![CDATA[ERROR]]></return_msg>\n</xml>";
+		 return "<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[ERROR]]></return_msg></xml>";
 
     }
 	
-	@ApiOperation("支付成功")
+	/*@ApiOperation("支付成功")
 	@PostMapping("/ok")
     public String ok(@ApiParam("预订单号") @RequestParam String preorderNo) throws Exception{
 		phPreorderInfoService.wxpay("SUCCESS", preorderNo);
 	    return "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>" + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
-	}
+	}*/
 	
 }
