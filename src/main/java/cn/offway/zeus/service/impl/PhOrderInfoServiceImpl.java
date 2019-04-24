@@ -202,7 +202,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				phOrderGoods.setCreateTime(now);
 				phOrderGoods.setGoodsCount(stock.getNum());
 				phOrderGoods.setGoodsId(phGoodsStock.getGoodsId());
-				phOrderGoods.setGoodsImage(phGoodsStock.getGoodsImage());
+				phOrderGoods.setGoodsImage(phGoodsStock.getImage());
 				phOrderGoods.setGoodsName(phGoodsStock.getGoodsName());
 				phOrderGoods.setGoodsStockId(phGoodsStock.getId());
 				phOrderGoods.setMerchantId(phGoodsStock.getMerchantId());

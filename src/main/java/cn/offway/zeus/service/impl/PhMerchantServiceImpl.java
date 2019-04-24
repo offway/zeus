@@ -73,13 +73,14 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 		}
 		
 		PhMerchantFare phMerchantFare = phMerchantFareRepository.findByMerchantIdAndIsDefault(id, "1");
+		Long merchantFareId = phMerchantFare.getId();
 		PhAddress phAddress = phAddressService.findOne(addrId);
-		PhMerchantFareSpecial phMerchantFareSpecial = phMerchantFareSpecialRepository.findByProvinceAndCityAndCounty(phAddress.getProvince(), phAddress.getCity(), phAddress.getCounty());
+		PhMerchantFareSpecial phMerchantFareSpecial = phMerchantFareSpecialRepository.findByMerchantFareIdAndProvinceAndCityAndCounty(merchantFareId,phAddress.getProvince(), phAddress.getCity(), phAddress.getCounty());
 		if(null == phMerchantFareSpecial){
-			phMerchantFareSpecial = phMerchantFareSpecialRepository.findByProvinceAndCityAndCounty(phAddress.getProvince(), phAddress.getCity(), null);
+			phMerchantFareSpecial = phMerchantFareSpecialRepository.findByMerchantFareIdAndProvinceAndCityAndCounty(merchantFareId,phAddress.getProvince(), phAddress.getCity(), null);
 		}
 		if(null == phMerchantFareSpecial){
-			phMerchantFareSpecial = phMerchantFareSpecialRepository.findByProvinceAndCityAndCounty(phAddress.getProvince(), null, null);
+			phMerchantFareSpecial = phMerchantFareSpecialRepository.findByMerchantFareIdAndProvinceAndCityAndCounty(merchantFareId,phAddress.getProvince(), null, null);
 		}
 		if(null == phMerchantFareSpecial){
 			fareFirstNum = phMerchantFare.getFareFirstNum().intValue();

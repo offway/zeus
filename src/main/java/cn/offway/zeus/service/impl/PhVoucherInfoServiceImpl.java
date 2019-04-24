@@ -103,8 +103,8 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
-	public int countByUserIdAndVoucherProjectId(Long userId,Long voucherProjectId){
-		return phVoucherInfoRepository.countByUserIdAndVoucherProjectId(userId,voucherProjectId);
+	public int countByUserIdAndVoucherProjectIdAndStatus(Long userId,Long voucherProjectId,String status){
+		return phVoucherInfoRepository.countByUserIdAndVoucherProjectIdAndStatus(userId,voucherProjectId,status);
 	}
 	
 	

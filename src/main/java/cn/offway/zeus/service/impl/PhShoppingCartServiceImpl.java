@@ -138,7 +138,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setBrandName(phGoodsStock.getBrandName());
 			phShoppingCart.setGoodsCount(param.get(id));
 			phShoppingCart.setGoodsId(phGoodsStock.getGoodsId());
-			phShoppingCart.setGoodsImage(phGoodsStock.getGoodsImage());
+			phShoppingCart.setGoodsImage(phGoodsStock.getImage());
 			phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
 			phShoppingCart.setGoodsStockId(id);
 			phShoppingCart.setPrice(phGoodsStock.getPrice());
@@ -226,7 +226,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setBrandLogo(phGoodsStock.getBrandLogo());
 			phShoppingCart.setBrandName(phGoodsStock.getBrandName());
 			phShoppingCart.setGoodsId(phGoodsStock.getGoodsId());
-			phShoppingCart.setGoodsImage(phGoodsStock.getGoodsImage());
+			phShoppingCart.setGoodsImage(phGoodsStock.getImage());
 			phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
 			phShoppingCart.setPrice(phGoodsStock.getPrice());
 			

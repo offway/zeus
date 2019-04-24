@@ -43,6 +43,6 @@ public interface PhVoucherInfoService{
 
 	void giveVoucher(Long userId, List<String> voucherProjectIds);
 
-	int countByUserIdAndVoucherProjectId(Long userId, Long voucherProjectId);
+	int countByUserIdAndVoucherProjectIdAndStatus(Long userId, Long voucherProjectId, String status);
 
 }
