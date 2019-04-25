@@ -46,6 +46,7 @@ import cn.offway.zeus.service.PhGoodsStockService;
 import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
+import cn.offway.zeus.service.PhShoppingCartService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.JsonResult;
@@ -93,6 +94,10 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	
 	@Autowired
 	private PhAddressRepository phAddressRepository;
+	
+	@Autowired
+	private PhShoppingCartService phShoppingCartService;
+	
 	
 	@Override
 	public PhOrderInfo save(PhOrderInfo phOrderInfo){
@@ -173,6 +178,8 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		List<PhOrderGoods> orderGoodss = new ArrayList<>();
 
 		List<OrderMerchantDto> merchantDtos =  orderAddDto.getMerchantDtos();
+		
+		List<Long> stockIds = new ArrayList<>();
 		for (OrderMerchantDto orderMerchantDto : merchantDtos) {
 			
 			String orderNo = generateOrderNo("11");
@@ -184,6 +191,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			int sumCount = 0;
 			for (OrderInitStockDto stock : stocks) {
 				Long stockId = stock.getStockId();
+				stockIds.add(stockId);
 				PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stockId);
 				double price = phGoodsStock.getPrice() * stock.getNum().intValue();
 				sumPrice = MathUtils.add(sumPrice, price);
@@ -309,6 +317,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		if(walletAmount>0D){
 			throw new Exception("钱包余额没用完,异常啦！！");
 		}
+		
+		//清掉购物车
+		phShoppingCartService.deleteByStockIds(stockIds);
 		
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("preorderNo", preorderNo);

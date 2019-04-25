@@ -26,4 +26,6 @@ public interface PhShoppingCartService{
 	void delete(List<Long> ids);
 
 	JsonResult orderInit(OrderInitDto orderInitDto);
+
+	int deleteByStockIds(List<Long> ids);
 }

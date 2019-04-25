@@ -81,6 +81,11 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	}
 	
 	@Override
+	public int deleteByStockIds(List<Long> ids){
+		return phShoppingCartRepository.deleteByStockIds(ids);
+	}
+	
+	@Override
 	public JsonResult shopingCarList(Long userId){
 		
 		Map<String, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();

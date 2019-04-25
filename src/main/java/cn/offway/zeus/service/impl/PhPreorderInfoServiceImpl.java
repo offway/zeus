@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
 import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.service.SmsService;
 import cn.offway.zeus.domain.PhCapitalFlow;
 import cn.offway.zeus.domain.PhOrderGoods;
 import cn.offway.zeus.domain.PhOrderInfo;
@@ -73,6 +74,9 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	
 	@Autowired
 	private PhGoodsRepository phGoodsRepository;
+	
+	@Autowired
+	private SmsService smsService;
 	
 	@Override
 	public PhPreorderInfo save(PhPreorderInfo phPreorderInfo){
@@ -231,7 +235,22 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			//更新商品销量
 			phGoodsRepository.updateSaleCount(preorderNo);
 			
-			
+			try {
+				//短信通知商户
+				List<String> phones = phOrderInfoRepository.findMerchantPhone(preorderNo);
+				StringBuilder sb = new StringBuilder();
+				for (String p : phones) {
+					sb.append(p);
+					sb.append(",");
+				}
+				String phone = sb.toString();
+				if(StringUtils.isNotBlank(phone)){
+					smsService.sendMsgBatch(phone.substring(0,phone.lastIndexOf(",")), "【OFFWAY】提醒您：亲，您有一笔新订单来啦！请尽快发货！");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("短信通知商户异常preorderNo="+preorderNo);
+			}
 		}
 	}
 }

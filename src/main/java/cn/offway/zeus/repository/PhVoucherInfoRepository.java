@@ -72,4 +72,6 @@ public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Lon
 	int giveByTime(Long userId,Long voucherProjectId);
 	
 	int countByUserIdAndVoucherProjectIdAndStatus(Long userId,Long voucherProjectId,String status);
+	
+	Long countByUserIdAndStatus(Long userId,String status);
 }

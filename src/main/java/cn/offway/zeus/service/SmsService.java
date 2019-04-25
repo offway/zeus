@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
+import com.yunpian.sdk.model.SmsBatchSend;
 import com.yunpian.sdk.model.SmsSingleSend;
 
 import cn.offway.zeus.domain.PhSmsInfo;
@@ -68,6 +69,33 @@ public class SmsService {
 			result = true;
 		}
 		phSmsInfoService.save(phSmsInfo);
+		return result;
+	}
+	
+	/**
+	 * 发送短信批量
+	 * @param phone 多个,相隔
+	 * @param message
+	 * @param ip
+	 * @return
+	 */
+	public boolean sendMsgBatch(String phone,String message){
+		
+		boolean result = false;
+		if(isPrd){
+			Map<String, String> param = yunpianClient.newParam(2);
+			param.put(YunpianClient.MOBILE, phone);
+			param.put(YunpianClient.TEXT, message);
+			
+			logger.info("短信批量发送请求:"+JSON.toJSONString(param));
+			Result<SmsBatchSend> r = yunpianClient.sms().batch_send(param);
+			logger.info("短信批量发送响应:"+JSON.toJSONString(r));
+			if(0 == r.getCode()){
+				result = true;
+			}
+		}else{
+			result = true;
+		}
 		return result;
 	}
 }

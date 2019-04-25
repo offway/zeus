@@ -34,4 +34,10 @@ public interface PhShoppingCartRepository extends JpaRepository<PhShoppingCart,L
 	@Modifying
 	@Query(nativeQuery=true,value="delete from ph_shopping_cart  where id in(?1)")
 	int delete(List<Long> ids);
+	
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="delete from ph_shopping_cart  where goods_stock_id in(?1)")
+	int deleteByStockIds(List<Long> ids);
 }

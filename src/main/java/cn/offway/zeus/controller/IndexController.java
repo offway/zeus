@@ -159,6 +159,9 @@ public class IndexController {
 	public JsonResult data(){
 		Map<String, Object> map = new HashMap<>();
 		List<PhStarsame> phStarsames = phStarsameService.indexData();
+		PhStarsame phStarsame = new PhStarsame();
+		phStarsame.setImageUrl("http://qiniu.offway.cn/image/f519e936b5a14339800e0862440ba72d%20.jpg");
+		phStarsames.add(phStarsame);
 		map.put("star", phStarsames);
 		List<PhBrand> brands = phBrandService.findByIsRecommendOrderBySortAsc("1");
 		map.put("brands", brands);

@@ -35,16 +35,19 @@ import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.WxuserInfo;
 import cn.offway.zeus.repository.PhInviteInfoRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
+import cn.offway.zeus.repository.PhVoucherInfoRepository;
 import cn.offway.zeus.service.PhCapitalFlowService;
 import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhNoticeService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
 import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.service.PhWxuserInfoService;
 import cn.offway.zeus.service.SmsService;
 import cn.offway.zeus.service.VCollectBrandService;
 import cn.offway.zeus.service.VCollectGoodsService;
+import cn.offway.zeus.service.impl.PhVoucherInfoServiceImpl;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.IpUtil;
 import cn.offway.zeus.utils.JsonResult;
@@ -111,6 +114,9 @@ public class UserController {
 	
 	@Autowired
 	private PhNoticeService phNoticeService;
+	
+	@Autowired
+	private PhVoucherInfoRepository phVoucherInfoRepository;
 	
 	
 	
@@ -224,16 +230,8 @@ public class UserController {
 			}
 			phUserInfo = phUserInfoService.findByPhone(phone);
 			if(null==phUserInfo){
-				phUserInfo = new PhUserInfo();
-				phUserInfo.setPhone(phone);
-				phUserInfo.setNickname("OFFWAY_"+phone.substring(5));
-				phUserInfo.setBalance(0D);
-				phUserInfo.setSex("1");
-				phUserInfo.setVersion(0L);
-				phUserInfo.setVoucherCount(0L);
-				phUserInfo.setCollectCount(0L);
-				phUserInfo.setCreateTime(new Date());
-				phUserInfo = phUserInfoService.save(phUserInfo);
+				//手机号没有直接注册
+				phUserInfo = phUserInfoService.register(phone, null, null, null, null, null, null);
 			}
 		}
 		
@@ -318,8 +316,11 @@ public class UserController {
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> userData( PhUserInfo phUserInfo) {
 		Long userId = phUserInfo.getId();
+		//查询优惠券数量
+		phUserInfo.setVoucherCount(phVoucherInfoRepository.countByUserIdAndStatus(userId, "0"));
 		String userInfo = JSON.toJSONString(phUserInfo,SerializerFeature.WriteMapNullValue);
 		Map<String, Object> map = JSON.parseObject(userInfo, Map.class);
+		
 		map.put("pendingPayment", phPreorderInfoService.countByUserIdAndStatus(userId, "0"));
 		//0-已下单,1-已付款,2-已发货,3-已收货,4-取消
 		map.put("pendingShip", phOrderInfoService.countByUserIdAndStatus(userId, "1"));
