@@ -68,7 +68,7 @@ public class PhStarsameServiceImpl implements PhStarsameService {
 				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
-                criteriaQuery.orderBy(criteriaBuilder.asc(root.get("sort")));
+                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
 				return null;
 			}
 		}, page);

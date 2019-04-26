@@ -68,6 +68,22 @@ public class VoucherController {
 			@ApiParam("配置") @RequestParam String config){
 		String content = phConfigService.findContentByName(config);
 		Long voucherProjectId = Long.parseLong(content);
+		return giveVoucher(userId, voucherProjectId);
+
+	}
+
+	@ApiOperation("根据优惠券方案ID领取优惠券")
+	@PostMapping("/giveByVpId")
+	public JsonResult give(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("优惠券方案ID") @RequestParam Long voucherProjectId){
+		
+		return giveVoucher(userId, voucherProjectId);
+
+	}
+	
+	
+	private JsonResult giveVoucher(Long userId, Long voucherProjectId) {
 		int count = phVoucherInfoService.countByUserIdAndVoucherProjectIdAndStatus(userId,voucherProjectId,"0");
 		if(count>0){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
@@ -78,7 +94,6 @@ public class VoucherController {
 		}else{
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
-
 	}
 	
 }

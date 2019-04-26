@@ -28,6 +28,7 @@ import cn.offway.zeus.domain.PhGoodsProperty;
 import cn.offway.zeus.domain.PhGoodsStock;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.dto.OrderInitDto;
+import cn.offway.zeus.repository.PhVoucherProjectRepository;
 import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhGoodsCategoryService;
 import cn.offway.zeus.service.PhGoodsImageService;
@@ -69,6 +70,10 @@ public class GoodsController {
 	@Autowired
 	private PhShoppingCartService phShoppingCartService;
 	
+	@Autowired
+	private PhVoucherProjectRepository phVoucherProjectRepository;
+	
+	
 	
 	@ApiOperation("查询商品类目")
 	@GetMapping("/category")
@@ -80,11 +85,13 @@ public class GoodsController {
 	@PostMapping("/list")
 	public JsonResult list(@RequestBody @ApiParam("商品属性") GoodsDto goodsDto ){
 		String sortDir = StringUtils.isBlank(goodsDto.getSortDir())?"desc":goodsDto.getSortDir();
-		String sortName = StringUtils.isBlank(goodsDto.getSortName())?"id":goodsDto.getSortName();
+		String sortName = StringUtils.isBlank(goodsDto.getSortName())?"upTime":goodsDto.getSortName();
 
+		sortName = "createTime".equals(sortName)?"upTime":sortName;
+		
 		PageRequest pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName);
 		if("saleCount".equals(sortName)){
-			pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName,"id");
+			pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName,"upTime");
 		}
 		
 		Page<PhGoods> pages = phGoodsService.findByPage(goodsDto,pageRequest);
@@ -132,6 +139,9 @@ public class GoodsController {
 		
 		List<PhGoods> recommendGoods =  phGoodsService.findRecommend(id);
 		resultMap.put("recommendGoods", recommendGoods);
+		
+		//查询改商品优惠券
+		resultMap.put("voucherProjects", phVoucherProjectRepository.findByMerchantId(phGoods.getMerchantId()));
 		
 		//更新商品浏览量
 		phGoodsService.updateViewCount(id);

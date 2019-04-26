@@ -71,6 +71,12 @@ public class PhGoods implements Serializable {
     /** 备注 **/
     private String remark;
 
+    /** 货号 **/
+    private String code;
+
+    /** 上架时间 **/
+    private Date upTime;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -244,6 +250,25 @@ public class PhGoods implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Column(name = "code", length = 100)
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "up_time")
+    public Date getUpTime() {
+        return upTime;
+    }
+
+    public void setUpTime(Date upTime) {
+        this.upTime = upTime;
     }
 
 }
