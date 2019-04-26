@@ -153,7 +153,8 @@ public class UserController {
 	@PostMapping("/sms")
 	public JsonResult sms(@ApiParam("手机号") @RequestParam String phone,HttpServletRequest request){
 		int code = 123456;
-		if(isPrd){
+		//慢慢的手机号为了审核需要特殊处理
+		if(isPrd && !"18016388248".equals(phone)){
 			code = RandomUtils.nextInt(100000, 999999);
 		}
 		boolean result = smsService.sendMsg(phone, "【OFFWAY】验证码："+code+"。此验证码只用于登陆OFFWAY验证身份，请勿转发他人，10分钟内有效。",IpUtil.getIpAddr(request));
