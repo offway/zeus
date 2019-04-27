@@ -104,6 +104,18 @@ public class OrderController {
 		}
 	}
 	
+	@ApiOperation("退款不退钱")
+	@PostMapping("/return")
+	public JsonResult returnOrder(@ApiParam("预订单号") @RequestParam String preorderNo){
+		try {
+			phPreorderInfoService.returnOrder(preorderNo);
+			return jsonResultHelper.buildSuccessJsonResult(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		}
+	}
+	
 	@ApiOperation("确认收货")
 	@PostMapping("/receipt")
 	public JsonResult receipt(@ApiParam("订单号") @RequestParam String orderNo){

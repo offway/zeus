@@ -32,4 +32,6 @@ public interface PhPreorderInfoService{
 	int countByUserIdAndStatus(Long userId, String status);
 
 	List<String> orderTimeOut();
+
+	void returnOrder(String preorderNo) throws Exception;
 }

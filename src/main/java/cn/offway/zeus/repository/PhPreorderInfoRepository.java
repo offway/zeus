@@ -22,4 +22,6 @@ public interface PhPreorderInfoRepository extends JpaRepository<PhPreorderInfo,L
 	
 	@Query(nativeQuery=true,value="select order_no from ph_preorder_info where status ='0' and create_time<= DATE_SUB(NOW(),INTERVAL 30 MINUTE)")
 	List<String> orderTimeOut();
+	
+	PhPreorderInfo findByOrderNo(String orderno);
 }

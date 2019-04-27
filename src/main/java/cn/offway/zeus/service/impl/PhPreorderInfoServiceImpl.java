@@ -105,6 +105,12 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	}
 	
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
+	public void returnOrder(String preorderNo) throws Exception{
+		returnResult(preorderNo,"");
+	}
+	
+	@Override
 	public List<String> orderTimeOut(){
 		return phPreorderInfoRepository.orderTimeOut();
 	}
@@ -162,6 +168,52 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			failResult(preorderNo,"wxpay");
 		}
 		
+	}
+	
+	private void returnResult(String preorderNo,String payChannel) throws Exception {
+		PhPreorderInfo phPreorderInfo = phPreorderInfoRepository.findByOrderNo(preorderNo);
+		if(null != phPreorderInfo){
+			phPreorderInfo.setStatus("2");//交易关闭
+			phPreorderInfo.setPayChannel(payChannel);
+			save(phPreorderInfo);
+			
+			//退余额
+			Double walletAmount = phPreorderInfo.getWalletAmount();
+			if(null != walletAmount){
+				Long userId = phPreorderInfo.getUserId();
+				PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+				phUserInfo.setBalance(phUserInfo.getBalance()+walletAmount);
+				phUserInfoService.save(phUserInfo);
+			}
+			
+			//退加息券
+			List<Long> pvoucherIds = new ArrayList<>(); phPreorderInfo.getPVoucherId();
+			if(null != phPreorderInfo.getPVoucherId()){
+				pvoucherIds.add(phPreorderInfo.getPVoucherId());
+			}
+			
+			List<PhOrderInfo> orderInfos = phOrderInfoRepository.findByPreorderNoAndStatus(preorderNo, "0");
+			for (PhOrderInfo phOrderInfo : orderInfos) {
+				if(null != phOrderInfo.getMVoucherId()){
+					pvoucherIds.add(phOrderInfo.getMVoucherId());
+				}
+				
+			}
+			if(pvoucherIds.size()>0){
+				phVoucherInfoRepository.back(pvoucherIds);
+			}
+			
+			//更新订单状态
+			phOrderInfoRepository.updateStatusByPreOrderNo(preorderNo,"0","4",payChannel);
+			
+			//恢复库存
+			List<PhOrderGoods> phOrderGoodss = phOrderGoodsRepository.findByPreorderNo(preorderNo);
+			for (PhOrderGoods phOrderGoods : phOrderGoodss) {
+				Long stockId = phOrderGoods.getGoodsStockId();
+				Long count = phOrderGoods.getGoodsCount();
+				phGoodsStockRepository.addStock(stockId, count);
+			}
+		}
 	}
 
 	private void failResult(String preorderNo,String payChannel) throws Exception {
