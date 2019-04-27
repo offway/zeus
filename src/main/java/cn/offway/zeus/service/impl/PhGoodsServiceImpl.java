@@ -102,7 +102,8 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 					Root<PhBrand> subRoot = subquery.from(PhBrand.class);
 					subquery.select(subRoot);
 					subquery.where(
-							criteriaBuilder.equal(root.get("brandId"), subRoot.get("id"))
+							criteriaBuilder.equal(root.get("brandId"), subRoot.get("id")),
+							criteriaBuilder.equal(subRoot.get("type"), goodsDto.getBrandType())
 							);
 					params.add(criteriaBuilder.exists(subquery));
 				}
