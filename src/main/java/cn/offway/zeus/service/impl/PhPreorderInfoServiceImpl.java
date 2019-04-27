@@ -233,7 +233,12 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			}
 			
 			//更新商品销量
-			phGoodsRepository.updateSaleCount(preorderNo);
+			List<PhOrderGoods> phOrderGoods =  phOrderGoodsRepository.findByPreorderNo(preorderNo);
+			for (PhOrderGoods goods : phOrderGoods) {
+				phGoodsRepository.updateSaleCount(goods.getId(), goods.getGoodsCount());
+			}
+			
+			
 			
 			try {
 				//短信通知商户

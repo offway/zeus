@@ -32,8 +32,8 @@ public interface PhGoodsRepository extends JpaRepository<PhGoods,Long>,JpaSpecif
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="update ph_goods g set g.sale_count = g.sale_count +(select og.goods_count from ph_order_goods og where og.preorder_no=?1 and og.goods_id=g.id) where g.id in (select goods_id from ph_order_goods where preorder_no=?1)")
-	int updateSaleCount(String preorderNo);
+	@Query(nativeQuery=true,value="update ph_goods g set g.sale_count = g.sale_count + ?2 where id=?1")
+	int updateSaleCount(Long goodsId,Long count);
 	
 	
 }
