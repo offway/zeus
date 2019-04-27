@@ -186,7 +186,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 				phUserInfoService.save(phUserInfo);
 			}
 			
-			//退加息券
+			/*//退加息券
 			List<Long> pvoucherIds = new ArrayList<>(); phPreorderInfo.getPVoucherId();
 			if(null != phPreorderInfo.getPVoucherId()){
 				pvoucherIds.add(phPreorderInfo.getPVoucherId());
@@ -201,10 +201,10 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			}
 			if(pvoucherIds.size()>0){
 				phVoucherInfoRepository.back(pvoucherIds);
-			}
+			}*/
 			
 			//更新订单状态
-			phOrderInfoRepository.updateStatusByPreOrderNo(preorderNo,"0","4",payChannel);
+			phOrderInfoRepository.updateStatusByPreOrderNo(preorderNo,"1","4",payChannel);
 			
 			//恢复库存
 			List<PhOrderGoods> phOrderGoodss = phOrderGoodsRepository.findByPreorderNo(preorderNo);
