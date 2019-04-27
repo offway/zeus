@@ -296,6 +296,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 				//短信通知商户
 				List<String> phones = phOrderInfoRepository.findMerchantPhone(preorderNo);
 				StringBuilder sb = new StringBuilder();
+				sb.append("15001775461,");
 				for (String p : phones) {
 					sb.append(p);
 					sb.append(",");
