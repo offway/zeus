@@ -168,7 +168,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			Integer num = brandGoodsNum.get(phGoodsStock.getMerchantId());
 			brandGoodsNum.put(phGoodsStock.getMerchantId(), (num==null?0:num.intValue())+phShoppingCart.getGoodsCount().intValue());
 
-			sumAmount+=phShoppingCart.getPrice();
+			sumAmount = MathUtils.add(sumAmount, MathUtils.mul(phShoppingCart.getPrice(), phShoppingCart.getGoodsCount().intValue()));
 		}
 		
 		
@@ -191,7 +191,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			//查询可用店铺券
 			double merchantSumAmount = 0D;
 			for (PhShoppingCart c : carts) {
-				merchantSumAmount+=c.getPrice();
+				merchantSumAmount= MathUtils.add(merchantSumAmount, MathUtils.mul(c.getPrice(), c.getGoodsCount().intValue()));
 			}
 			s.put("merchantVouchers", phVoucherInfoService.findUseByMerchant(userId, merchantId, merchantSumAmount));
 			
