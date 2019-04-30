@@ -96,6 +96,8 @@ public class LaborController {
 				"Air Jordan 1  x Off-White北卡蓝","YEEZY 350V2亚洲限定",
 				"OFFWAY项链","Nike Air Max 97“万花筒”"};
 		String[] names = {"来不及道别","你再难遇我","把思念吞下","尝尽温柔","乜许、伱卟懂","心悸","把爱放生吧","媚骨","等我把愚勇熬成温柔","满心欢喜","倾慕","寄没有地址的信","心誶","凉了时光薄了情","安若","欠莪一个拥抱","称霸幼儿园","稚念","此用户已被腾讯注销","顾妄","甜味少女心","孑然","卖萌惯犯","該落的眼淚始終會落下","时光过客","宿命","苁心茾始","学不会伪装","漠念","久浪不归","傲娇萝莉","言初","醉后方知爱意浓","浅念","咖啡不解酒的醉","偏执的温柔","吹梦到西洲","陌九","一路小跑跑进你心里","心如柠檬自然酸","天使之魅","顾清辞","月亮快递员","哥的世界、闲人免进","久不愈","森屿暮歌","浮生未歇","OFFWAY_640186","OFFWAY_612200","OFFWAY_765886","OFFWAY_255847","OFFWAY_772764","OFFWAY_325513","OFFWAY_113136","OFFWAY_516238","OFFWAY_929578","OFFWAY_254744","OFFWAY_270070","OFFWAY_580174","OFFWAY_734586","OFFWAY_240954","OFFWAY_487092","OFFWAY_868363","OFFWAY_638904","OFFWAY_141138","OFFWAY_215713","OFFWAY_629802","OFFWAY_139256","OFFWAY_571726","OFFWAY_813862","OFFWAY_578299"};
+		String[] heads = {"http://qiniu.offway.cn/image/head/一口啾啾咪+.png","http://qiniu.offway.cn/image/head/与爱错过.jpg","http://qiniu.offway.cn/image/head/仙女东东与花是宝藏.png","http://qiniu.offway.cn/image/head/以大橘为重.png","http://qiniu.offway.cn/image/head/伊娃.jpg","http://qiniu.offway.cn/image/head/勿.jpg","http://qiniu.offway.cn/image/head/吃瓜散人.png","http://qiniu.offway.cn/image/head/啊AW.png","http://qiniu.offway.cn/image/head/奈囍.png","http://qiniu.offway.cn/image/head/奶油可乐饼.png","http://qiniu.offway.cn/image/head/如果我问心有愧呢.jpg","http://qiniu.offway.cn/image/head/如果有如果.png","http://qiniu.offway.cn/image/head/孙甜蟹.png","http://qiniu.offway.cn/image/head/小华仔.jpg","http://qiniu.offway.cn/image/head/小明.jpg","http://qiniu.offway.cn/image/head/小男佣.jpg","http://qiniu.offway.cn/image/head/小蛮的水仙花.png","http://qiniu.offway.cn/image/head/小顽童.jpg","http://qiniu.offway.cn/image/head/就叫角角吧.png","http://qiniu.offway.cn/image/head/张大丹.jpg","http://qiniu.offway.cn/image/head/微信图片_20190408184728.png","http://qiniu.offway.cn/image/head/思思.jpg","http://qiniu.offway.cn/image/head/我爱台妹.jpg","http://qiniu.offway.cn/image/head/搞错性别.jpg","http://qiniu.offway.cn/image/head/春眠是个好名字哦.png","http://qiniu.offway.cn/image/head/林西柚-.png","http://qiniu.offway.cn/image/head/柳泫雅.png","http://qiniu.offway.cn/image/head/欲晞sir.png","http://qiniu.offway.cn/image/head/江月.jpg","http://qiniu.offway.cn/image/head/深海里的彼得潘.png","http://qiniu.offway.cn/image/head/爱吃面包的Sandy.png","http://qiniu.offway.cn/image/head/王大锤.jpg","http://qiniu.offway.cn/image/head/糖拌大橙子.png","http://qiniu.offway.cn/image/head/红彤彤的少女心.png","http://qiniu.offway.cn/image/head/纽扣少女的居.png","http://qiniu.offway.cn/image/head/罗懵鲨鱼.png","http://qiniu.offway.cn/image/head/美少女壮士lulu.png","http://qiniu.offway.cn/image/head/胡成阳.jpg","http://qiniu.offway.cn/image/head/腹黑少女.jpg","http://qiniu.offway.cn/image/head/药.jpg","http://qiniu.offway.cn/image/head/萌作作作汉子.jpg","http://qiniu.offway.cn/image/head/蜜桃桃硬糖__.png","http://qiniu.offway.cn/image/head/螃蟹先生.jpg","http://qiniu.offway.cn/image/head/转身变超人sunny.png","http://qiniu.offway.cn/image/head/达四零.jpg","http://qiniu.offway.cn/image/head/酸妮耶.png","http://qiniu.offway.cn/image/head/里德尔树下.png","http://qiniu.offway.cn/image/head/钟乐一生.jpg","http://qiniu.offway.cn/image/head/飘飘飘飘.jpg","http://qiniu.offway.cn/image/head/黄‘宗’泽.jpg"};
+		
 		int randp = RandomUtils.nextInt(0, prices.length-1);
 		int randn = RandomUtils.nextInt(0, names.length-1);
 		String name = prices[randp];
@@ -105,6 +107,10 @@ public class LaborController {
 		phLaborLucky.setCreateTime(new Date());
 		phLaborLucky.setName(name);
 		phLaborLucky.setNickname(nickName);
+		if(nickName.indexOf("OFFWAY")<0){
+			int randh = RandomUtils.nextInt(0, heads.length-1);
+			phLaborLucky.setHeadimgurl(heads[randh]);
+		}
 		
 		int index = RandomUtils.nextInt(0, laborLuckies.size()-1);
 		laborLuckies.add(index, phLaborLucky);
