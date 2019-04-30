@@ -28,6 +28,7 @@ import cn.offway.zeus.domain.PhStarsameImage;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.service.PhBannerService;
 import cn.offway.zeus.service.PhBrandService;
+import cn.offway.zeus.service.PhConfigService;
 import cn.offway.zeus.service.PhGoodsService;
 import cn.offway.zeus.service.PhStarsameImageService;
 import cn.offway.zeus.service.PhStarsameService;
@@ -78,6 +79,9 @@ public class IndexController {
 	
 	@Autowired
 	private PhBrandService phBrandService;
+	
+	@Autowired
+	private PhConfigService phConfigService;
 
 	@ResponseBody
 	@GetMapping("/")
@@ -167,34 +171,9 @@ public class IndexController {
 		map.put("brands", brands);
 		List<PhGoods> phGoods = phGoodsService.indexData();
 		map.put("goods", phGoods);
-		return jsonResultHelper.buildSuccessJsonResult(map);
-	}
-	
-	
-	@ApiOperation(value = "分享文案")
-	@GetMapping("/share/content")
-	@ResponseBody
-	public JsonResult shareContent(@ApiParam("活动类型[0-赚钱达人,1-51活动,2-品牌日活动]") @RequestParam String type){
-		Map<String, Object> map = new HashMap<>();
-		String image = null;
-		String title = null;
-		String content = null;
-		switch (type) {
-		case "0":
-			image = "https://qn.offway.cn/image/eff3b181414d4f649ab7972ae1e5d7dc.jpg";
-			title = "送你【350元现金大礼包】，点击领取！";
-			content = "我在OFFWAY潮流电商App，送你350元新人福利，助我赢350元大礼~";
-			break;
-		case "1":
-			break;
-		case "2":
-			break;
-		default:
-			break;
-		}
-		map.put("image", image);
-		map.put("title", title);
-		map.put("content", content);
+		String config = phConfigService.findContentByName("INDEX_CATEGORY");
+		map.put("categories", JSON.parse(config));
+		
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 	

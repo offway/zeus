@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +101,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 		String name = "";
 		int index = 1;
 		if(null != phLaborPrize){
-			if(random <= 5){
+			if(random <= 3){
 				//OFFWAY惊喜礼包
 				phLaborPrize.setStatus("1");
 				phLaborPrizeRepository.save(phLaborPrize);
@@ -116,7 +117,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 				phLaborLuckyRepository.save(phLaborLucky);
 				index = 1;
 				
-			}else if(random >=6 && random <= 70){
+			}else if(random >=4 && random <= 68){
 				//5-200元现金礼包
 				name = voucherlist(userId, now, phUserInfo);
 				index = 2;
@@ -139,6 +140,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 		
 		resultMap.put("index", index);
 		resultMap.put("name", name);
+		
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 

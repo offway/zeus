@@ -2,6 +2,7 @@ package cn.offway.zeus.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.offway.zeus.domain.PhLaborLucky;
 import java.lang.Long;
@@ -17,5 +18,6 @@ public interface PhLaborLuckyRepository extends JpaRepository<PhLaborLucky,Long>
 
 	List<PhLaborLucky> findByUserIdOrderByCreateTimeDesc(Long userId);
 	
+	@Query(nativeQuery=true,value="select * from ph_labor_lucky order by create_time desc limit 99")
 	List<PhLaborLucky> findByOrderByCreateTimeDesc();
 }
