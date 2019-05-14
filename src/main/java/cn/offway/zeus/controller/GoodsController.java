@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ import cn.offway.zeus.service.PhGoodsImageService;
 import cn.offway.zeus.service.PhGoodsPropertyService;
 import cn.offway.zeus.service.PhGoodsService;
 import cn.offway.zeus.service.PhGoodsStockService;
+import cn.offway.zeus.service.PhPickService;
 import cn.offway.zeus.service.PhShoppingCartService;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -72,6 +74,9 @@ public class GoodsController {
 	
 	@Autowired
 	private PhVoucherProjectRepository phVoucherProjectRepository;
+	
+	@Autowired
+	private PhPickService phPickService;
 	
 	
 	
@@ -177,6 +182,12 @@ public class GoodsController {
 	public JsonResult orderInit(@RequestBody @ApiParam("请求参数") OrderInitDto orderInitDto){
 		return phShoppingCartService.orderInit(orderInitDto);
 
+	}
+	
+	@ApiOperation("优选详情")
+	@GetMapping("/pick/{id}")
+	public JsonResult pickInfo(@ApiParam("优选ID") @PathVariable Long id){
+		return jsonResultHelper.buildSuccessJsonResult(phPickService.findOne(id));
 	}
 	
 }

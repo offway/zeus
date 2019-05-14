@@ -20,7 +20,9 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import cn.offway.zeus.domain.PhStarsame;
 import cn.offway.zeus.repository.PhStarsameGoodsRepository;
 import cn.offway.zeus.repository.PhStarsameImageRepository;
+import cn.offway.zeus.repository.PhStarsameRepository;
 import cn.offway.zeus.service.PhStarsameService;
+import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
@@ -44,6 +46,9 @@ public class StarsameController {
 	
 	@Autowired
 	private PhStarsameGoodsRepository phStarsameGoodsRepository;
+	
+	@Autowired
+	private PhStarsameRepository phStarsameRepository;
 	
 	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
@@ -79,6 +84,7 @@ public class StarsameController {
     		praised = true;
     	}
     	resultMap.put("praised",praised);
+    	resultMap.put("callCount",phStarsameRepository.countCall(id));
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 	
@@ -98,6 +104,24 @@ public class StarsameController {
 			stringRedisTemplate.opsForValue().set(STARSAME_PRAISE+"_"+id+"_"+userId, "");
     	}
 
+		return jsonResultHelper.buildSuccessJsonResult(null);
+	}
+	
+	@ApiOperation("明星同款打call")
+	@PostMapping("/call")
+	public JsonResult call(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("明星同款ID") @RequestParam Long id){
+		
+		int count = phStarsameRepository.countCall(id, userId);
+		if(count == 0){
+			phStarsameRepository.insertCall(id, userId);
+		}else{
+			int c = phStarsameRepository.call(id, userId);
+			if(c == 0){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.CALL_LIMIT);
+			}
+		}
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	

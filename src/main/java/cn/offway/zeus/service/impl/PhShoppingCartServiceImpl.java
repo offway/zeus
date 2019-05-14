@@ -15,10 +15,12 @@ import org.springframework.util.CollectionUtils;
 
 import cn.offway.zeus.domain.PhGoodsProperty;
 import cn.offway.zeus.domain.PhGoodsStock;
+import cn.offway.zeus.domain.PhMerchantFare;
 import cn.offway.zeus.domain.PhShoppingCart;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.dto.OrderInitDto;
 import cn.offway.zeus.dto.OrderInitStockDto;
+import cn.offway.zeus.repository.PhMerchantFareRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhGoodsPropertyService;
 import cn.offway.zeus.service.PhGoodsStockService;
@@ -63,6 +65,10 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	
 	@Autowired
 	private PhUserInfoService phUserInfoService;
+	
+	@Autowired
+	private PhMerchantFareRepository phMerchantFareRepository;
+	
 	
 	
 	@Override
@@ -187,6 +193,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 				fare = phMerchantService.calculateFare(merchantId, brandGoodsNum.get(merchantId), addrId);
 			}
 			s.put("fare", fare);
+			//是否顺丰速运
+			PhMerchantFare phMerchantFare = phMerchantFareRepository.findByMerchantIdAndIsDefault(merchantId, "1");
+			s.put("isSf", phMerchantFare.getIsSf());
 			
 			//查询可用店铺券
 			double merchantSumAmount = 0D;

@@ -23,9 +23,9 @@ public class ScheduledService {
 	private PhCapitalFlowService phCapitalFlowService;
 	
 	/**
-	 * 订单超时关闭
+	 * 订单超时关闭-捡漏
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/20 * * * ?")
 	public void orderTimeOut() {
 		logger.info("订单超时关闭定时任务开始");
 		try {

@@ -32,6 +32,9 @@ public class GoodsDto implements Serializable {
     @ApiModelProperty(value ="类目[卫衣，T恤等]")
     private String category;
     
+    @ApiModelProperty(value ="优选ID")
+    private Long pickId;
+    
     @ApiModelProperty(required = true,value ="页码,从0开始")
     private int page;
     
@@ -124,6 +127,14 @@ public class GoodsDto implements Serializable {
 
 	public void setBrandType(String brandType) {
 		this.brandType = brandType;
+	}
+
+	public Long getPickId() {
+		return pickId;
+	}
+
+	public void setPickId(Long pickId) {
+		this.pickId = pickId;
 	}
     
 }

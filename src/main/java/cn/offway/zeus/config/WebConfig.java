@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.sensorsdata.analytics.javasdk.SensorsAnalytics;
 import com.yunpian.sdk.YunpianClient;
 
+import io.netty.util.HashedWheelTimer;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -61,4 +62,9 @@ public class WebConfig extends WebMvcConfigurerAdapter{
                 .paths(PathSelectors.any())
                 .build();
 	}
+	
+	@Bean
+	public HashedWheelTimer hashedWheelTimer(){
+		return new HashedWheelTimer();
+	} 
 }

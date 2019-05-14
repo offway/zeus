@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import cn.offway.zeus.domain.PhAddress;
 import cn.offway.zeus.domain.PhOrderExpressInfo;
@@ -31,6 +34,7 @@ import cn.offway.zeus.domain.PhPreorderInfo;
 import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.dto.OrderInfoDto;
 import cn.offway.zeus.dto.PreorderDto;
+import cn.offway.zeus.enums.ExpressCodeEnum;
 import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.service.Kuaidi100Service;
 import cn.offway.zeus.service.PhAddressService;
@@ -203,47 +207,6 @@ public class OrderController {
 		return jsonResultHelper.buildSuccessJsonResult(page3);
 	}
 	
-	/*@SuppressWarnings("unchecked")
-	@ApiOperation("待付款订单详情")
-	@GetMapping("/info/pending")
-	public JsonResult infoPending(@ApiParam("预订单号") @RequestParam String preOrderNo){
-		
-		PhPreorderInfo phPreorderInfo = phPreorderInfoService.findByOrderNoAndStatus(preOrderNo, "0");
-		Map<String, Object> resultMap = new HashMap<>();//JSON.parseObject(JSON.toJSONString(phPreorderInfo), Map.class);
-		
-		resultMap.put("amount", phPreorderInfo.getAmount());
-		resultMap.put("orderNo", phPreorderInfo.getOrderNo());
-		resultMap.put("mailFee", phPreorderInfo.getMailFee());
-		resultMap.put("price", phPreorderInfo.getPrice());
-		resultMap.put("status", phPreorderInfo.getStatus());
-		resultMap.put("voucherAmount", phPreorderInfo.getVoucherAmount());
-		resultMap.put("walletAmount", phPreorderInfo.getWalletAmount());
-		
-		
-		PhAddress phAddress = phAddressService.findOne(phPreorderInfo.getAddrId());
-		Map<String, Object> addrMap = new HashMap<>();
-		addrMap.put("city", phAddress.getCity());
-		addrMap.put("content", phAddress.getContent());
-		addrMap.put("county", phAddress.getCounty());
-		addrMap.put("phone", phAddress.getPhone());
-		addrMap.put("province", phAddress.getProvince());
-		addrMap.put("realName", phAddress.getRealName());
-		resultMap.put("address", addrMap);
-		
-		
-		List<PhOrderGoods> goods = new ArrayList<>();
-		
-		List<PhOrderInfo> orderInfos = phOrderInfoService.findByPreorderNoAndStatus(phPreorderInfo.getOrderNo(), "0");
-		for (PhOrderInfo phOrderInfo : orderInfos) {
-			goods.addAll(phOrderGoodsService.findByOrderNo(phOrderInfo.getOrderNo()));
-		}
-		
-		resultMap.put("goods", goods);
-		
-		return jsonResultHelper.buildSuccessJsonResult(resultMap);
-
-	}*/
-	
 	@ApiOperation("订单详情")
 	@GetMapping("/info")
 	public JsonResult info(
@@ -332,19 +295,44 @@ public class OrderController {
 			addrMap.put("province", phOrderExpressInfo.getToProvince());
 			addrMap.put("realName", phOrderExpressInfo.getToRealName());
 			
-			if(StringUtils.isNotBlank(phOrderExpressInfo.getMailNo())){
-//				String result = kuaidi100Service.query("yuantong", "805283162742333582", "18621866390");
-				String result = kuaidi100Service.query(phOrderExpressInfo.getExpressCode(), phOrderExpressInfo.getMailNo(), phOrderExpressInfo.getToPhone());
-				resultMap.put("express", JSON.parse(result));
+			String mailNo = phOrderExpressInfo.getMailNo();
+			if(StringUtils.isNotBlank(mailNo)){
+				resultMap.put("express", queryExpress(phOrderExpressInfo));
 			}
 		}
 		
 		resultMap.put("address", addrMap);
-
-		
 		
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 
+	}
+	
+	
+	@ApiOperation("物流详情")
+	@GetMapping("/express")
+	public JsonResult express(@ApiParam("订单号") @RequestParam String orderNo){
+		PhOrderExpressInfo phOrderExpressInfo = phOrderExpressInfoService.findByOrderNoAndType(orderNo, "0");
+		return jsonResultHelper.buildSuccessJsonResult(queryExpress(phOrderExpressInfo));
+
+	}
+
+	private JSONObject queryExpress(PhOrderExpressInfo phOrderExpressInfo) {
+//		String result = kuaidi100Service.query("yuantong", "805283162742333582", "18621866390");
+		String result = kuaidi100Service.query(phOrderExpressInfo.getExpressCode(), phOrderExpressInfo.getMailNo(), phOrderExpressInfo.getToPhone());
+		JSONObject jsonObject = JSON.parseObject(result);
+		JSONArray list = new JSONArray();
+		JSONArray jsonArray = jsonObject.getJSONArray("data");
+		if(null != jsonArray){
+			list.addAll(jsonArray);
+		}
+		Map<String, Object> map = new HashMap<>();
+		map.put("context", "【正在发货】   物流单号："+ExpressCodeEnum.getByCode(phOrderExpressInfo.getExpressCode()).getDesc()+phOrderExpressInfo.getMailNo());
+		String time = DateFormatUtils.format(phOrderExpressInfo.getCreateTime(), "yyyy-MM-dd HH:mm:ss");
+		map.put("time", time);
+		map.put("ftime", time);
+		list.add(map);
+		jsonObject.put("data", list);
+		return jsonObject;
 	}
 			
 	

@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import cn.offway.zeus.domain.PhBrand;
 import cn.offway.zeus.domain.PhGoods;
+import cn.offway.zeus.domain.PhPick;
+import cn.offway.zeus.domain.PhPickGoods;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.repository.PhGoodsRepository;
 import cn.offway.zeus.service.PhGoodsService;
@@ -90,9 +92,12 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 					params.add(criteriaBuilder.equal(root.get("category"), goodsDto.getCategory()));
 				}
 				
-				if(StringUtils.isNotBlank(goodsDto.getType())){
+				String type = goodsDto.getType();
+				if(StringUtils.isNotBlank(type)){
 					In<String> in = criteriaBuilder.in(root.get("type"));
-					in.value("男装＆女装");
+					if("男装".equals(type) || "女装".equals(type)){
+						in.value("男装＆女装");
+					}
 					in.value(goodsDto.getType());
 					params.add(in);
 				}
@@ -104,6 +109,17 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 					subquery.where(
 							criteriaBuilder.equal(root.get("brandId"), subRoot.get("id")),
 							criteriaBuilder.equal(subRoot.get("type"), goodsDto.getBrandType())
+							);
+					params.add(criteriaBuilder.exists(subquery));
+				}
+				
+				if(null != goodsDto.getPickId()){
+					Subquery<PhPickGoods> subquery = criteriaQuery.subquery(PhPickGoods.class);
+					Root<PhPickGoods> subRoot = subquery.from(PhPickGoods.class);
+					subquery.select(subRoot);
+					subquery.where(
+							criteriaBuilder.equal(root.get("id"), subRoot.get("goodsId")),
+							criteriaBuilder.equal(subRoot.get("pickId"), goodsDto.getPickId())
 							);
 					params.add(criteriaBuilder.exists(subquery));
 				}

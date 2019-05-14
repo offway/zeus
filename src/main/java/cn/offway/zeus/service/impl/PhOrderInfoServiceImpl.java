@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
@@ -37,10 +38,10 @@ import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.dto.OrderInitStockDto;
 import cn.offway.zeus.dto.OrderMerchantDto;
 import cn.offway.zeus.exception.StockException;
-import cn.offway.zeus.exception.VoucherException;
 import cn.offway.zeus.repository.PhAddressRepository;
 import cn.offway.zeus.repository.PhOrderGoodsRepository;
 import cn.offway.zeus.repository.PhOrderInfoRepository;
+import cn.offway.zeus.service.OrderTimeoutService;
 import cn.offway.zeus.service.PhGoodsPropertyService;
 import cn.offway.zeus.service.PhGoodsStockService;
 import cn.offway.zeus.service.PhMerchantService;
@@ -52,6 +53,7 @@ import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import cn.offway.zeus.utils.MathUtils;
+import io.netty.util.HashedWheelTimer;
 
 
 /**
@@ -97,6 +99,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	
 	@Autowired
 	private PhShoppingCartService phShoppingCartService;
+	
+	@Autowired
+	private HashedWheelTimer hashedWheelTimer;
 	
 	
 	@Override
@@ -349,6 +354,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		phPreorderInfo.setWalletAmount(orderAddDto.getWalletAmount());
 		phPreorderInfoService.save(phPreorderInfo);
 		
+		hashedWheelTimer.newTimeout(new OrderTimeoutService(preorderNo,phPreorderInfoService), 30, TimeUnit.MINUTES);
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 	
