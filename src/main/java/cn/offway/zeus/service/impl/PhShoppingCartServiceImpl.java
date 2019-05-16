@@ -195,7 +195,12 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			s.put("fare", fare);
 			//是否顺丰速运
 			PhMerchantFare phMerchantFare = phMerchantFareRepository.findByMerchantIdAndIsDefault(merchantId, "1");
-			s.put("isSf", phMerchantFare.getIsSf());
+
+			String isSf = "0";
+			if(null != phMerchantFare){
+				isSf = phMerchantFare.getIsSf();
+			}
+			s.put("isSf", isSf);
 			
 			//查询可用店铺券
 			double merchantSumAmount = 0D;
