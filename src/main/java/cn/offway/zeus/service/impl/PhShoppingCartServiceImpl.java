@@ -23,6 +23,7 @@ import cn.offway.zeus.dto.OrderInitStockDto;
 import cn.offway.zeus.repository.PhMerchantFareRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhGoodsPropertyService;
+import cn.offway.zeus.service.PhGoodsSpecialService;
 import cn.offway.zeus.service.PhGoodsStockService;
 import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.service.PhShoppingCartService;
@@ -68,6 +69,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	
 	@Autowired
 	private PhMerchantFareRepository phMerchantFareRepository;
+	
+	@Autowired
+	private PhGoodsSpecialService phGoodsSpecialService;
 	
 	
 	
@@ -174,7 +178,10 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			Integer num = brandGoodsNum.get(phGoodsStock.getMerchantId());
 			brandGoodsNum.put(phGoodsStock.getMerchantId(), (num==null?0:num.intValue())+phShoppingCart.getGoodsCount().intValue());
 
-			sumAmount = MathUtils.add(sumAmount, MathUtils.mul(phShoppingCart.getPrice(), phShoppingCart.getGoodsCount().intValue()));
+			int count = phGoodsSpecialService.countByGoodsId(phShoppingCart.getGoodsId());
+			if(count == 0){
+				sumAmount = MathUtils.add(sumAmount, MathUtils.mul(phShoppingCart.getPrice(), phShoppingCart.getGoodsCount().intValue()));
+			}
 		}
 		
 		

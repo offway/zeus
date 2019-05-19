@@ -43,6 +43,7 @@ import cn.offway.zeus.repository.PhOrderGoodsRepository;
 import cn.offway.zeus.repository.PhOrderInfoRepository;
 import cn.offway.zeus.service.OrderTimeoutService;
 import cn.offway.zeus.service.PhGoodsPropertyService;
+import cn.offway.zeus.service.PhGoodsSpecialService;
 import cn.offway.zeus.service.PhGoodsStockService;
 import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.service.PhOrderInfoService;
@@ -102,6 +103,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	
 	@Autowired
 	private HashedWheelTimer hashedWheelTimer;
+	
+	@Autowired
+	private PhGoodsSpecialService phGoodsSpecialService;
 	
 	
 	@Override
@@ -165,6 +169,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		double sumAllAmount= 0D;
 		double sumALlPrice= 0D;
 		double sumpVoucherAmout = 0D;
+		double sumPriceByplatform= 0D;//除不能使用平台优惠券的商品总价
 		
 		
 		double pVoucherAmount = 0D;
@@ -232,6 +237,11 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				}
 				phOrderGoods.setRemark(sb.toString());
 				orderGoodss.add(phOrderGoods);
+				
+				int count = phGoodsSpecialService.countByGoodsId(phOrderGoods.getGoodsId());
+				if(count == 0){
+					sumPriceByplatform = MathUtils.add(sumPriceByplatform, phOrderGoods.getPrice());
+				}
 				
 			}
 			String message = orderMerchantDto.getMessage();
@@ -313,7 +323,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		phOrderGoodsRepository.save(orderGoodss);
 		
 		if(null !=pVoucherId){
-			int c = phVoucherInfoService.updateStatus(pVoucherId,sumALlPrice,userId);
+			int c = phVoucherInfoService.updateStatus(pVoucherId,sumPriceByplatform,userId);
 			if(c!=1){
 				throw new Exception("锁定加息券异常");
 			}
