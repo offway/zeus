@@ -1,5 +1,7 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +34,10 @@ public class PhVoucherProjectServiceImpl implements PhVoucherProjectService {
 	@Override
 	public PhVoucherProject findOne(Long id){
 		return phVoucherProjectRepository.findOne(id);
+	}
+	
+	@Override
+	public List<PhVoucherProject> findUseByMerchant(Long merchantId,Double amount){
+		return phVoucherProjectRepository.findUseByMerchant(merchantId, amount);
 	}
 }

@@ -29,6 +29,7 @@ import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.service.PhShoppingCartService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhVoucherInfoService;
+import cn.offway.zeus.service.PhVoucherProjectService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -72,6 +73,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	
 	@Autowired
 	private PhGoodsSpecialService phGoodsSpecialService;
+	
+	@Autowired
+	private PhVoucherProjectService phVoucherProjectService;
 	
 	
 	
@@ -215,6 +219,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 				merchantSumAmount= MathUtils.add(merchantSumAmount, MathUtils.mul(c.getPrice(), c.getGoodsCount().intValue()));
 			}
 			s.put("merchantVouchers", phVoucherInfoService.findUseByMerchant(userId, merchantId, merchantSumAmount));
+			s.put("merchantVPs", phVoucherProjectService.findUseByMerchant(merchantId, merchantSumAmount));
 			
 			list.add(s);
 		}

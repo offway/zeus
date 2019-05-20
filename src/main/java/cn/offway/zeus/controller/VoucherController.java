@@ -78,8 +78,29 @@ public class VoucherController {
 			@ApiParam("用户ID") @RequestParam Long userId,
 			@ApiParam("优惠券方案ID") @RequestParam Long voucherProjectId){
 		
-		return giveVoucher(userId, voucherProjectId);
+		JsonResult jsonResult = giveVoucher(userId, voucherProjectId);
+		jsonResult.setData(phVoucherInfoService.findId(userId, voucherProjectId));
+		return jsonResult;
 
+	}
+	
+	@ApiOperation("领取并使用优惠券")
+	@PostMapping("/use")
+	public JsonResult use(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("优惠券方案ID") @RequestParam Long voucherProjectId){
+		
+		Long id = phVoucherInfoService.findId(userId, voucherProjectId);
+		if(null == id){
+			boolean result = phVoucherInfoService.giveVoucher(userId, voucherProjectId);
+			if(result){
+				id = phVoucherInfoService.findId(userId, voucherProjectId);
+				return jsonResultHelper.buildSuccessJsonResult(id);
+			}else{
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+			}
+		}
+		return jsonResultHelper.buildSuccessJsonResult(id);
 	}
 	
 	

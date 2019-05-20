@@ -75,4 +75,8 @@ public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Lon
 	
 	Long countByUserIdAndStatus(Long userId,String status);
 	
+	@Query(nativeQuery=true,value="select id from ph_voucher_info where user_id=?1 and voucher_project_id=?2 and `status`='0' order by id desc limit 1")
+	Long findId(Long userId,Long voucherProjectId);
+
+	
 }

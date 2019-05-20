@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import cn.offway.zeus.domain.PhVoucherProject;
 
 /**
@@ -13,4 +15,6 @@ public interface PhVoucherProjectService{
 	PhVoucherProject save(PhVoucherProject phVoucherProject);
 	
 	PhVoucherProject findOne(Long id);
+
+	List<PhVoucherProject> findUseByMerchant(Long merchantId, Double amount);
 }

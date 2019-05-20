@@ -21,4 +21,7 @@ public interface PhVoucherProjectRepository extends JpaRepository<PhVoucherProje
 	
 	@Query(nativeQuery=true,value="select * from ph_voucher_project where type='1' and merchant_id=?1 and (NOW() BETWEEN begin_time and end_time or valid_num is not null)")
 	List<PhVoucherProject> findByMerchantId(Long merchantId);
+	
+	@Query(nativeQuery=true,value="select * from ph_voucher_project where type='1' and merchant_id=?1 and NOW() BETWEEN begin_time and end_time and used_min_amount <= ?2")
+	List<PhVoucherProject> findUseByMerchant(Long merchantId,Double amount);
 }
