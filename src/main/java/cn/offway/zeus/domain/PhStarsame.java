@@ -31,6 +31,9 @@ public class PhStarsame implements Serializable {
 
     /** 点赞数 **/
     private Long praiseCount;
+    
+    /** 打call数 **/
+    private Long callCount;
 
     /** 创建时间 **/
     private Date createTime;
@@ -125,5 +128,16 @@ public class PhStarsame implements Serializable {
     public void setSort(Long sort) {
         this.sort = sort;
     }
+
+    @Column(name = "call_count", length = 11)
+	public Long getCallCount() {
+		return callCount;
+	}
+
+	public void setCallCount(Long callCount) {
+		this.callCount = callCount;
+	}
+    
+    
 
 }

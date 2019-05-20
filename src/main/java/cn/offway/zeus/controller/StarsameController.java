@@ -84,7 +84,7 @@ public class StarsameController {
     		praised = true;
     	}
     	resultMap.put("praised",praised);
-    	resultMap.put("callCount",phStarsameRepository.countCall(id));
+//    	resultMap.put("callCount",phStarsameRepository.countCall(id));
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 	
@@ -122,6 +122,7 @@ public class StarsameController {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.CALL_LIMIT);
 			}
 		}
+		phStarsameRepository.addCall(id);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	
