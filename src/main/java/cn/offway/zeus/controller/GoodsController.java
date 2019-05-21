@@ -38,9 +38,11 @@ import cn.offway.zeus.service.PhGoodsService;
 import cn.offway.zeus.service.PhGoodsStockService;
 import cn.offway.zeus.service.PhPickService;
 import cn.offway.zeus.service.PhShoppingCartService;
+import cn.offway.zeus.service.VPickGoodsService;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -77,6 +79,9 @@ public class GoodsController {
 	
 	@Autowired
 	private PhPickService phPickService;
+	
+	@Autowired
+	private VPickGoodsService vPickGoodsService;
 	
 	
 	
@@ -188,6 +193,15 @@ public class GoodsController {
 	@GetMapping("/pick/{id}")
 	public JsonResult pickInfo(@ApiParam("优选ID") @PathVariable Long id){
 		return jsonResultHelper.buildSuccessJsonResult(phPickService.findOne(id));
+	}
+	
+	@ApiOperation("优选商品列表")
+	@PostMapping("/pick/list")
+	public JsonResult pickgoods(
+			@ApiParam("优选ID") @RequestParam Long pickId,
+			@ApiParam("页码,从0开始") @RequestParam int page,
+			@ApiParam("页大小") @RequestParam int size){
+		return jsonResultHelper.buildSuccessJsonResult(vPickGoodsService.findByPage(pickId, new PageRequest(page, size)));
 	}
 	
 }
