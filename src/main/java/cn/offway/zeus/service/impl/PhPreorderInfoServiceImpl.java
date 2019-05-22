@@ -2,7 +2,9 @@ package cn.offway.zeus.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -294,16 +296,10 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			
 			try {
 				//短信通知商户
-				List<String> phones = phOrderInfoRepository.findMerchantPhone(preorderNo);
-				StringBuilder sb = new StringBuilder();
-				sb.append("15001775461,");
-				for (String p : phones) {
-					sb.append(p);
-					sb.append(",");
-				}
-				String phone = sb.toString();
-				if(StringUtils.isNotBlank(phone)){
-					smsService.sendMsgBatch(phone.substring(0,phone.lastIndexOf(",")), "【OFFWAY】提醒您：亲，您有一笔新订单来啦！请尽快发货！");
+				List<Object> phones = phOrderInfoRepository.findMerchantPhone(preorderNo);
+				for (Object p : phones) {
+					Object[] obj = (Object[]) p;
+					smsService.sendMsg(obj[0].toString(), "【OFFWAY】您有一笔新订单，订单编号："+obj[1].toString()+"，商品件数："+obj[2].toString()+"件，请及时登录后台进行发货哦~");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

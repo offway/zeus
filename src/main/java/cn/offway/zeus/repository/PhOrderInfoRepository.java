@@ -44,6 +44,6 @@ public interface PhOrderInfoRepository extends JpaRepository<PhOrderInfo,Long>,J
 	@Query(nativeQuery=true,value="select * from ph_order_info o where o.`status`='3' and DATE_FORMAT(NOW(),'%Y-%m-%d') = DATE_FORMAT(DATE_ADD(o.receipt_time,INTERVAL 8 DAY),'%Y-%m-%d') and exists(select 1 from ph_invite_info i where i.invite_user_id=o.user_id)")
 	List<PhOrderInfo> returnAmountOrders();
 	
-	@Query(nativeQuery=true,value="select phone from ph_address where id in (select addr_id from ph_merchant where id in (select merchant_id from ph_order_info where preorder_no=?1))")
-	List<String> findMerchantPhone(String preorderno);
+	@Query(nativeQuery=true,value="select a.phone,o.order_no,SUM(og.goods_count) from ph_order_info o ,ph_merchant m ,ph_address a,ph_order_goods og where o.order_no = og.order_no and o.merchant_id = m.id and m.addr_id = a.id and o.preorder_no=?1 group by a.phone,o.order_no")
+	List<Object> findMerchantPhone(String preorderno);
 }

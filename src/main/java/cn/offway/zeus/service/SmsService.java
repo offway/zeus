@@ -73,6 +73,33 @@ public class SmsService {
 	}
 	
 	/**
+	 * 发送短信
+	 * @param phone
+	 * @param message
+	 * @return
+	 */
+	public boolean sendMsg(String phone,String message){
+		
+		boolean result = false;
+		if(isPrd){
+			Map<String, String> param = yunpianClient.newParam(2);
+			param.put(YunpianClient.MOBILE, phone);
+			param.put(YunpianClient.TEXT, message);
+			
+			logger.info("短信发送请求:"+JSON.toJSONString(param));
+			Result<SmsSingleSend> r = yunpianClient.sms().single_send(param);
+			logger.info("短信发送响应:"+JSON.toJSONString(r));
+			
+			if(0 == r.getCode()){
+				result = true;
+			}
+		}else{
+			result = true;
+		}
+		return result;
+	}
+	
+	/**
 	 * 发送短信批量
 	 * @param phone 多个,相隔
 	 * @param message
