@@ -17,7 +17,7 @@ public interface PhVoucherInfoService{
 	
 	PhVoucherInfo findOne(Long id);
 
-	List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId);
+	List<PhVoucherInfo> findByUserId(Long userId);
 
 	List<PhVoucherInfo> findByIdInOrderByCreateTimeDesc(List<Long> ids);
 	

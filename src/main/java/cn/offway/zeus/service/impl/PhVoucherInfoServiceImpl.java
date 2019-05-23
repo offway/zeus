@@ -53,8 +53,8 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
-	public List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId){
-		return phVoucherInfoRepository.findByUserIdOrderByCreateTimeDesc(userId);
+	public List<PhVoucherInfo> findByUserId(Long userId){
+		return phVoucherInfoRepository.findByUserId(userId);
 	}
 	
 	@Override

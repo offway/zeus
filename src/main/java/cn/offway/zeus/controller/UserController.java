@@ -318,7 +318,7 @@ public class UserController {
 	private Map<String, Object> userData( PhUserInfo phUserInfo) {
 		Long userId = phUserInfo.getId();
 		//查询优惠券数量
-		phUserInfo.setVoucherCount(phVoucherInfoRepository.countByUserIdAndStatus(userId, "0"));
+		phUserInfo.setVoucherCount(phVoucherInfoRepository.countByUserId(userId));
 		String userInfo = JSON.toJSONString(phUserInfo,SerializerFeature.WriteMapNullValue);
 		Map<String, Object> map = JSON.parseObject(userInfo, Map.class);
 		

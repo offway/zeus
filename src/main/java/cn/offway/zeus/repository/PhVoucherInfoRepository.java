@@ -20,7 +20,7 @@ import java.lang.Long;
 public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Long>,JpaSpecificationExecutor<PhVoucherInfo> {
 
 	@Query(nativeQuery=true,value="select * from ph_voucher_info where user_id=?1 and `status`='0'and NOW() BETWEEN begin_time and end_time order by id desc")
-	List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId);
+	List<PhVoucherInfo> findByUserId(Long userId);
 	
 	List<PhVoucherInfo> findByIdInOrderByCreateTimeDesc(List<Long> ids);
 	
@@ -74,7 +74,8 @@ public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Lon
 	
 	int countByUserIdAndVoucherProjectIdAndStatus(Long userId,Long voucherProjectId,String status);
 	
-	Long countByUserIdAndStatus(Long userId,String status);
+	@Query(nativeQuery=true,value="select count(*) from ph_voucher_info where user_id=?1 and `status`='0'and NOW() BETWEEN begin_time and end_time")
+	Long countByUserId(Long userId);
 	
 	@Query(nativeQuery=true,value="select id from ph_voucher_info where user_id=?1 and voucher_project_id=?2 and `status`='0'and NOW() BETWEEN begin_time and end_time order by id desc limit 1")
 	Long findId(Long userId,Long voucherProjectId);

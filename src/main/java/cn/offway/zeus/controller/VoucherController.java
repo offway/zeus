@@ -49,7 +49,7 @@ public class VoucherController {
 	@ApiOperation("用户优惠券列表")
 	@GetMapping("/list")
 	public JsonResult list(@ApiParam("用户ID") @RequestParam Long userId){
-		return jsonResultHelper.buildSuccessJsonResult(phVoucherInfoService.findByUserIdOrderByCreateTimeDesc(userId));
+		return jsonResultHelper.buildSuccessJsonResult(phVoucherInfoService.findByUserId(userId));
 
 	}
 	
