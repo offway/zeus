@@ -58,6 +58,11 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 	}
 	
 	@Override
+	public List<PhGoods> findBrandRecommend(Long brandId){
+		return phGoodsRepository.findBrandRecommend(brandId);
+	}
+	
+	@Override
 	public List<PhGoods> findRecommend(Long id){
 		return phGoodsRepository.findRecommend(id);
 	}

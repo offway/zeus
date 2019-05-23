@@ -18,4 +18,7 @@ public interface PhBannerRepository extends JpaRepository<PhBanner,Long>,JpaSpec
 
 	@Query(nativeQuery=true,value="select * from ph_banner where `position` = ?1 and `status`='1' and NOW() BETWEEN begin_time and end_time order by sort")
 	List<PhBanner> banners(String position);
+	
+	@Query(nativeQuery=true,value="select * from ph_banner where `status`='1' and NOW() BETWEEN begin_time and end_time order by sort")
+	List<PhBanner> banners();
 }

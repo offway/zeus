@@ -1,23 +1,19 @@
 package cn.offway.zeus.controller;
 
-import static org.mockito.Matchers.intThat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.Set;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.convert.IndexedData;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,17 +24,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.offway.zeus.domain.PhBanner;
 import cn.offway.zeus.domain.PhBrand;
 import cn.offway.zeus.domain.PhConfig;
 import cn.offway.zeus.domain.PhGoods;
 import cn.offway.zeus.domain.PhStarsame;
-import cn.offway.zeus.domain.PhStarsameImage;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.service.PhBannerService;
 import cn.offway.zeus.service.PhBrandService;
 import cn.offway.zeus.service.PhConfigService;
 import cn.offway.zeus.service.PhGoodsService;
-import cn.offway.zeus.service.PhStarsameImageService;
 import cn.offway.zeus.service.PhStarsameService;
 import cn.offway.zeus.service.PhWxuserInfoService;
 import cn.offway.zeus.service.WxService;
@@ -161,8 +156,8 @@ public class IndexController {
 	@ApiOperation(value = "首页banner")
 	@GetMapping("/banners")
 	@ResponseBody
-	public JsonResult banners(){
-		return jsonResultHelper.buildSuccessJsonResult(phBannerService.banners("0"));
+	public JsonResult banners(@ApiParam("展示位置[0-首页顶部,1-首页腹部]") @RequestParam(required = false) String position){
+		return jsonResultHelper.buildSuccessJsonResult(phBannerService.banners(StringUtils.isBlank(position)?"0":position));
 	}
 	
 	@ApiOperation(value = "首页乱七八糟的数据")
@@ -185,45 +180,50 @@ public class IndexController {
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@ApiOperation(value = "首页乱七八糟的数据")
 	@GetMapping("/data/v2")
 	@ResponseBody
 	public JsonResult datav2(){
 		Map<String, Object> map = new HashMap<>();
 		
-		/*String categoryImg = phConfigService.findContentByName("INDEX_CATEGORY_IMG");
-		map.put("categoryImg", JSON.parse(categoryImg));
+		map.put("star", phStarsameService.indexData());
 		
-		String images = phConfigService.findContentByName("INDEX_IMAGES");
-		map.put("images", JSON.parse(images));
+		List<PhBanner> phBanners = phBannerService.banners();
 		
-		List<PhStarsame> phStarsames = phStarsameService.indexData();
-		map.put("star", phStarsames);*/
-		
-		map.put("banners", phBannerService.banners("1"));
-		
-		/*String images = phConfigService.findContentByName("INDEX_BRAND_LOGO");
-		map.put("images", JSON.parse(images));*/
-		
-		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES","INDEX_BRAND_LOGO","INDEX_CATEGORY_IMG","INDEX_CATEGORY");
-		for (PhConfig phConfig : configs) {
-			map.put(phConfig.getName(), JSON.parse(phConfig.getContent()));
+		List<PhBanner> banners = new ArrayList<>();
+		List<PhBanner> promoteSales = new ArrayList<>();
+		for (PhBanner phBanner : phBanners) {
+			if("0".equals(phBanner.getPosition())){
+				banners.add(phBanner);
+			}else if("1".equals(phBanner.getPosition())){
+				promoteSales.add(phBanner);
+			}
 		}
 		
-		/* List<PhBrand> brands = phBrandService.findByIsRecommendOrderBySortAsc("1");
-		map.put("brands", brands);
-		List<PhGoods> phGoods = phGoodsService.indexData();
-		map.put("goods", phGoods);
-		String categories = phConfigService.findContentByName("INDEX_CATEGORY");
-		map.put("categories", JSON.parse(categories));*/
-		
-		
-		
+		map.put("banners", banners);
+		map.put("promoteSales", promoteSales);
+
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES","INDEX_BRAND_LOGO","INDEX_BRAND_GOODS","INDEX_CATEGORY");
+		for (PhConfig phConfig : configs) {
+			String name = phConfig.getName().toLowerCase();
+			String content = phConfig.getContent();
+			if("index_brand_goods".equals(name)){
+				List<Map> brands  = JSON.parseArray(content,Map.class);
+				for (Map<String,Object> brand : brands) {
+					Long brandId = Long.parseLong(brand.get("id").toString());
+					brand.put("goods", phGoodsService.findBrandRecommend(brandId));
+				}
+				map.put(name,brands);
+			}else{
+				map.put(name,JSON.parse(content));
+			}
+		}
 		
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		List<Integer> a = new ArrayList<>();
 		for (int i=1;i<=3000;i++) {
 			int c = RandomUtils.nextInt(10000000, 99999999);
@@ -241,7 +241,7 @@ public class IndexController {
 			IndexController.cc(a, c);
 		}
 		a.add(c);
-	}
+	}*/
 	
 	
 }
