@@ -1,5 +1,7 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +39,10 @@ public class PhConfigServiceImpl implements PhConfigService {
 	@Override
 	public String findContentByName(String name){
 		return phConfigRepository.findContentByName(name);
+	}
+	
+	@Override
+	public List<PhConfig> findByNameIn(String... names){
+		return phConfigRepository.findByNameIn(names);
 	}
 }

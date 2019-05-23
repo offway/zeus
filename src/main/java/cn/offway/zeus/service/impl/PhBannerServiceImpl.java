@@ -37,7 +37,7 @@ public class PhBannerServiceImpl implements PhBannerService {
 	}
 	
 	@Override
-	public List<PhBanner> banners(){
-		return phBannerRepository.banners();
+	public List<PhBanner> banners(String position){
+		return phBannerRepository.banners(position);
 	}
 }

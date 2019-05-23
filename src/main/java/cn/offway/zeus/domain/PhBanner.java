@@ -46,6 +46,9 @@ public class PhBanner implements Serializable {
 
     /** 备注 **/
     private String remark;
+    
+    /** 展示位置[0-首页顶部,1-首页腹部] **/
+    private String position;
 
 
     @Id
@@ -152,5 +155,16 @@ public class PhBanner implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    @Column(name = "position", length = 2)
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+    
+    
 
 }

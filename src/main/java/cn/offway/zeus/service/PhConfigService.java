@@ -1,5 +1,7 @@
 package cn.offway.zeus.service;
 
+import java.util.List;
+
 import cn.offway.zeus.domain.PhConfig;
 
 /**
@@ -15,4 +17,6 @@ public interface PhConfigService{
 	PhConfig findOne(Long id);
 
 	String findContentByName(String name);
+
+	List<PhConfig> findByNameIn(String... names);
 }
