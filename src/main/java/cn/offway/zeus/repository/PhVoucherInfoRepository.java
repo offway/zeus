@@ -19,6 +19,7 @@ import java.lang.Long;
  */
 public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Long>,JpaSpecificationExecutor<PhVoucherInfo> {
 
+	@Query(nativeQuery=true,value="select * from ph_voucher_info where user_id=?1 and `status`='0'and NOW() BETWEEN begin_time and end_time order by id desc")
 	List<PhVoucherInfo> findByUserIdOrderByCreateTimeDesc(Long userId);
 	
 	List<PhVoucherInfo> findByIdInOrderByCreateTimeDesc(List<Long> ids);
