@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import cn.offway.zeus.domain.PhGoods;
 import cn.offway.zeus.dto.GoodsDto;
+import cn.offway.zeus.dto.SearchDto;
 
 /**
  * 商品表Service接口
@@ -29,4 +30,6 @@ public interface PhGoodsService{
 	int updateViewCount(Long id);
 
 	List<PhGoods> findBrandRecommend(Long brandId);
+
+	Page<PhGoods> findByPageForSearch(SearchDto searchDto, Pageable page);
 }

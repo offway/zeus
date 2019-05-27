@@ -12,11 +12,11 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class BrandDto implements Serializable {
 
-    @ApiModelProperty(value ="品牌ID")
+   /* @ApiModelProperty(value ="品牌ID")
     private Long id;
 
     @ApiModelProperty(value ="品牌名称")
-    private String name;
+    private String name;*/
 
     @ApiModelProperty(value ="类型[0-国内品牌，1-国际品牌]")
     private String type;
@@ -27,7 +27,7 @@ public class BrandDto implements Serializable {
     @ApiModelProperty(required = true,value ="页大小")
     private int size;
 
-    public String getName() {
+    /*public String getName() {
         return name;
     }
 
@@ -41,7 +41,7 @@ public class BrandDto implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
+	}*/
 
 	public String getType() {
 		return type;

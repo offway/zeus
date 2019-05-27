@@ -29,6 +29,7 @@ import cn.offway.zeus.domain.PhGoodsProperty;
 import cn.offway.zeus.domain.PhGoodsStock;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.dto.OrderInitDto;
+import cn.offway.zeus.dto.SearchDto;
 import cn.offway.zeus.repository.PhVoucherProjectRepository;
 import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhGoodsCategoryService;
@@ -203,5 +204,12 @@ public class GoodsController {
 			@ApiParam("页大小") @RequestParam int size){
 		return jsonResultHelper.buildSuccessJsonResult(vPickGoodsService.findByPage(pickId, new PageRequest(page, size)));
 	}
+	
+	/*@ApiOperation("搜索商品列表")
+	@PostMapping("/list/search")
+	public JsonResult listsearch(@RequestBody @ApiParam("请求参数") SearchDto searchDto){
+		Page<PhGoods> pages = phGoodsService.findByPageForSearch(searchDto,new PageRequest(searchDto.getPage(), searchDto.getSize() ,Direction.fromString("desc"),"upTime"));
+		return jsonResultHelper.buildSuccessJsonResult(pages);
+	}*/
 	
 }

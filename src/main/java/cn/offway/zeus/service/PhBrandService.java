@@ -26,5 +26,9 @@ public interface PhBrandService{
 
 	List<PhBrand> findByTypeOrderByNameAsc(String type);
 
-	Page<PhBrand> findByPage(BrandDto brandDto, Pageable page);
+	List<PhBrand> findByNameLike(String name);
+
+	PhBrand findByName(String name);
+
+	Page<PhBrand> findByPage(BrandDto brandDto, String isRecommend, Pageable page);
 }

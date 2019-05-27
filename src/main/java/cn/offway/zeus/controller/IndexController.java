@@ -28,8 +28,12 @@ import cn.offway.zeus.domain.PhBanner;
 import cn.offway.zeus.domain.PhBrand;
 import cn.offway.zeus.domain.PhConfig;
 import cn.offway.zeus.domain.PhGoods;
+import cn.offway.zeus.domain.PhGoodsCategory;
+import cn.offway.zeus.domain.PhGoodsType;
 import cn.offway.zeus.domain.PhStarsame;
 import cn.offway.zeus.domain.PhWxuserInfo;
+import cn.offway.zeus.repository.PhGoodsCategoryRepository;
+import cn.offway.zeus.repository.PhGoodsTypeRepository;
 import cn.offway.zeus.service.PhBannerService;
 import cn.offway.zeus.service.PhBrandService;
 import cn.offway.zeus.service.PhConfigService;
@@ -85,6 +89,12 @@ public class IndexController {
 	
 	@Autowired
 	private PhConfigService phConfigService;
+	
+	@Autowired
+	private PhGoodsTypeRepository phGoodsTypeRepository;
+	
+	@Autowired
+	private PhGoodsCategoryRepository phGoodsCategoryRepository;
 
 	@ResponseBody
 	@GetMapping("/")
@@ -222,6 +232,49 @@ public class IndexController {
 		
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
+	
+	@ApiOperation("搜索")
+	@GetMapping("/search")
+	@ResponseBody
+	public JsonResult search(@ApiParam("搜索关键字") @RequestParam String wd){
+		
+		
+		List<String> s = new ArrayList<>();
+		List<Map<String, Object>> list = new ArrayList<>();
+		//匹配品牌
+		List<PhBrand> brands = phBrandService.findByNameLike("%"+wd+"%");
+		for (PhBrand phBrand : brands) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("type", "brand");
+			map.put("value", phBrand.getName());
+			map.put("info", phBrand);
+			list.add(map);
+			s.add(phBrand.getName());
+		}
+		//匹配商品分类
+		List<String> types = phGoodsTypeRepository.findByNameLike("%"+wd+"%");
+		for (String type : types) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("type", "type");
+			map.put("value", type);
+			map.put("info", null);
+			list.add(map);
+			s.add(type);
+		}
+		//匹配商品二级分类
+		List<String> categories = phGoodsCategoryRepository.findByNameLike("%"+wd+"%");
+		for (String category : categories) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("type", "category");
+			map.put("value", category);
+			map.put("info", null);
+			list.add(map);
+			s.add(category);
+		}
+		
+		return jsonResultHelper.buildSuccessJsonResult(s);
+	}
+			
 	
 	/*public static void main(String[] args) {
 		List<Integer> a = new ArrayList<>();

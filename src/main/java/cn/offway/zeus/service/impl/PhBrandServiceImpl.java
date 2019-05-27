@@ -65,20 +65,30 @@ public class PhBrandServiceImpl implements PhBrandService {
 	}
 	
 	@Override
-	public Page<PhBrand> findByPage(final BrandDto brandDto,Pageable page){
+	public List<PhBrand> findByNameLike(String name){
+		return phBrandRepository.findByNameLike(name);
+	}
+	
+	@Override
+	public PhBrand findByName(String name){
+		return phBrandRepository.findByName(name);
+	}
+	
+	@Override
+	public Page<PhBrand> findByPage(final BrandDto brandDto,final String isRecommend,Pageable page){
 		return phBrandRepository.findAll(new Specification<PhBrand>() {
 			
 			@Override
 			public Predicate toPredicate(Root<PhBrand> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 				List<Predicate> params = new ArrayList<Predicate>();
 				
-				if(null != brandDto.getId()){
+				/*if(null != brandDto.getId()){
 					params.add(criteriaBuilder.equal(root.get("id"), brandDto.getId()));
 				}
 				
 				if(StringUtils.isNotBlank(brandDto.getName())){
 					params.add(criteriaBuilder.like(root.get("name"), "%"+brandDto.getName()+"%"));
-				}
+				}*/
 				
 				if(StringUtils.isNotBlank(brandDto.getType())){
 					if("0".equals(brandDto.getType())){
@@ -87,9 +97,15 @@ public class PhBrandServiceImpl implements PhBrandService {
 					params.add(criteriaBuilder.equal(root.get("type"), brandDto.getType()));
 				}
 				
+				if(StringUtils.isNotBlank(isRecommend)){
+					params.add(criteriaBuilder.equal(root.get("isRecommend"), isRecommend));
+				}
+				
+				
+				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
-                criteriaQuery.orderBy(criteriaBuilder.asc(root.get("name")));
+                criteriaQuery.orderBy(criteriaBuilder.asc(root.get("sort")));
 				return null;
 			}
 		}, page);
