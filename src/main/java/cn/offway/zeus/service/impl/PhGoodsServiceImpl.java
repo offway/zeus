@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -24,7 +23,6 @@ import cn.offway.zeus.domain.PhBrand;
 import cn.offway.zeus.domain.PhGoods;
 import cn.offway.zeus.domain.PhPickGoods;
 import cn.offway.zeus.dto.GoodsDto;
-import cn.offway.zeus.dto.SearchDto;
 import cn.offway.zeus.repository.PhGoodsRepository;
 import cn.offway.zeus.service.PhGoodsService;
 
@@ -135,55 +133,6 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
-				return null;
-			}
-		}, page);
-	}
-	
-	@Override
-	public Page<PhGoods> findByPageForSearch(final SearchDto searchDto,Pageable page){
-		return phGoodsRepository.findAll(new Specification<PhGoods>() {
-			
-			@Override
-			public Predicate toPredicate(Root<PhGoods> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-				List<Predicate> params = new ArrayList<Predicate>();
-				
-				Predicate predicate = null;
-//				Order order = null;
-				if(null != searchDto.getBrandId()){
-					predicate = criteriaBuilder.equal(root.get("brandId"),searchDto.getBrandId());
-//					order = criteriaBuilder.asc(root.get("brandId"));
-				}
-				
-				if(StringUtils.isNotBlank(searchDto.getCategory())){
-					predicate = criteriaBuilder.equal(root.get("category"), searchDto.getCategory());
-//					order = criteriaBuilder.asc(root.get("category"));
-				}
-				
-				String type = searchDto.getType();
-				if(StringUtils.isNotBlank(type)){
-					In<String> in = criteriaBuilder.in(root.get("type"));
-					if("男装".equals(type) || "女装".equals(type)){
-						in.value("男装＆女装");
-					}
-					in.value(type);
-					predicate = in;
-//					order = criteriaBuilder.asc(root.get("type"));
-				}
-				
-				if(null == predicate){
-					params.add(criteriaBuilder.like(root.get("name"), "%"+searchDto.getWd()+"%"));
-				}else{
-					params.add(criteriaBuilder.or(predicate,criteriaBuilder.like(root.get("name"), "%"+searchDto.getWd()+"%")));
-
-				}
-				
-				params.add(criteriaBuilder.equal(root.get("status"),  "1"));
-				
-                Predicate[] predicates = new Predicate[params.size()];
-                criteriaQuery.where(params.toArray(predicates));
-                
-//                criteriaQuery.orderBy(order,criteriaBuilder.desc(root.get("upTime")));
 				return null;
 			}
 		}, page);
