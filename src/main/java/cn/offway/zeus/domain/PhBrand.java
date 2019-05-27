@@ -44,6 +44,15 @@ public class PhBrand implements Serializable {
     /** 是否推荐[0-否，1-是] **/
     private String isRecommend;
 
+    /** 商户ID **/
+    private Long merchantId;
+
+    /** 商户名称 **/
+    private String merchantName;
+
+    /** 商户LOGO **/
+    private String merchantLogo;
+
     /** 排序 **/
     private Long sort;
 
@@ -52,6 +61,12 @@ public class PhBrand implements Serializable {
 
     /** 备注 **/
     private String remark;
+
+    /** 品牌LOGO(推荐到首页) **/
+    private String logoIndex;
+
+    /** 品牌banner(高街潮流推荐) **/
+    private String bannerBig;
 
 
     @Id
@@ -146,6 +161,33 @@ public class PhBrand implements Serializable {
         this.isRecommend = isRecommend;
     }
 
+    @Column(name = "merchant_id", length = 11)
+    public Long getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Long merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    @Column(name = "merchant_name", length = 100)
+    public String getMerchantName() {
+        return merchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
+    }
+
+    @Column(name = "merchant_logo", length = 100)
+    public String getMerchantLogo() {
+        return merchantLogo;
+    }
+
+    public void setMerchantLogo(String merchantLogo) {
+        this.merchantLogo = merchantLogo;
+    }
+
     @Column(name = "sort", length = 11)
     public Long getSort() {
         return sort;
@@ -172,6 +214,24 @@ public class PhBrand implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Column(name = "logo_index", length = 200)
+    public String getLogoIndex() {
+        return logoIndex;
+    }
+
+    public void setLogoIndex(String logoIndex) {
+        this.logoIndex = logoIndex;
+    }
+
+    @Column(name = "banner_big", length = 100)
+    public String getBannerBig() {
+        return bannerBig;
+    }
+
+    public void setBannerBig(String bannerBig) {
+        this.bannerBig = bannerBig;
     }
 
 }

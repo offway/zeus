@@ -6,8 +6,10 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,13 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.offway.zeus.domain.PhBrand;
+import cn.offway.zeus.domain.PhGoods;
 import cn.offway.zeus.dto.BrandDto;
+import cn.offway.zeus.dto.BrandRecommendDto;
 import cn.offway.zeus.service.PhBrandService;
+import cn.offway.zeus.service.PhGoodsService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -39,6 +43,9 @@ public class BrandController {
 	
 	@Autowired
 	private PhBrandService phBrandService;
+	
+	@Autowired
+	private PhGoodsService phGoodsService;
 
 	@ApiOperation("全部品牌")
 	@GetMapping("/list")
@@ -57,8 +64,21 @@ public class BrandController {
 	public JsonResult recommends(@RequestBody @ApiParam("品牌属性") BrandDto brandDto) throws Exception{
 	    
 		Page<PhBrand> pages = phBrandService.findByPage(brandDto, "1", new PageRequest(brandDto.getPage(), brandDto.getSize()));
-
-		return jsonResultHelper.buildSuccessJsonResult(pages);
+		
+		List<PhBrand> phBrands = pages.getContent();
+		List<BrandRecommendDto> dtos = new ArrayList<>();
+	
+		for (PhBrand phBrand : phBrands) {
+			BrandRecommendDto dto = new BrandRecommendDto();
+			BeanUtils.copyProperties(phBrand, dto);
+			List<PhGoods> goods = new ArrayList<>();
+			if("0".equals(brandDto.getType())){
+				goods = phGoodsService.findBrandRecommend(phBrand.getId());
+			}
+			dto.setGoods(goods);
+			dtos.add(dto);
+		}
+		return jsonResultHelper.buildSuccessJsonResult(new PageImpl<>(dtos, new PageRequest(brandDto.getPage(), brandDto.getSize()), pages.getTotalElements()));
 	}
 	
 	@ApiOperation("品牌列表分页")
