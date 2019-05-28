@@ -69,7 +69,10 @@ public class PhMerchant implements Serializable {
     private Long returnAddrId;
 
     /** 商户类型[0-品牌商,1-买手店] **/
-    private Long type;
+    private String type;
+
+    /** 商户所在城市[买手店必填] **/
+    private String city;
 
 
     @Id
@@ -239,13 +242,22 @@ public class PhMerchant implements Serializable {
         this.returnAddrId = returnAddrId;
     }
 
-    @Column(name = "type", length = 11)
-    public Long getType() {
+    @Column(name = "type", length = 2)
+    public String getType() {
         return type;
     }
 
-    public void setType(Long type) {
+    public void setType(String type) {
         this.type = type;
+    }
+
+    @Column(name = "city", length = 100)
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
 }

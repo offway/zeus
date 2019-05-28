@@ -49,14 +49,9 @@ public class BrandController {
 
 	@ApiOperation("全部品牌")
 	@GetMapping("/list")
-	public JsonResult list(@ApiParam("类型[0-国内品牌，1-国际品牌]") @RequestParam(required = false) String type){
-		List<PhBrand> brands = new ArrayList<>();
-		if(StringUtils.isBlank(type)){
-			brands = phBrandService.findAll();
-		}else{
-			brands = phBrandService.findByTypeOrderByNameAsc(type);
-		}
-		return jsonResultHelper.buildSuccessJsonResult(brands);
+	public JsonResult list(
+			@ApiParam("类型[0-国内品牌，1-国际品牌]") @RequestParam(required = false) String type){
+		return jsonResultHelper.buildSuccessJsonResult(phBrandService.findAll(type));
 	}
 	
 	@ApiOperation("推荐品牌")

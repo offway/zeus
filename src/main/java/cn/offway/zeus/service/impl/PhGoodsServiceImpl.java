@@ -96,6 +96,10 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 					params.add(criteriaBuilder.equal(root.get("category"), goodsDto.getCategory()));
 				}
 				
+				if(null != goodsDto.getMerchantId()){
+					params.add(criteriaBuilder.equal(root.get("merchantId"), goodsDto.getMerchantId()));
+				}
+				
 				String type = goodsDto.getType();
 				if(StringUtils.isNotBlank(type)){
 					In<String> in = criteriaBuilder.in(root.get("type"));

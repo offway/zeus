@@ -22,8 +22,6 @@ public interface PhBrandService{
 
 	List<PhBrand> findByIsRecommendOrderBySortAsc(String isRecommend);
 
-	List<PhBrand> findAll();
-
 	List<PhBrand> findByTypeOrderByNameAsc(String type);
 
 	List<PhBrand> findByNameLike(String name);
@@ -31,4 +29,6 @@ public interface PhBrandService{
 	PhBrand findByName(String name);
 
 	Page<PhBrand> findByPage(BrandDto brandDto, String isRecommend, Pageable page);
+
+	List<PhBrand> findAll(String type);
 }

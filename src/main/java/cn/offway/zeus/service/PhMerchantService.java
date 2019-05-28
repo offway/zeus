@@ -1,6 +1,10 @@
 package cn.offway.zeus.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import cn.offway.zeus.domain.PhMerchant;
+import cn.offway.zeus.dto.MerchantDto;
 
 /**
  * 商户表Service接口
@@ -15,4 +19,6 @@ public interface PhMerchantService{
 	PhMerchant findOne(Long id);
 
 	double calculateFare(Long id, int num, Long addrId);
+
+	Page<PhMerchant> findByPage(MerchantDto merchantDto, Pageable page);
 }
