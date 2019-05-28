@@ -14,9 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.service.PhConfigService;
 import cn.offway.zeus.service.PhInviteInfoService;
+import cn.offway.zeus.service.PhUserChannelService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.domain.PhInviteInfo;
+import cn.offway.zeus.domain.PhUserChannel;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhUserInfoRepository;
@@ -44,6 +46,9 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	
 	@Autowired
 	private PhConfigService phConfigService;
+	
+	@Autowired
+	private PhUserChannelService phUserChannelService;
 	
 	
 	@Override
@@ -133,6 +138,12 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		}
 		//赠送优惠券大礼包
 		phVoucherInfoService.give(phUserInfo.getId(), Arrays.asList(content.split(",")));
+		
+		//查询渠道
+		PhUserChannel phUserChannel = phUserChannelService.findByPhone(phone);
+		if(null != phUserChannel){
+			phUserInfo.setChannel(phUserChannel.getChannel());
+		}
 		
 		return phUserInfo;
 	}

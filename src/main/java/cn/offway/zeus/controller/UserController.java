@@ -30,6 +30,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import cn.offway.zeus.domain.PhOrderInfo;
 import cn.offway.zeus.domain.PhShoppingCart;
+import cn.offway.zeus.domain.PhUserChannel;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.WxuserInfo;
@@ -41,6 +42,7 @@ import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhNoticeService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
+import cn.offway.zeus.service.PhUserChannelService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.service.PhWxuserInfoService;
@@ -117,6 +119,10 @@ public class UserController {
 	
 	@Autowired
 	private PhVoucherInfoRepository phVoucherInfoRepository;
+	
+	@Autowired
+	private PhUserChannelService phUserChannelService;
+	
 	
 	
 	
@@ -284,7 +290,7 @@ public class UserController {
 	
 	@ApiOperation("绑定第三方登录账号")
 	@PostMapping("/bind")
-	public JsonResult login(
+	public JsonResult bind(
 			@ApiParam("用户ID") @RequestParam Long userId,
 			@ApiParam("微信用户ID") @RequestParam(required=false) String unionid,
 			@ApiParam("微博ID") @RequestParam(required=false) String weiboid,
@@ -419,7 +425,36 @@ public class UserController {
 	@GetMapping("/returnAmounts")
 	public  JsonResult returnAmounts(@ApiParam("用户ID") @RequestParam Long userId){
 		return jsonResultHelper.buildSuccessJsonResult(phCapitalFlowService.findByBusinessTypeAndUserIdOrderByCreateTimeDesc("0", userId));
-
 	}
+	
+	@ApiOperation("渠道登记")
+	@PostMapping("/registerCh")
+	public  JsonResult registerCh(
+			@ApiParam("手机号") @RequestParam String phone,
+			@ApiParam("验证码") @RequestParam String code,
+			@ApiParam("渠道[HY-欢阅传媒]") @RequestParam String channel){
+		
+    	String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
+    	if(StringUtils.isBlank(smsCode)){
+    		return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);
+    	}
+    	
+    	if(!code.equals(smsCode)){
+    		return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_ERROR);
+    	}
+		
+		if(null!=phUserInfoService.findByPhone(phone)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
+		}
+		
+		PhUserChannel phUserChannel = new PhUserChannel();
+		phUserChannel.setChannel(channel);
+		phUserChannel.setCreateTime(new Date());
+		phUserChannel.setPhone(phone);
+		phUserChannelService.save(phUserChannel);
+		return jsonResultHelper.buildSuccessJsonResult(null);
+	}
+	
+	
 	
 }

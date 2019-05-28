@@ -79,6 +79,9 @@ public class PhUserInfo implements Serializable {
     
     @ApiModelProperty("是否赚钱达人[0-否，1-是] ")
     private String isMm;
+    
+    @ApiModelProperty("渠道[HY-欢阅传媒]")
+    private String channel;
 
 
     @Id
@@ -247,5 +250,16 @@ public class PhUserInfo implements Serializable {
     public void setIsMm(String isMm) {
         this.isMm = isMm;
     }
+
+    @Column(name = "channel", length = 20)
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+    
+    
 
 }
