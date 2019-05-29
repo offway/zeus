@@ -68,11 +68,17 @@ public class PhMerchant implements Serializable {
     /** 退货地址ID[见ph_address.id] **/
     private Long returnAddrId;
 
+    /** 商户所在城市[买手店必填] **/
+    private String city;
+
     /** 商户类型[0-品牌商,1-买手店] **/
     private String type;
 
-    /** 商户所在城市[买手店必填] **/
-    private String city;
+    /** 商户banner **/
+    private String banner;
+
+    /** 背景图 **/
+    private String background;
 
 
     @Id
@@ -242,6 +248,15 @@ public class PhMerchant implements Serializable {
         this.returnAddrId = returnAddrId;
     }
 
+    @Column(name = "city", length = 100)
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     @Column(name = "type", length = 2)
     public String getType() {
         return type;
@@ -251,13 +266,22 @@ public class PhMerchant implements Serializable {
         this.type = type;
     }
 
-    @Column(name = "city", length = 100)
-    public String getCity() {
-        return city;
+    @Column(name = "banner", length = 100)
+    public String getBanner() {
+        return banner;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setBanner(String banner) {
+        this.banner = banner;
+    }
+
+    @Column(name = "background", length = 200)
+    public String getBackground() {
+        return background;
+    }
+
+    public void setBackground(String background) {
+        this.background = background;
     }
 
 }
