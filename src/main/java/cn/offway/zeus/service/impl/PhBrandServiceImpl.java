@@ -50,6 +50,11 @@ public class PhBrandServiceImpl implements PhBrandService {
 	}
 	
 	@Override
+	public List<PhBrand> findByMerchantId(Long merchantId){
+		return phBrandRepository.findByMerchantId(merchantId);
+	}
+	
+	@Override
 	public List<PhBrand> findAll(final String type){
 		return phBrandRepository.findAll(new Specification<PhBrand>() {
 			@Override

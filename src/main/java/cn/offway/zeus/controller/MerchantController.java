@@ -1,7 +1,10 @@
 package cn.offway.zeus.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import cn.offway.zeus.domain.PhBrand;
 import cn.offway.zeus.domain.PhMerchant;
-import cn.offway.zeus.dto.BrandDto;
 import cn.offway.zeus.dto.MerchantDto;
-import cn.offway.zeus.repository.PhMerchantBrandRepository;
+import cn.offway.zeus.dto.MerchantInfoDto;
+import cn.offway.zeus.service.PhBrandService;
 import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -37,7 +41,7 @@ public class MerchantController {
 	private PhMerchantService phMerchantService;
 	
 	@Autowired
-	private PhMerchantBrandRepository phMerchantBrandRepository;
+	private PhBrandService phBrandService;
 	
 	@ApiOperation("商户列表")
 	@PostMapping("/listByPage")
@@ -52,7 +56,19 @@ public class MerchantController {
 	@ApiOperation("商户品牌列表")
 	@GetMapping("/brands")
 	public JsonResult listByPage(
-			@ApiParam("商户Id") @RequestParam Long merchantId) throws Exception{
-		return jsonResultHelper.buildSuccessJsonResult(phMerchantBrandRepository.findByMerchantId(merchantId));
+			@ApiParam("商户Id") @RequestParam Long id) throws Exception{
+		return jsonResultHelper.buildSuccessJsonResult(phBrandService.findByMerchantId(id));
+	}
+	
+	@ApiOperation("商户详情")
+	@GetMapping("/info")
+	public JsonResult info(
+			@ApiParam("商户Id") @RequestParam Long id) throws Exception{
+		PhMerchant phMerchant = phMerchantService.findOne(id);
+		MerchantInfoDto dto = new MerchantInfoDto();
+		BeanUtils.copyProperties(phMerchant, dto);
+		List<PhBrand> brands = phBrandService.findByMerchantId(id);
+		dto.setBrands(brands);
+		return jsonResultHelper.buildSuccessJsonResult(dto);
 	}
 }

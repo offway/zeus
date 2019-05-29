@@ -31,4 +31,6 @@ public interface PhBrandService{
 	Page<PhBrand> findByPage(BrandDto brandDto, String isRecommend, Pageable page);
 
 	List<PhBrand> findAll(String type);
+
+	List<PhBrand> findByMerchantId(Long merchantId);
 }
