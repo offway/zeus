@@ -43,8 +43,9 @@ public class LogAspect {
 		}
 		Object params = paramMap;
 		if(paramMap.isEmpty() && args.length == 1){
-			if(!args[0].getClass().getName().equals("org.springframework.security.web.firewall.RequestWrapper")){
-				params = JSON.toJSONString(args[0],SerializerFeature.WriteMapNullValue);
+			Object arg = args[0];
+			if(null != arg && !arg.getClass().getName().equals("org.springframework.security.web.firewall.RequestWrapper")){
+				params = JSON.toJSONString(arg,SerializerFeature.WriteMapNullValue);
 			}
 		}
  
