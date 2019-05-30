@@ -1,10 +1,14 @@
 package cn.offway.zeus.controller;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.offway.zeus.domain.PhLimitedSale;
+import cn.offway.zeus.domain.PhLimitedSaleOp;
 import cn.offway.zeus.dto.LimitedSaleDto;
+import cn.offway.zeus.dto.LimitedSaleInfoDto;
+import cn.offway.zeus.repository.PhLimitedSaleOpRepository;
 import cn.offway.zeus.service.PhLimitedSaleService;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -33,6 +40,9 @@ public class LimitedSaleController {
 	@Autowired
 	private PhLimitedSaleService phLimitedSaleService;
 	
+	@Autowired
+	private PhLimitedSaleOpRepository phLimitedSaleOpRepository;
+	
 	
 	@ApiOperation("限量发售列表")
 	@PostMapping("/list")
@@ -42,8 +52,35 @@ public class LimitedSaleController {
 	}
 	
 	@ApiOperation("限量发售详情")
-	@PostMapping("/info")
-	public JsonResult info(@ApiParam("限量发售ID") @RequestParam Long id){
-		return jsonResultHelper.buildSuccessJsonResult(phLimitedSaleService.findOne(id));
+	@GetMapping("/info")
+	public JsonResult info(
+			@ApiParam("限量发售ID") @RequestParam Long id,
+			@ApiParam("用户ID") @RequestParam(required = false) Long userId){
+		PhLimitedSale phLimitedSale = phLimitedSaleService.findOne(id);
+		LimitedSaleInfoDto dto = new LimitedSaleInfoDto();
+		BeanUtils.copyProperties(phLimitedSale, dto);
+		int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id, userId, "0");
+		dto.setAssisted(c>0);
+		int d = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id, userId, "1");
+		dto.setSubscribed(d>0);
+		return jsonResultHelper.buildSuccessJsonResult(dto);
+	}
+	
+	@ApiOperation("好友助力/订阅")
+	@PostMapping("/op")
+	public JsonResult op(
+			@ApiParam("限量发售ID") @RequestParam Long id,
+			@ApiParam("用户ID") @RequestParam(required = false) Long userId,
+			@ApiParam("类型[0-好友助力,1-订阅]") @RequestParam String type){
+		int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id, userId, type);
+		if(c == 0){
+			PhLimitedSaleOp op = new PhLimitedSaleOp();
+			op.setCreateTime(new Date());
+			op.setLimitedSaleId(id);
+			op.setType(type);
+			op.setUserId(userId);
+			phLimitedSaleOpRepository.save(op);
+		}
+		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 }

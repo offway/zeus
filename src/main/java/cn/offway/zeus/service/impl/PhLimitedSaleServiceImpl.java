@@ -59,25 +59,27 @@ public class PhLimitedSaleServiceImpl implements PhLimitedSaleService {
 				
 				Date now = new Date();
 				
-				Order order = criteriaBuilder.desc(root.get("id"));
+//				Order order = criteriaBuilder.desc(root.get("id"));
 				if(StringUtils.isNotBlank(limitedSaleDto.getType())){
 					if("0".equals(limitedSaleDto.getType())){
 						//最新发售
 						params.add(criteriaBuilder.lessThanOrEqualTo(root.get("beginTime"), now));
 						params.add(criteriaBuilder.greaterThan(root.get("endTime"), now));
-						order = criteriaBuilder.asc(root.get("endTime"));
+//						order = criteriaBuilder.asc(root.get("endTime"));
 					}else{
 						//即将发售
 						params.add(criteriaBuilder.greaterThan(root.get("beginTime"), now));
-						order = criteriaBuilder.asc(root.get("beginTime"));
+//						order = criteriaBuilder.asc(root.get("beginTime"));
 
 					}
 				}
 				
+				params.add(criteriaBuilder.equal(root.get("status"), "1"));
+
 				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
-                criteriaQuery.orderBy(order);
+                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
 				return null;
 			}
 		}, page);
