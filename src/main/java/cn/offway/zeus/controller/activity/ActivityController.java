@@ -57,4 +57,19 @@ public class ActivityController {
 		
 		return jsonResultHelper.buildSuccessJsonResult(name);
 	}
+	
+	@ApiOperation(value = "潮流展抽奖")
+	@PostMapping("/lottery/exhibition")
+	public JsonResult exhibition(){
+		
+		String name = null;
+		PhLaborPrize phLaborPrize = phLaborPrizeRepository.lottery("3");
+		if(null!=phLaborPrize){
+			phLaborPrize.setStatus("1");
+			phLaborPrizeRepository.save(phLaborPrize);
+			name = phLaborPrize.getName();
+		}
+		
+		return jsonResultHelper.buildSuccessJsonResult(name);
+	}
 }
