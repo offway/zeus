@@ -116,10 +116,13 @@ public class GoodsController {
 		List<Map<String, Object>> list = new ArrayList<>();
 		List<PhGoodsStock> phGoodsStocks = phGoodsStockService.findByGoodsId(id);
 		List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsId(id);
+		
+		Long sumStock = 0L;
 		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
 			Map<String, Object> map = new HashMap<>();
+			Long stock = phGoodsStock.getStock();
 			map.put("id", phGoodsStock.getId());
-			map.put("stock", phGoodsStock.getStock());
+			map.put("stock", stock);
 			map.put("img", phGoodsStock.getImage());
 			map.put("price", phGoodsStock.getPrice());
 			
@@ -135,6 +138,7 @@ public class GoodsController {
 			
 			map.put("attributes",attributes );
 			list.add(map);
+			sumStock +=stock;
 		}
 		
 		resultMap.put("goods", phGoods);
@@ -148,6 +152,8 @@ public class GoodsController {
 		//查询改商品优惠券
 		resultMap.put("voucherProjects", phVoucherProjectRepository.findByMerchantId(phGoods.getMerchantId()));
 		
+		//是否售罄
+		resultMap.put("sellOut",sumStock==0); 
 		//更新商品浏览量
 		phGoodsService.updateViewCount(id);
 

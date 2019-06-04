@@ -51,4 +51,9 @@ public class PhGoodsStockServiceImpl implements PhGoodsStockService {
 	public int updateStock(Long stockId,Long count){
 		return phGoodsStockRepository.updateStock(stockId,count);
 	}
+	
+	@Override
+	public int sumStock(Long goodsId){
+		return phGoodsStockRepository.sumStock(goodsId);
+	}
 }

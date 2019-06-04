@@ -50,6 +50,11 @@ public class PhLimitedSaleServiceImpl implements PhLimitedSaleService {
 	}
 	
 	@Override
+	public PhLimitedSale findByGoodsId(Long goodsId){
+		return phLimitedSaleRepository.findByGoodsId(goodsId);
+	}
+	
+	@Override
 	public Page<PhLimitedSale> findByPage(final LimitedSaleDto limitedSaleDto,Pageable page){
 		return phLimitedSaleRepository.findAll(new Specification<PhLimitedSale>() {
 			

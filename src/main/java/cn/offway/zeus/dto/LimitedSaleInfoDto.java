@@ -47,8 +47,8 @@ public class LimitedSaleInfoDto implements Serializable {
     /** 是否助力 **/
     private boolean assisted;
     
-    /** 是否订阅 **/
-    private boolean subscribed;
+    /** 服务器当前时间 **/
+    private Date now;
 
 	public Long getId() {
 		return id;
@@ -146,12 +146,12 @@ public class LimitedSaleInfoDto implements Serializable {
 		this.assisted = assisted;
 	}
 
-	public boolean isSubscribed() {
-		return subscribed;
+	public Date getNow() {
+		return now;
 	}
 
-	public void setSubscribed(boolean subscribed) {
-		this.subscribed = subscribed;
+	public void setNow(Date now) {
+		this.now = now;
 	}
-
+	
 }

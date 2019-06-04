@@ -19,6 +19,7 @@ import cn.offway.zeus.domain.PhLimitedSale;
 import cn.offway.zeus.domain.PhLimitedSaleOp;
 import cn.offway.zeus.dto.LimitedSaleDto;
 import cn.offway.zeus.dto.LimitedSaleInfoDto;
+import cn.offway.zeus.repository.PhGoodsStockRepository;
 import cn.offway.zeus.repository.PhLimitedSaleOpRepository;
 import cn.offway.zeus.service.PhLimitedSaleService;
 import cn.offway.zeus.utils.JsonResult;
@@ -43,7 +44,6 @@ public class LimitedSaleController {
 	@Autowired
 	private PhLimitedSaleOpRepository phLimitedSaleOpRepository;
 	
-	
 	@ApiOperation("限量发售列表")
 	@PostMapping("/list")
 	public JsonResult list(@RequestBody @ApiParam("请求参数") LimitedSaleDto limitedSaleDto){
@@ -59,10 +59,14 @@ public class LimitedSaleController {
 		PhLimitedSale phLimitedSale = phLimitedSaleService.findOne(id);
 		LimitedSaleInfoDto dto = new LimitedSaleInfoDto();
 		BeanUtils.copyProperties(phLimitedSale, dto);
-		int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id, userId, "0");
-		dto.setAssisted(c>0);
-		int d = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id, userId, "1");
-		dto.setSubscribed(d>0);
+		boolean assisted = false;
+		if(null != userId){
+			int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id, userId, "0");
+			assisted = c>0;
+		}
+		dto.setAssisted(assisted);
+		dto.setNow(new Date());
+		
 		return jsonResultHelper.buildSuccessJsonResult(dto);
 	}
 	

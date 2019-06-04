@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import cn.offway.zeus.domain.PhBrand;
 import cn.offway.zeus.domain.PhGoods;
+import cn.offway.zeus.domain.PhLimitedSale;
 import cn.offway.zeus.domain.PhPickGoods;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.repository.PhGoodsRepository;
@@ -134,6 +135,12 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				
 				
 				params.add(criteriaBuilder.equal(root.get("status"),  "1"));
+				
+				Subquery<PhLimitedSale> subquery = criteriaQuery.subquery(PhLimitedSale.class);
+				Root<PhLimitedSale> subRoot = subquery.from(PhLimitedSale.class);
+				subquery.select(subRoot);
+				subquery.where(criteriaBuilder.equal(root.get("id"), subRoot.get("goodsId")));
+				params.add(criteriaBuilder.not(criteriaBuilder.exists(subquery)));
 				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
