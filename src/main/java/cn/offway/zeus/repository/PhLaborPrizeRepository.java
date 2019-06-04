@@ -19,4 +19,6 @@ public interface PhLaborPrizeRepository extends JpaRepository<PhLaborPrize,Long>
 	
 	@Query(nativeQuery = true,value="select * from ph_labor_prize where type=?1 and `status`='0' ORDER BY RAND() limit 1")
 	PhLaborPrize lottery(String type);
+	
+	PhLaborPrize findByTypeAndStatusAndRemark(String type,String status,String remark);
 }
