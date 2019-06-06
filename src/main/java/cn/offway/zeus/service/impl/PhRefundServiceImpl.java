@@ -96,6 +96,17 @@ public class PhRefundServiceImpl implements PhRefundService {
 		if(phOrderInfo.getUserId() != refundDto.getUserId()){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
+		
+		List<String> statuss = new ArrayList<>();
+		//1-已付款,2-已发货,3-已收货
+		statuss.add("1");
+		statuss.add("2");
+		statuss.add("3");
+		if(!statuss.contains(phOrderInfo.getStatus())){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+
+		}
+		
 		String isComplete = "0";
 		if(null != phOrderInfo.getPVoucherId() || null != phOrderInfo.getMVoucherId()|| null != phOrderInfo.getWalletAmount()|| 0D==phOrderInfo.getWalletAmount().doubleValue() || goodsDtos.isEmpty()){
 			isComplete = "1";
