@@ -23,4 +23,6 @@ public interface PhRefundService{
 	JsonResult apply(RefundDto refundDto) throws Exception;
 
 	JsonResult init(String orderNo);
+
+	JsonResult info(Long id);
 }

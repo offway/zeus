@@ -50,4 +50,9 @@ public class PhRefundGoodsServiceImpl implements PhRefundGoodsService {
 	public int deleteByRefundId(Long refundId){
 		return phRefundGoodsRepository.deleteByRefundId(refundId);
 	}
+
+	@Override
+	public List<PhRefundGoods> findByRefundId(Long refundId) {
+		return phRefundGoodsRepository.findByRefundId(refundId);
+	}
 }

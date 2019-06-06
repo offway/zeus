@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import cn.offway.zeus.domain.PhRefundGoods;
+import java.lang.Long;
+import java.util.List;
 
 /**
  * 退款/退货商品明细Repository接口
@@ -18,4 +20,6 @@ public interface PhRefundGoodsRepository extends JpaRepository<PhRefundGoods,Lon
 	Long refundGoodsCount(Long orderGoodsId);
 	
 	int deleteByRefundId(Long refundId);
+	
+	List<PhRefundGoods> findByRefundId(Long refundId);
 }

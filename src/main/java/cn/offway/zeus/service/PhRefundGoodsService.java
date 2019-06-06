@@ -21,4 +21,6 @@ public interface PhRefundGoodsService{
 	Long refundGoodsCount(Long orderGoodsId);
 
 	int deleteByRefundId(Long refundId);
+	
+	List<PhRefundGoods> findByRefundId(Long refundId);
 }

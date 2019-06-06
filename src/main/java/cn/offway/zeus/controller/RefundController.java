@@ -67,4 +67,27 @@ public class RefundController {
 		return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 
 	}
+	
+	@ApiOperation("填写物流单号")
+	@PostMapping("/mailNo")
+	public JsonResult mailNo(
+			@ApiParam("退款申请ID") @RequestParam Long id,
+			@ApiParam("物流单号") @RequestParam String mailNo){
+		PhRefund phRefund = phRefundService.findOne(id);
+//		if("0".equals(phRefund.getStatus())){
+			phRefund.setMailNo(mailNo);
+//			phRefund.setStatus("5");
+			phRefundService.save(phRefund);
+			return jsonResultHelper.buildSuccessJsonResult(null);
+//		}
+//		return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+
+	}
+	
+	@ApiOperation("退款详情")
+	@GetMapping("/info")
+	public JsonResult info(
+			@ApiParam("退款申请ID") @RequestParam Long id){
+		return phRefundService.info(id);
+	}
 }

@@ -8,12 +8,15 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import cn.offway.zeus.domain.PhMerchant;
 import cn.offway.zeus.domain.PhOrderGoods;
 import cn.offway.zeus.domain.PhOrderInfo;
 import cn.offway.zeus.domain.PhRefund;
@@ -22,6 +25,8 @@ import cn.offway.zeus.dto.RefundDto;
 import cn.offway.zeus.dto.RefundGoodsDto;
 import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhRefundRepository;
+import cn.offway.zeus.service.PhAddressService;
+import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.service.PhOrderGoodsService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhRefundGoodsService;
@@ -30,6 +35,7 @@ import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import cn.offway.zeus.utils.MathUtils;
+import io.swagger.annotations.ApiParam;
 
 
 /**
@@ -57,6 +63,12 @@ public class PhRefundServiceImpl implements PhRefundService {
 	
 	@Autowired
 	private PhOrderInfoService phOrderInfoService;
+	
+	@Autowired
+	private PhMerchantService phMerchantService;
+	
+	@Autowired
+	private PhAddressService phAddressService;
 	
 	@Override
 	public PhRefund save(PhRefund phRefund){
@@ -212,6 +224,56 @@ public class PhRefundServiceImpl implements PhRefundService {
 		resultMap.put("orderGoods", goodss);
 		
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
+	}
+	
+	@Override
+	public JsonResult info(Long id){
+		PhRefund phRefund = findOne(id);
+		String isComplete = phRefund.getIsComplete();
+		String orderNo = phRefund.getOrderNo();
+		Map<String, Object> resultMap = new HashMap<>();
+		List<Map<String, Object>> goods = new ArrayList<>();
+		if("1".equals(isComplete)){
+			//整单退款
+			List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
+			for (PhOrderGoods phOrderGoods : phOrderGoodss) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("image", phOrderGoods.getGoodsImage());
+				map.put("name", phOrderGoods.getGoodsName());
+				map.put("count", phOrderGoods.getGoodsCount());
+				map.put("property", phOrderGoods.getRemark());
+				goods.add(map);
+			}
+		}else{
+			List<PhRefundGoods> phRefundGoodss = phRefundGoodsService.findByRefundId(id);
+			for (PhRefundGoods phRefundGoods : phRefundGoodss) {
+				PhOrderGoods phOrderGoods = phOrderGoodsService.findOne(phRefundGoods.getOrderGoodsId());
+				Map<String, Object> map = new HashMap<>();
+				map.put("image", phOrderGoods.getGoodsImage());
+				map.put("name", phOrderGoods.getGoodsName());
+				map.put("count", phRefundGoods.getGoodsCount());
+				map.put("property", phOrderGoods.getRemark());
+				goods.add(map);
+			}
+		}
+		
+		resultMap.put("goods", goods);
+		resultMap.put("refund", phRefund);
+		
+		//不是仅退款，需要查询退货地址
+		if(!"0".equals(phRefund.getType())){
+			//退货地址
+			PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
+			Long merchantId = phOrderInfo.getMerchantId();
+			PhMerchant phMerchant = phMerchantService.findOne(merchantId);
+			Long retAddrId = phMerchant.getReturnAddrId();
+			resultMap.put("addr", phAddressService.findOne(retAddrId));
+		}
+
+		
+		
+		return jsonResultHelper.buildSuccessJsonResult(resultMap);
+
 	}
 
 }
