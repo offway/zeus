@@ -79,19 +79,13 @@ public class PhRefundServiceImpl implements PhRefundService {
 		
 		String orderNo = refundDto.getOrderNo();
 
-		//一笔订单只能提交一次退款申请
-		int c = phRefundRepository.isCompleteOrderNo(orderNo);//查询该订单是否已整单退款-暂时不用
-		if(c>0){
-			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_APPLIED);
-		}
-		
 		List<RefundGoodsDto> goodsDtos = refundDto.getGoods();
 		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
 		if(phOrderInfo.getUserId() != refundDto.getUserId()){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
 		String isComplete = "0";
-		if(null != phOrderInfo.getPVoucherId() || null != phOrderInfo.getMVoucherId() || goodsDtos.isEmpty()){
+		if(null != phOrderInfo.getPVoucherId() || null != phOrderInfo.getMVoucherId()|| null != phOrderInfo.getWalletAmount()|| 0D==phOrderInfo.getWalletAmount().doubleValue() || goodsDtos.isEmpty()){
 			isComplete = "1";
 		}
 		
@@ -101,6 +95,12 @@ public class PhRefundServiceImpl implements PhRefundService {
 		if(null != id){
 			delete(id);
 			phRefundGoodsService.deleteByRefundId(id);
+		}
+		
+		//一笔订单只能提交一次退款申请
+		int c = phRefundRepository.isCompleteOrderNo(orderNo);//查询该订单是否已整单退款-暂时不用
+		if(c>0){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_APPLIED);
 		}
 		
 		Date now = new Date();
