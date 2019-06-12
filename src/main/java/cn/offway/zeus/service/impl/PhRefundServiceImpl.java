@@ -6,10 +6,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder.In;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -97,6 +108,13 @@ public class PhRefundServiceImpl implements PhRefundService {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
 		
+		if(null != phOrderInfo.getReceiptTime()){
+			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).after(new Date())){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_TIMEOUT);
+			}
+		}
+		
+		
 		List<String> statuss = new ArrayList<>();
 		//1-已付款,2-已发货,3-已收货
 		statuss.add("1");
@@ -141,11 +159,14 @@ public class PhRefundServiceImpl implements PhRefundService {
 		phRefund.setAmount(phOrderInfo.getAmount());
 		phRefund = save(phRefund);
 		
+		Long goodsNum = 0L;//退款商品数
+		
+		List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
+
+		
 		if("0".equals(isComplete)){
 			double amount = 0D;
 			Long refundId = phRefund.getId();
-			
-			List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
 			
 			List<PhRefundGoods> phRefundGoodss = new ArrayList<>();
 			
@@ -167,42 +188,22 @@ public class PhRefundServiceImpl implements PhRefundService {
 						phRefundGoods.setGoodsCount(refundGoodsDto.getGoodsCount());
 						amount = MathUtils.add(amount, MathUtils.div(phOrderGoods.getPrice(), orderGoodsCount,2)*phRefundGoods.getGoodsCount());
 						phRefundGoodss.add(phRefundGoods);
-
+						goodsNum+=phRefundGoods.getGoodsCount();
 					}
 				}
 			}
-
-				
-				
-			/*for (PhOrderGoods phOrderGoods : phOrderGoodss) {
-				Long orderGoodsId = phOrderGoods.getId();
-				PhRefundGoods phRefundGoods = new PhRefundGoods();
-				phRefundGoods.setCreateTime(now);
-				Long orderGoodsCount = phOrderGoods.getGoodsCount();
-				Long count = phRefundGoodsService.refundGoodsCount(orderGoodsId);
-				phRefundGoods.setGoodsCount(orderGoodsCount.longValue()-count.longValue());//减去已经退款的数量
-				phRefundGoods.setOrderGoodsId(orderGoodsId);
-				phRefundGoods.setRefundId(refundId);
-				phRefundGoods.setVersion(0L);
-				for (RefundGoodsDto refundGoodsDto : goodsDtos) {
-					if(orderGoodsId.longValue() == refundGoodsDto.getOrderGoodsId().longValue()){
-						phRefundGoods.setGoodsCount(refundGoodsDto.getGoodsCount());
-					}
-				}
-				if(phRefundGoods.getGoodsCount().longValue()<=0L){
-					throw new Exception("可退款商品数不足");
-				}
-				
-				amount = MathUtils.add(amount, MathUtils.div(phOrderGoods.getPrice(), orderGoodsCount,2)*phRefundGoods.getGoodsCount());
-				phRefundGoodss.add(phRefundGoods);
-			}*/
 			
 			phRefundGoodsService.save(phRefundGoodss);
-			
-			phRefund.setAmount(amount);
-			phRefund = save(phRefund);
+			phRefund.setAmount(MathUtils.add(amount, null == phOrderInfo.getMailFee()?0D:phOrderInfo.getMailFee()));
+		}else{
+			for (PhOrderGoods phOrderGoods : phOrderGoodss) {
+				goodsNum+=phOrderGoods.getGoodsCount();
+			}
+
 		}
 
+		phRefund.setGoodsCount(goodsNum);
+		phRefund = save(phRefund);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	
@@ -214,9 +215,17 @@ public class PhRefundServiceImpl implements PhRefundService {
 		if(c>0){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_APPLIED);
 		}
+		
 		Map<String, Object> resultMap = new HashMap<>();
 		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
+
+		if(null != phOrderInfo.getReceiptTime()){
+			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).after(new Date())){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_TIMEOUT);
+			}
+		}
 		resultMap.put("orderInfo", phOrderInfo);
+		resultMap.put("hasCoupon", phOrderInfo.getMVoucherId()!=null || phOrderInfo.getPVoucherId() != null || phOrderInfo.getWalletAmount().doubleValue()>0D);
 		List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
 		
 		List<PhOrderGoods> goodss = new ArrayList<>();
@@ -252,6 +261,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 				map.put("image", phOrderGoods.getGoodsImage());
 				map.put("name", phOrderGoods.getGoodsName());
 				map.put("count", phOrderGoods.getGoodsCount());
+				map.put("price", phOrderGoods.getPrice());
 				map.put("property", phOrderGoods.getRemark());
 				goods.add(map);
 			}
@@ -263,6 +273,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 				map.put("image", phOrderGoods.getGoodsImage());
 				map.put("name", phOrderGoods.getGoodsName());
 				map.put("count", phRefundGoods.getGoodsCount());
+				map.put("price", MathUtils.mul(MathUtils.div(phOrderGoods.getPrice(), phOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));
 				map.put("property", phOrderGoods.getRemark());
 				goods.add(map);
 			}
@@ -285,6 +296,26 @@ public class PhRefundServiceImpl implements PhRefundService {
 		
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 
+	}
+	
+	@Override
+	public Page<PhRefund> findByPage(final Long userId,Pageable page){
+		return phRefundRepository.findAll(new Specification<PhRefund>() {
+			
+			@Override
+			public Predicate toPredicate(Root<PhRefund> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				List<Predicate> params = new ArrayList<Predicate>();
+				
+				if(null != userId){
+					params.add(cb.equal(root.get("userId"), userId));
+				}
+				
+                Predicate[] predicates = new Predicate[params.size()];
+                query.where(params.toArray(predicates));
+                query.orderBy(cb.desc(root.get("createTime")));
+				return null;
+			}
+		}, page);
 	}
 
 }

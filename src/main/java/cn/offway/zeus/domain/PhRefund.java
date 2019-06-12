@@ -32,7 +32,7 @@ public class PhRefund implements Serializable {
     /** 类型[0-仅退款,1-退货退款,2-换货] **/
     private String type;
 
-    /** 状态[0-已申请,1-审核通过,2-审核拒绝,3-退款中,4-退款成功,5-已取消] **/
+    /** 状态[0-审核中,1-待退货,2-退货中,3-退款中,4-退款成功,5-退款取消,6-审核失败] **/
     private String status;
 
     /** 退款原因 **/
@@ -64,6 +64,9 @@ public class PhRefund implements Serializable {
 
     /** 是否整单退款[0-否,1-是] **/
     private String isComplete;
+    
+    /** 退款商品数量 **/
+    private Long goodsCount;
 
 
     @Id
@@ -221,6 +224,15 @@ public class PhRefund implements Serializable {
 
     public void setIsComplete(String isComplete) {
         this.isComplete = isComplete;
+    }
+    
+    @Column(name = "goods_count", length = 11)
+    public Long getGoodsCount() {
+        return goodsCount;
+    }
+
+    public void setGoodsCount(Long goodsCount) {
+        this.goodsCount = goodsCount;
     }
 
 }

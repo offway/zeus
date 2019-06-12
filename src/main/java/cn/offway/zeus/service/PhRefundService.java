@@ -2,6 +2,9 @@ package cn.offway.zeus.service;
 
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import cn.offway.zeus.domain.PhRefund;
 import cn.offway.zeus.dto.RefundDto;
 import cn.offway.zeus.utils.JsonResult;
@@ -25,4 +28,6 @@ public interface PhRefundService{
 	JsonResult init(String orderNo);
 
 	JsonResult info(Long id);
+
+	Page<PhRefund> findByPage(Long userId, Pageable page);
 }
