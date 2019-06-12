@@ -199,6 +199,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			List<OrderInitStockDto> stocks = orderMerchantDto.getStocks();
 			double sumPrice = 0D;
 			int sumCount = 0;
+			double mVoucherAmount = 0D;
 			for (OrderInitStockDto stock : stocks) {
 				Long stockId = stock.getStockId();
 				stockIds.add(stockId);
@@ -251,6 +252,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			if(null!=mVoucherId){
 				mphVoucherInfo =  phVoucherInfoService.findOne(mVoucherId);
 				sumMVoucherAmount = MathUtils.add(sumMVoucherAmount, mphVoucherInfo.getAmount());
+				mVoucherAmount = mphVoucherInfo.getAmount();
 			}
 			
 			PhOrderInfo phOrderInfo = new PhOrderInfo();
@@ -270,7 +272,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			phOrderInfo.setIsHidden("0");
 			
 			//需要支付金额=商品总价+运费-商户优惠券金额
-			double laveAmount = MathUtils.sub(MathUtils.add(sumPrice, mailFee), sumMVoucherAmount);
+			double laveAmount = MathUtils.sub(MathUtils.add(sumPrice, mailFee), mVoucherAmount);
 			double pVAmount =0D;
 			if(pVoucherAmount>0){
 				if(pVoucherAmount<=laveAmount){
