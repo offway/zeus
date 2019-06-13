@@ -36,12 +36,14 @@ import cn.offway.zeus.dto.OrderInfoDto;
 import cn.offway.zeus.dto.PreorderDto;
 import cn.offway.zeus.enums.ExpressCodeEnum;
 import cn.offway.zeus.exception.StockException;
+import cn.offway.zeus.repository.PhRefundRepository;
 import cn.offway.zeus.service.Kuaidi100Service;
 import cn.offway.zeus.service.PhAddressService;
 import cn.offway.zeus.service.PhOrderExpressInfoService;
 import cn.offway.zeus.service.PhOrderGoodsService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
+import cn.offway.zeus.service.PhRefundService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -78,6 +80,9 @@ public class OrderController {
 	
 	@Autowired
 	private PhOrderExpressInfoService phOrderExpressInfoService;
+	
+	@Autowired
+	private PhRefundService phRefundService;
 	
 	
 
@@ -259,7 +264,9 @@ public class OrderController {
 			addrId = phOrderInfo.getAddrId();
 			createTime = phOrderInfo.getCreateTime();
 			goods = phOrderGoodsService.findByOrderNo(orderNo);
-
+			
+			//是否可以申请退款
+			resultMap.put("canRefund", phRefundService.canRefund(orderNo));
 			
 		}
 		

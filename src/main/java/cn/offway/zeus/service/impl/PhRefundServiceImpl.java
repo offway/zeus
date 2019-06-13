@@ -193,8 +193,14 @@ public class PhRefundServiceImpl implements PhRefundService {
 				}
 			}
 			
-			phRefundGoodsService.save(phRefundGoodss);
-			phRefund.setAmount(MathUtils.add(amount, null == phOrderInfo.getMailFee()?0D:phOrderInfo.getMailFee()));
+			if(MathUtils.add(amount, null == phOrderInfo.getMailFee()?0D:phOrderInfo.getMailFee())==phOrderInfo.getAmount()){
+				phRefund.setAmount(phOrderInfo.getAmount());
+				phRefund.setIsComplete("1");
+			}else{
+				phRefund.setAmount(amount);
+				phRefundGoodsService.save(phRefundGoodss);
+
+			}
 		}else{
 			for (PhOrderGoods phOrderGoods : phOrderGoodss) {
 				goodsNum+=phOrderGoods.getGoodsCount();
@@ -205,6 +211,35 @@ public class PhRefundServiceImpl implements PhRefundService {
 		phRefund.setGoodsCount(goodsNum);
 		phRefund = save(phRefund);
 		return jsonResultHelper.buildSuccessJsonResult(null);
+	}
+	
+	@Override
+	public boolean canRefund(String orderNo){
+		boolean canRefund = true;
+		//一笔订单只能提交一次退款申请
+		int c = phRefundRepository.isCompleteOrderNo(orderNo);//查询该订单是否已整单退款-暂时不用
+		if(c>0){
+			canRefund = false;
+		}
+		
+		Map<String, Object> resultMap = new HashMap<>();
+		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
+
+		if(null != phOrderInfo.getReceiptTime()){
+			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).after(new Date())){
+				canRefund = false;
+			}
+		}
+		
+		List<String> statuss = new ArrayList<>();
+		//1-已付款,2-已发货,3-已收货
+		statuss.add("1");
+		statuss.add("2");
+		statuss.add("3");
+		if(!statuss.contains(phOrderInfo.getStatus())){
+			canRefund = false;
+		}
+		return canRefund;
 	}
 	
 	@Override
@@ -224,6 +259,17 @@ public class PhRefundServiceImpl implements PhRefundService {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_TIMEOUT);
 			}
 		}
+		
+		List<String> statuss = new ArrayList<>();
+		//1-已付款,2-已发货,3-已收货
+		statuss.add("1");
+		statuss.add("2");
+		statuss.add("3");
+		if(!statuss.contains(phOrderInfo.getStatus())){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+
+		}
+		
 		resultMap.put("orderInfo", phOrderInfo);
 		resultMap.put("hasCoupon", phOrderInfo.getMVoucherId()!=null || phOrderInfo.getPVoucherId() != null || phOrderInfo.getWalletAmount().doubleValue()>0D);
 		List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);

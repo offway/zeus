@@ -30,4 +30,6 @@ public interface PhRefundService{
 	JsonResult info(Long id);
 
 	Page<PhRefund> findByPage(Long userId, Pageable page);
+
+	boolean canRefund(String orderNo);
 }
