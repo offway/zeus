@@ -8,6 +8,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
+
+import cn.offway.zeus.domain.PhOrderExpressInfo;
 import cn.offway.zeus.domain.PhOrderGoods;
+import cn.offway.zeus.domain.PhOrderInfo;
 import cn.offway.zeus.domain.PhRefund;
 import cn.offway.zeus.domain.PhRefundGoods;
 import cn.offway.zeus.dto.RefundDto;
@@ -26,6 +31,7 @@ import cn.offway.zeus.service.PhOrderGoodsService;
 import cn.offway.zeus.service.PhRefundGoodsService;
 import cn.offway.zeus.service.PhRefundService;
 import cn.offway.zeus.utils.CommonResultCode;
+import cn.offway.zeus.utils.HttpClientUtil;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import cn.offway.zeus.utils.MathUtils;
@@ -51,6 +57,9 @@ public class RefundController {
 	
 	@Autowired
 	private PhRefundGoodsService phRefundGoodsService;
+	
+	@Value("${is-prd}")
+	private boolean isPrd;
 	
 	
 	@ApiOperation("退款申请初始化")
@@ -91,16 +100,45 @@ public class RefundController {
 	@PostMapping("/mailNo")
 	public JsonResult mailNo(
 			@ApiParam("退款申请ID") @RequestParam Long id,
-			@ApiParam("物流单号") @RequestParam String mailNo){
+			@ApiParam("物流单号") @RequestParam String mailNo,
+			@ApiParam("快递公司编码") @RequestParam String expressCode){
 		PhRefund phRefund = phRefundService.findOne(id);
 		if("1".equals(phRefund.getStatus())){
 			phRefund.setMailNo(mailNo);
+			phRefund.setExpressCode(expressCode);
 			phRefund.setStatus("2");
-			phRefundService.save(phRefund);
+			phRefund = phRefundService.save(phRefund);
+			
+			if(isPrd){
+				try {
+					subscribeExpressInfo(phRefund);
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error("订阅快递物流推送异常,退款申请ID:{}",id,e);
+				}
+			}
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		}
 		return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 
+	}
+	
+	private void subscribeExpressInfo(PhRefund phRefund) throws Exception {
+	    String key = "uyUDaSuE5009";
+	    Map<String, String> innerInnerParam = new HashMap<>();
+	    innerInnerParam.put("callbackurl", "https://admin.offway.cn/callbackRefund/express?id=" +phRefund.getId() );
+	    String innerInnerParamStr = JSON.toJSONString(innerInnerParam);
+	    Map<String, String> innerParam = new HashMap<>();
+	    innerParam.put("company", phRefund.getExpressCode());
+	    innerParam.put("number", phRefund.getMailNo());
+	    innerParam.put("key", key);
+	    innerParam.put("parameters", innerInnerParamStr);
+	    String innerParamStr = JSON.toJSONString(innerParam);
+	    Map<String, String> param = new HashMap<>();
+	    param.put("schema", "json");
+	    param.put("param", innerParamStr);
+	    String body = HttpClientUtil.post("https://poll.kuaidi100.com/poll", param);
+	    logger.info("订阅快递物流推送响应参数:"+body);
 	}
 	
 	@ApiOperation("退款详情")

@@ -31,5 +31,5 @@ public interface PhRefundService{
 
 	Page<PhRefund> findByPage(Long userId, Pageable page);
 
-	boolean canRefund(String orderNo);
+	String canRefund(String orderNo);
 }

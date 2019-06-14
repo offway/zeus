@@ -67,6 +67,9 @@ public class PhRefund implements Serializable {
     
     /** 退款商品数量 **/
     private Long goodsCount;
+    
+    /** 快递公司编码 **/
+    private String expressCode;
 
 
     @Id
@@ -234,5 +237,16 @@ public class PhRefund implements Serializable {
     public void setGoodsCount(Long goodsCount) {
         this.goodsCount = goodsCount;
     }
+
+    @Column(name = "express_code", length = 50)
+	public String getExpressCode() {
+		return expressCode;
+	}
+
+	public void setExpressCode(String expressCode) {
+		this.expressCode = expressCode;
+	}
+    
+    
 
 }

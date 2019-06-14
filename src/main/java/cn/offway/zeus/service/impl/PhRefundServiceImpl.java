@@ -109,7 +109,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 		}
 		
 		if(null != phOrderInfo.getReceiptTime()){
-			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).after(new Date())){
+			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).before(new Date())){
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_TIMEOUT);
 			}
 		}
@@ -214,31 +214,22 @@ public class PhRefundServiceImpl implements PhRefundService {
 	}
 	
 	@Override
-	public boolean canRefund(String orderNo){
-		boolean canRefund = true;
+	public String canRefund(String orderNo){
+		String canRefund = "";
 		//一笔订单只能提交一次退款申请
 		int c = phRefundRepository.isCompleteOrderNo(orderNo);//查询该订单是否已整单退款-暂时不用
 		if(c>0){
-			canRefund = false;
+			canRefund = CommonResultCode.REFUND_APPLIED.getStatusCode();
 		}
 		
-		Map<String, Object> resultMap = new HashMap<>();
 		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
 
 		if(null != phOrderInfo.getReceiptTime()){
-			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).after(new Date())){
-				canRefund = false;
+			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).before(new Date())){
+				canRefund = CommonResultCode.REFUND_TIMEOUT.getStatusCode();
 			}
 		}
 		
-		List<String> statuss = new ArrayList<>();
-		//1-已付款,2-已发货,3-已收货
-		statuss.add("1");
-		statuss.add("2");
-		statuss.add("3");
-		if(!statuss.contains(phOrderInfo.getStatus())){
-			canRefund = false;
-		}
 		return canRefund;
 	}
 	
@@ -255,7 +246,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
 
 		if(null != phOrderInfo.getReceiptTime()){
-			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).after(new Date())){
+			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).before(new Date())){
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_TIMEOUT);
 			}
 		}
