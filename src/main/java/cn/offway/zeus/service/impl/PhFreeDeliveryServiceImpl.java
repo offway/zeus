@@ -88,36 +88,38 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 		
 		Date now = new Date();
 		PhFreeDelivery phFreeDelivery = findOne(freeDeliveryId);
-		PhFreeDeliveryUser phFreeDeliveryUser = phFreeDeliveryUserService.findByFreeDeliveryIdAndUserId(freeDeliveryId, userId);
-		if(null == phFreeDeliveryUser){
+		if("0".equals(phFreeDelivery.getStatus())){
+			PhFreeDeliveryUser phFreeDeliveryUser = phFreeDeliveryUserService.findByFreeDeliveryIdAndUserId(freeDeliveryId, userId);
+			if(null == phFreeDeliveryUser){
+				
+				PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+				phFreeDeliveryUser = new PhFreeDeliveryUser();
+				phFreeDeliveryUser.setBoostCount(phFreeDelivery.getBoostCount());
+				phFreeDeliveryUser.setCreateTime(now);
+				phFreeDeliveryUser.setCurrentCount(0L);
+				phFreeDeliveryUser.setFreeDeliveryId(freeDeliveryId);
+				phFreeDeliveryUser.setHeadimgurl(phUserInfo.getHeadimgurl());
+				phFreeDeliveryUser.setNickname(phUserInfo.getNickname());
+				phFreeDeliveryUser.setUserId(userId);
+				phFreeDeliveryUser.setVersion(0L);
+			}
+			phFreeDeliveryUser.setCurrentCount(phFreeDeliveryUser.getCurrentCount()+1L);
+			phFreeDeliveryUser.setLastTime(now);
+			phFreeDeliveryUser = phFreeDeliveryUserService.save(phFreeDeliveryUser);
+			if(phFreeDeliveryUser.getCurrentCount().longValue() == phFreeDeliveryUser.getBoostCount().longValue()){
+				phFreeDelivery.setStatus("1");//已抢光
+				save(phFreeDelivery);
+			}
 			
-			PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
-			phFreeDeliveryUser = new PhFreeDeliveryUser();
-			phFreeDeliveryUser.setBoostCount(phFreeDelivery.getBoostCount());
-			phFreeDeliveryUser.setCreateTime(now);
-			phFreeDeliveryUser.setCurrentCount(0L);
-			phFreeDeliveryUser.setFreeDeliveryId(freeDeliveryId);
-			phFreeDeliveryUser.setHeadimgurl(phUserInfo.getHeadimgurl());
-			phFreeDeliveryUser.setNickname(phUserInfo.getNickname());
-			phFreeDeliveryUser.setUserId(userId);
-			phFreeDeliveryUser.setVersion(0L);
+			PhUserInfo boostUser = phUserInfoService.findOne(boostUserId);
+			
+			PhFreeDeliveryBoost phFreeDeliveryBoost = new PhFreeDeliveryBoost();
+			phFreeDeliveryBoost.setBoostHeadimgurl(boostUser.getHeadimgurl());
+			phFreeDeliveryBoost.setBoostNickname(boostUser.getNickname());
+			phFreeDeliveryBoost.setBoostUserId(boostUserId);
+			phFreeDeliveryBoost.setCreateTime(now);
+			phFreeDeliveryBoost.setFreeDeliveryUserId(phFreeDeliveryUser.getId());
+			phFreeDeliveryBoostService.save(phFreeDeliveryBoost);
 		}
-		phFreeDeliveryUser.setCurrentCount(phFreeDeliveryUser.getCurrentCount()+1L);
-		phFreeDeliveryUser.setLastTime(now);
-		phFreeDeliveryUser = phFreeDeliveryUserService.save(phFreeDeliveryUser);
-		if(phFreeDeliveryUser.getCurrentCount().longValue() == phFreeDeliveryUser.getBoostCount().longValue()){
-			phFreeDelivery.setStatus("1");//已抢光
-			save(phFreeDelivery);
-		}
-		
-		PhUserInfo boostUser = phUserInfoService.findOne(boostUserId);
-
-		PhFreeDeliveryBoost phFreeDeliveryBoost = new PhFreeDeliveryBoost();
-		phFreeDeliveryBoost.setBoostHeadimgurl(boostUser.getHeadimgurl());
-		phFreeDeliveryBoost.setBoostNickname(boostUser.getNickname());
-		phFreeDeliveryBoost.setBoostUserId(boostUserId);
-		phFreeDeliveryBoost.setCreateTime(now);
-		phFreeDeliveryBoost.setFreeDeliveryUserId(phFreeDeliveryUser.getId());
-		phFreeDeliveryBoostService.save(phFreeDeliveryBoost);
 	}
 }
