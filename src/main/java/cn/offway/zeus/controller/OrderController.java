@@ -103,9 +103,10 @@ public class OrderController {
 	
 	@ApiOperation("取消订单")
 	@PostMapping("/cancel")
-	public JsonResult cancel(@ApiParam("预订单号") @RequestParam String preorderNo){
+	public JsonResult cancel(@ApiParam("预订单号") @RequestParam String preorderNo,
+			@ApiParam("取消理由") @RequestParam(required = false) String remark){
 		try {
-			phPreorderInfoService.cancelOrder(preorderNo);
+			phPreorderInfoService.cancelOrder(preorderNo,remark);
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		} catch (Exception e) {
 			e.printStackTrace();

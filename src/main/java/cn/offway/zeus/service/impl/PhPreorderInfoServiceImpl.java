@@ -102,8 +102,8 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
-	public void cancelOrder(String preorderNo) throws Exception{
-		failResult(preorderNo,"");
+	public void cancelOrder(String preorderNo,String remark) throws Exception{
+		failResult(preorderNo,"",remark);
 	}
 	
 	@Override
@@ -152,7 +152,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 		if("TRADE_SUCCESS".equals(status)){
 			successResult(preorderNo,"alipay");
 		}else if("TRADE_CLOSED".equals(status)){
-			failResult(preorderNo,"alipay");
+			failResult(preorderNo,"alipay",null);
 		}
 		
 	}
@@ -167,7 +167,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 		if("SUCCESS".equals(status)){
 			successResult(preorderNo,"wxpay");
 		}else if("FAIL".equals(status)){
-			failResult(preorderNo,"wxpay");
+			failResult(preorderNo,"wxpay",null);
 		}
 		
 	}
@@ -218,11 +218,12 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 		}
 	}
 
-	private void failResult(String preorderNo,String payChannel) throws Exception {
+	private void failResult(String preorderNo,String payChannel,String remark) throws Exception {
 		PhPreorderInfo phPreorderInfo = findByOrderNoAndStatus(preorderNo, "0");
 		if(null != phPreorderInfo){
 			phPreorderInfo.setStatus("2");//交易关闭
 			phPreorderInfo.setPayChannel(payChannel);
+			phPreorderInfo.setRemark(remark);
 			save(phPreorderInfo);
 			
 			//退余额

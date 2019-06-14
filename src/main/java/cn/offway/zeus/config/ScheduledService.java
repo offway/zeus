@@ -33,7 +33,7 @@ public class ScheduledService {
 			List<String> orderNos = phPreorderInfoService.orderTimeOut();
 			for (String orderNo : orderNos) {
 				logger.info("订单超时关闭定时任务处理订单号："+orderNo);
-				phPreorderInfoService.cancelOrder(orderNo);
+				phPreorderInfoService.cancelOrder(orderNo,"订单超时关闭");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

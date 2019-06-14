@@ -163,7 +163,10 @@ public class UserController {
 		if(isPrd && !"18016388248".equals(phone)){
 			code = RandomUtils.nextInt(100000, 999999);
 		}
+//		String msg = "【HENCHAO】Verification code: "+code+". This verification code is only used to verify the identity by logging in to HENCHAO. Please do not forward it to others and it will be valid within 10 minutes. ";
 		boolean result = smsService.sendMsg(phone, "【OFFWAY】验证码："+code+"。此验证码只用于登陆OFFWAY验证身份，请勿转发他人，10分钟内有效。",IpUtil.getIpAddr(request));
+//		boolean result = smsService.sendMsg(phone, msg,IpUtil.getIpAddr(request));
+
 		if(result){
     		stringRedisTemplate.opsForValue().set(SMS_CODE_KEY+"_"+phone, ""+code, 10, TimeUnit.MINUTES);
 			return jsonResultHelper.buildSuccessJsonResult(null);
