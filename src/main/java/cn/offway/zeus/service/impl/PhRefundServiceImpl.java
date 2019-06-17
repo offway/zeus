@@ -126,7 +126,8 @@ public class PhRefundServiceImpl implements PhRefundService {
 		}
 		
 		String isComplete = "0";
-		if(null != phOrderInfo.getPVoucherId() || null != phOrderInfo.getMVoucherId()|| null != phOrderInfo.getWalletAmount()|| 0D==phOrderInfo.getWalletAmount().doubleValue() || goodsDtos.isEmpty()){
+		if(null != phOrderInfo.getPVoucherId() || null != phOrderInfo.getMVoucherId()|| 
+				phOrderInfo.getWalletAmount().doubleValue()>0D || goodsDtos.isEmpty()){
 			isComplete = "1";
 		}
 		
