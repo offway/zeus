@@ -1,6 +1,8 @@
 package cn.offway.zeus.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +110,19 @@ public class FreeDeliveryController {
 			@ApiParam("助力用户ID") @RequestParam(required = false) Long boostUserId){
 		
 		try {
+			
+			Date now = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			if(now.before(sdf.parse("2019-06-18 00:00:00")) || now.after(sdf.parse("2019-06-20 23:59:59"))){
+				//不在活动时间范围
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
+			}
+			
+			PhFreeDelivery phFreeDelivery = phFreeDeliveryService.findOne(freeDeliveryId);
+			if("1".equals(phFreeDelivery.getStatus())){
+				//已抢光
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+			}
 			phFreeDeliveryService.boost(freeDeliveryId,userId,boostUserId);
 		} catch (Exception e) {
 			e.printStackTrace();
