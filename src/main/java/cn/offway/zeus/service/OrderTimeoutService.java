@@ -12,7 +12,7 @@ public class OrderTimeoutService implements io.netty.util.TimerTask{
 	@Override
 	public void run(Timeout timeout) throws Exception {
 		String orderNo = ((OrderTimeoutService)timeout.task()).getOrderNo();
-		phPreorderInfoService.cancelOrder(orderNo);
+		phPreorderInfoService.cancelOrder(orderNo,"订单超时关闭");
 	}
 
 	public OrderTimeoutService() {

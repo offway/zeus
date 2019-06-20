@@ -27,4 +27,6 @@ public interface PhGoodsService{
 	List<PhGoods> findRecommend(Long id);
 
 	int updateViewCount(Long id);
+
+	List<PhGoods> findBrandRecommend(Long brandId);
 }

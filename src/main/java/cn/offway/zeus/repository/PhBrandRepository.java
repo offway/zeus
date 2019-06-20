@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.offway.zeus.domain.PhBrand;
 
@@ -18,4 +19,12 @@ public interface PhBrandRepository extends JpaRepository<PhBrand,Long>,JpaSpecif
 	List<PhBrand> findByIsRecommendOrderBySortAsc(String isRecommend);
 	
 	List<PhBrand> findByTypeOrderByNameAsc(String type);
+	
+	List<PhBrand> findByNameLike(String name);
+	
+	@Query(nativeQuery=true,value="select * from ph_brand where name =?1 limit 1")
+	PhBrand findByName(String name);
+	
+	@Query(nativeQuery=true,value="select * from ph_brand where id in (select brand_id from ph_merchant_brand where merchant_id=?1 )")
+	List<PhBrand> findByMerchantId(Long merchantId);
 }

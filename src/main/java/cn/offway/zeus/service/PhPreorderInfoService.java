@@ -25,8 +25,6 @@ public interface PhPreorderInfoService{
 
 	void wxpay(String status, String preorderNo) throws Exception;
 
-	void cancelOrder(String preorderNo) throws Exception;
-
 	Page<PhPreorderInfo> findByPage(Long userId, Pageable page);
 
 	int countByUserIdAndStatus(Long userId, String status);
@@ -34,4 +32,6 @@ public interface PhPreorderInfoService{
 	List<String> orderTimeOut();
 
 	void returnOrder(String preorderNo) throws Exception;
+
+	void cancelOrder(String preorderNo, String remark) throws Exception;
 }

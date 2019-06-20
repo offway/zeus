@@ -5,29 +5,29 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Banner管理
+ * 限量发售
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-01 11:26:00 Exp $
+ * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
  */
 @Entity
-@Table(name = "ph_banner")
-public class PhBanner implements Serializable {
+@Table(name = "ph_limited_sale")
+public class PhLimitedSale implements Serializable {
 
     /** ID **/
     private Long id;
 
-    /** banner **/
-    private String banner;
+    /** 名称 **/
+    private String name;
 
-    /** 类别[0-跳转URL,1-品牌,2-商品,3-明星同款] **/
-    private String type;
+    /** 封面图片 **/
+    private String image;
 
-    /** 跳转对应ID **/
-    private Long redirectId;
+    /** 售价 **/
+    private Double price;
 
-    /** 跳转链接 **/
-    private String url;
+    /** 商品ID **/
+    private Long goodsId;
 
     /** 开始时间 **/
     private Date beginTime;
@@ -38,17 +38,14 @@ public class PhBanner implements Serializable {
     /** 状态[0-未上架,1-已上架] **/
     private String status;
 
-    /** 排序 **/
-    private Long sort;
-
     /** 创建时间 **/
     private Date createTime;
 
+    /** 发售详情 **/
+    private String info;
+
     /** 备注 **/
     private String remark;
-    
-    /** 展示位置[0-首页顶部,1-首页腹部] **/
-    private String position;
 
 
     @Id
@@ -62,41 +59,40 @@ public class PhBanner implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "banner", length = 100)
-    public String getBanner() {
-        return banner;
+    @Column(name = "name", length = 100)
+    public String getName() {
+        return name;
     }
 
-    public void setBanner(String banner) {
-        this.banner = banner;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @Column(name = "type", length = 2)
-    public String getType() {
-        return type;
+    @Column(name = "image", length = 100)
+    public String getImage() {
+        return image;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setImage(String image) {
+        this.image = image;
     }
 
-    @Column(name = "redirect_id", length = 11)
-
-    public Long getRedirectId() {
-		return redirectId;
-	}
-
-	public void setRedirectId(Long redirectId) {
-		this.redirectId = redirectId;
-	}
-
-    @Column(name = "url", length = 50)
-    public String getUrl() {
-        return url;
+    @Column(name = "price", precision = 15, scale = 2)
+    public Double getPrice() {
+        return price;
     }
 
-	public void setUrl(String url) {
-        this.url = url;
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    @Column(name = "goods_id", length = 11)
+    public Long getGoodsId() {
+        return goodsId;
+    }
+
+    public void setGoodsId(Long goodsId) {
+        this.goodsId = goodsId;
     }
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -128,15 +124,6 @@ public class PhBanner implements Serializable {
         this.status = status;
     }
 
-    @Column(name = "sort", length = 11)
-    public Long getSort() {
-        return sort;
-    }
-
-    public void setSort(Long sort) {
-        this.sort = sort;
-    }
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_time")
     public Date getCreateTime() {
@@ -147,6 +134,15 @@ public class PhBanner implements Serializable {
         this.createTime = createTime;
     }
 
+    @Column(name = "info")
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
     @Column(name = "remark", length = 200)
     public String getRemark() {
         return remark;
@@ -155,16 +151,5 @@ public class PhBanner implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-
-    @Column(name = "position", length = 2)
-	public String getPosition() {
-		return position;
-	}
-
-	public void setPosition(String position) {
-		this.position = position;
-	}
-    
-    
 
 }

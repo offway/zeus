@@ -1,6 +1,8 @@
 package cn.offway.zeus.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import cn.offway.zeus.domain.PhStarsame;
+import cn.offway.zeus.domain.PhStarsameGoods;
 import cn.offway.zeus.repository.PhStarsameGoodsRepository;
 import cn.offway.zeus.repository.PhStarsameImageRepository;
 import cn.offway.zeus.repository.PhStarsameRepository;
@@ -76,7 +79,21 @@ public class StarsameController {
 		PhStarsame phStarsame = phStarsameService.findOne(id);
 		resultMap = JSON.parseObject(JSON.toJSONString(phStarsame,SerializerFeature.WriteMapNullValue),Map.class);
 		resultMap.put("banner", phStarsameImageRepository.findImageByStarsameIdOrderBySortAsc(id));
-		resultMap.put("goods",phStarsameGoodsRepository.findByStarsameIdOrderByCreateTimeDesc(id));
+		
+		List<PhStarsameGoods> list = phStarsameGoodsRepository.findByStarsameIdOrderByCreateTimeDesc(id);
+		
+		List<PhStarsameGoods> goods = new ArrayList<>();
+		List<PhStarsameGoods> brands = new ArrayList<>();
+
+		for (PhStarsameGoods phStarsameGoods : list) {
+			if("1".equals(phStarsameGoods.getType())){
+				brands.add(phStarsameGoods);
+			}else{
+				goods.add(phStarsameGoods);
+			}
+		}
+		resultMap.put("goods",goods);
+		resultMap.put("brands",brands);
 		
 		boolean praised = false;
 		String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE+"_"+id+"_"+userId);

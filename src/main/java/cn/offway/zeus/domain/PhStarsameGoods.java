@@ -46,6 +46,9 @@ public class PhStarsameGoods implements Serializable {
 
     /** 备注 **/
     private String remark;
+    
+    /** 类型[0-推荐商品,1-推荐品牌] **/
+    private String type;
 
 
     @Id
@@ -149,5 +152,16 @@ public class PhStarsameGoods implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    @Column(name = "type", length = 2)
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+    
+    
 
 }

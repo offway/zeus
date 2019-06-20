@@ -52,10 +52,34 @@ public class PhMerchant implements Serializable {
 
     /** 备注 **/
     private String remark;
-    
+
+    /** 公司 **/
+    private String company;
+
+    /** 后台登录ID[见ph_admin.id] **/
+    private Long adminId;
+
     /** 是否包邮[0-否,1-是] **/
     private String isFreeFare;
-    
+
+    /**  **/
+    private Double ratio;
+
+    /** 退货地址ID[见ph_address.id] **/
+    private Long returnAddrId;
+
+    /** 商户所在城市[买手店必填] **/
+    private String city;
+
+    /** 商户类型[0-品牌商,1-买手店] **/
+    private String type;
+
+    /** 商户banner **/
+    private String banner;
+
+    /** 背景图 **/
+    private String background;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -179,15 +203,85 @@ public class PhMerchant implements Serializable {
         this.remark = remark;
     }
 
-    @Column(name = "is_free_fare", length = 2)
-	public String getIsFreeFare() {
-		return isFreeFare;
-	}
+    @Column(name = "company", length = 200)
+    public String getCompany() {
+        return company;
+    }
 
-	public void setIsFreeFare(String isFreeFare) {
-		this.isFreeFare = isFreeFare;
-	}
-    
-    
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    @Column(name = "admin_id", length = 11)
+    public Long getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(Long adminId) {
+        this.adminId = adminId;
+    }
+
+    @Column(name = "is_free_fare", length = 2)
+    public String getIsFreeFare() {
+        return isFreeFare;
+    }
+
+    public void setIsFreeFare(String isFreeFare) {
+        this.isFreeFare = isFreeFare;
+    }
+
+    @Column(name = "ratio", precision = 15, scale = 2)
+    public Double getRatio() {
+        return ratio;
+    }
+
+    public void setRatio(Double ratio) {
+        this.ratio = ratio;
+    }
+
+    @Column(name = "return_addr_id", length = 11)
+    public Long getReturnAddrId() {
+        return returnAddrId;
+    }
+
+    public void setReturnAddrId(Long returnAddrId) {
+        this.returnAddrId = returnAddrId;
+    }
+
+    @Column(name = "city", length = 100)
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    @Column(name = "type", length = 2)
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Column(name = "banner", length = 100)
+    public String getBanner() {
+        return banner;
+    }
+
+    public void setBanner(String banner) {
+        this.banner = banner;
+    }
+
+    @Column(name = "background", length = 200)
+    public String getBackground() {
+        return background;
+    }
+
+    public void setBackground(String background) {
+        this.background = background;
+    }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import cn.offway.zeus.service.PhBannerService;
 
@@ -34,6 +35,11 @@ public class PhBannerServiceImpl implements PhBannerService {
 	@Override
 	public PhBanner findOne(Long id){
 		return phBannerRepository.findOne(id);
+	}
+	
+	@Override
+	public List<PhBanner> banners(String position){
+		return phBannerRepository.banners(position);
 	}
 	
 	@Override

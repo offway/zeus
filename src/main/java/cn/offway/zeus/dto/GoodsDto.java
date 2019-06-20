@@ -19,7 +19,10 @@ public class GoodsDto implements Serializable {
 
     @ApiModelProperty(value ="品牌ID")
     private Long brandId;
-
+    
+    @ApiModelProperty(value ="商户ID")
+    private Long merchantId;
+    
     @ApiModelProperty(value ="品牌名称")
     private String brandName;
     
@@ -135,6 +138,14 @@ public class GoodsDto implements Serializable {
 
 	public void setPickId(Long pickId) {
 		this.pickId = pickId;
+	}
+
+	public Long getMerchantId() {
+		return merchantId;
+	}
+
+	public void setMerchantId(Long merchantId) {
+		this.merchantId = merchantId;
 	}
     
 }

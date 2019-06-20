@@ -32,4 +32,7 @@ public interface PhGoodsStockRepository extends JpaRepository<PhGoodsStock,Long>
 	@Modifying
 	@Query(nativeQuery=true,value="update ph_goods_stock s set s.stock =  s.stock+?2 , version = version+1 where  s.id=?1 ")
 	int addStock(Long stockId,Long count);
+	
+	@Query(nativeQuery=true,value="select ifnull(sum(s.stock),0) from  ph_goods_stock s  where  s.goods_id=?1 ")
+	int sumStock(Long goodsId);
 }

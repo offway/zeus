@@ -5,20 +5,15 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 品牌查询条件
+ * 限量发售
  *
  * @author wn
  * @version $v: 1.0.0, $time:2018-02-12 11:26:00 Exp $
  */
-public class BrandDto implements Serializable {
+public class LimitedSaleDto implements Serializable {
 
-   /* @ApiModelProperty(value ="品牌ID")
-    private Long id;
 
-    @ApiModelProperty(value ="品牌名称")
-    private String name;*/
-
-    @ApiModelProperty(value ="类型[0-国内品牌，1-国际品牌]")
+    @ApiModelProperty(value ="类型[0-最新发售，1-即将发售]")
     private String type;
 
     @ApiModelProperty(required = true,value ="页码,从0开始")
@@ -26,22 +21,6 @@ public class BrandDto implements Serializable {
     
     @ApiModelProperty(required = true,value ="页大小")
     private int size;
-
-    /*public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}*/
 
 	public String getType() {
 		return type;

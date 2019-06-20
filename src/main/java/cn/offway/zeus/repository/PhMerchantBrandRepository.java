@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhMerchantBrand;
+import java.lang.Long;
+import java.util.List;
 
 /**
  * 商户品牌关系Repository接口
@@ -13,5 +15,5 @@ import cn.offway.zeus.domain.PhMerchantBrand;
  */
 public interface PhMerchantBrandRepository extends JpaRepository<PhMerchantBrand,Long>,JpaSpecificationExecutor<PhMerchantBrand> {
 
-	/** 此处写一些自定义的方法 **/
+	List<PhMerchantBrand> findByMerchantId(Long merchantId);
 }

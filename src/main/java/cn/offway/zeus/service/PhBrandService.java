@@ -22,9 +22,15 @@ public interface PhBrandService{
 
 	List<PhBrand> findByIsRecommendOrderBySortAsc(String isRecommend);
 
-	List<PhBrand> findAll();
-
 	List<PhBrand> findByTypeOrderByNameAsc(String type);
 
-	Page<PhBrand> findByPage(BrandDto brandDto, Pageable page);
+	List<PhBrand> findByNameLike(String name);
+
+	PhBrand findByName(String name);
+
+	Page<PhBrand> findByPage(BrandDto brandDto, String isRecommend, Pageable page);
+
+	List<PhBrand> findAll(String type);
+
+	List<PhBrand> findByMerchantId(Long merchantId);
 }

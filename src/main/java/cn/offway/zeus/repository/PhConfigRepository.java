@@ -1,5 +1,7 @@
 package cn.offway.zeus.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +18,6 @@ public interface PhConfigRepository extends JpaRepository<PhConfig,Long>,JpaSpec
 
 	@Query(nativeQuery=true,value="select content from ph_config where name=?1")
 	String findContentByName(String name);
+	
+	List<PhConfig> findByNameIn(String... names);
 }

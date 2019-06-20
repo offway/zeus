@@ -1,17 +1,32 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import cn.offway.zeus.service.PhAddressService;
 import cn.offway.zeus.service.PhMerchantFareService;
 import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.domain.PhAddress;
+import cn.offway.zeus.domain.PhBrand;
 import cn.offway.zeus.domain.PhMerchant;
 import cn.offway.zeus.domain.PhMerchantFare;
 import cn.offway.zeus.domain.PhMerchantFareSpecial;
+import cn.offway.zeus.dto.BrandDto;
+import cn.offway.zeus.dto.MerchantDto;
 import cn.offway.zeus.repository.PhAddressRepository;
 import cn.offway.zeus.repository.PhMerchantFareRepository;
 import cn.offway.zeus.repository.PhMerchantFareSpecialRepository;
@@ -49,6 +64,26 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 	@Override
 	public PhMerchant findOne(Long id){
 		return phMerchantRepository.findOne(id);
+	}
+	
+	@Override
+	public Page<PhMerchant> findByPage(final MerchantDto merchantDto,Pageable page){
+		return phMerchantRepository.findAll(new Specification<PhMerchant>() {
+			
+			@Override
+			public Predicate toPredicate(Root<PhMerchant> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+				List<Predicate> params = new ArrayList<Predicate>();
+				
+				if(StringUtils.isNotBlank(merchantDto.getType())){
+					params.add(criteriaBuilder.equal(root.get("type"), merchantDto.getType()));
+				}
+				
+                Predicate[] predicates = new Predicate[params.size()];
+                criteriaQuery.where(params.toArray(predicates));
+                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
+				return null;
+			}
+		}, page);
 	}
 	
 	/**

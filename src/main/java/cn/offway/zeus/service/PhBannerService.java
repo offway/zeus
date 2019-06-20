@@ -16,5 +16,7 @@ public interface PhBannerService{
 	
 	PhBanner findOne(Long id);
 
+	List<PhBanner> banners(String position);
+
 	List<PhBanner> banners();
 }

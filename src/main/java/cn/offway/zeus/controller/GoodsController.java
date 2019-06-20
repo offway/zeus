@@ -21,16 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSON;
-
-import cn.offway.zeus.domain.PhCollect;
 import cn.offway.zeus.domain.PhGoods;
 import cn.offway.zeus.domain.PhGoodsProperty;
 import cn.offway.zeus.domain.PhGoodsStock;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.dto.OrderInitDto;
 import cn.offway.zeus.repository.PhVoucherProjectRepository;
-import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhGoodsCategoryService;
 import cn.offway.zeus.service.PhGoodsImageService;
 import cn.offway.zeus.service.PhGoodsPropertyService;
@@ -42,7 +38,6 @@ import cn.offway.zeus.service.VPickGoodsService;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -121,10 +116,13 @@ public class GoodsController {
 		List<Map<String, Object>> list = new ArrayList<>();
 		List<PhGoodsStock> phGoodsStocks = phGoodsStockService.findByGoodsId(id);
 		List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsId(id);
+		
+		Long sumStock = 0L;
 		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
 			Map<String, Object> map = new HashMap<>();
+			Long stock = phGoodsStock.getStock();
 			map.put("id", phGoodsStock.getId());
-			map.put("stock", phGoodsStock.getStock());
+			map.put("stock", stock);
 			map.put("img", phGoodsStock.getImage());
 			map.put("price", phGoodsStock.getPrice());
 			
@@ -140,6 +138,7 @@ public class GoodsController {
 			
 			map.put("attributes",attributes );
 			list.add(map);
+			sumStock +=stock;
 		}
 		
 		resultMap.put("goods", phGoods);
@@ -153,6 +152,8 @@ public class GoodsController {
 		//查询改商品优惠券
 		resultMap.put("voucherProjects", phVoucherProjectRepository.findByMerchantId(phGoods.getMerchantId()));
 		
+		//是否售罄
+		resultMap.put("sellOut",sumStock==0); 
 		//更新商品浏览量
 		phGoodsService.updateViewCount(id);
 
@@ -203,5 +204,4 @@ public class GoodsController {
 			@ApiParam("页大小") @RequestParam int size){
 		return jsonResultHelper.buildSuccessJsonResult(vPickGoodsService.findByPage(pickId, new PageRequest(page, size)));
 	}
-	
 }

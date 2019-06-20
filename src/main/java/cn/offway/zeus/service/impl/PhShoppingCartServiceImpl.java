@@ -15,16 +15,19 @@ import org.springframework.util.CollectionUtils;
 
 import cn.offway.zeus.domain.PhGoodsProperty;
 import cn.offway.zeus.domain.PhGoodsStock;
+import cn.offway.zeus.domain.PhLimitedSale;
 import cn.offway.zeus.domain.PhMerchantFare;
 import cn.offway.zeus.domain.PhShoppingCart;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.dto.OrderInitDto;
 import cn.offway.zeus.dto.OrderInitStockDto;
+import cn.offway.zeus.repository.PhLimitedSaleOpRepository;
 import cn.offway.zeus.repository.PhMerchantFareRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.service.PhGoodsPropertyService;
 import cn.offway.zeus.service.PhGoodsSpecialService;
 import cn.offway.zeus.service.PhGoodsStockService;
+import cn.offway.zeus.service.PhLimitedSaleService;
 import cn.offway.zeus.service.PhMerchantService;
 import cn.offway.zeus.service.PhShoppingCartService;
 import cn.offway.zeus.service.PhUserInfoService;
@@ -76,6 +79,12 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	
 	@Autowired
 	private PhVoucherProjectService phVoucherProjectService;
+	
+	@Autowired
+	private PhLimitedSaleService phLimitedSaleService;
+	
+	@Autowired
+	private PhLimitedSaleOpRepository phLimitedSaleOpRepository;
 	
 	
 	
@@ -132,6 +141,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	@Override
 	public JsonResult orderInit(OrderInitDto orderInitDto){
 		
+		Date now = new Date();
 		Map<String, Object> result = new HashMap<>();
 		Map<Long, Long> param = new HashMap<>();
 		for (OrderInitStockDto  stock : orderInitDto.getStocks()) {
@@ -147,6 +157,23 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		Map<String, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();
 		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
 			
+			Long goodsId = phGoodsStock.getGoodsId();
+			
+			//限量发售检查
+			PhLimitedSale phLimitedSale = phLimitedSaleService.findByGoodsId(goodsId);
+			if(null != phLimitedSale){
+				
+				if("0".equals(phLimitedSale.getStatus()) || phLimitedSale.getBeginTime().after(now)
+						|| phLimitedSale.getEndTime().before(now)){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+				}
+				
+				int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(phLimitedSale.getId(), userId, "0");
+				if(c == 0){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+				}
+			}
+
 			Long id = phGoodsStock.getId();
 			PhShoppingCart phShoppingCart = new PhShoppingCart();
 			phShoppingCart.setMerchantId(phGoodsStock.getMerchantId());
@@ -156,7 +183,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setBrandLogo(phGoodsStock.getBrandLogo());
 			phShoppingCart.setBrandName(phGoodsStock.getBrandName());
 			phShoppingCart.setGoodsCount(param.get(id));
-			phShoppingCart.setGoodsId(phGoodsStock.getGoodsId());
+			phShoppingCart.setGoodsId(goodsId);
 			phShoppingCart.setGoodsImage(phGoodsStock.getImage());
 			phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
 			phShoppingCart.setGoodsStockId(id);

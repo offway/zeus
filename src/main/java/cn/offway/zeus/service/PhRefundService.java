@@ -1,6 +1,13 @@
 package cn.offway.zeus.service;
 
+import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import cn.offway.zeus.domain.PhRefund;
+import cn.offway.zeus.dto.RefundDto;
+import cn.offway.zeus.utils.JsonResult;
 
 /**
  * 退款/退货Service接口
@@ -13,4 +20,16 @@ public interface PhRefundService{
 	PhRefund save(PhRefund phRefund);
 	
 	PhRefund findOne(Long id);
+
+	void delete(Long id);
+
+	JsonResult apply(RefundDto refundDto) throws Exception;
+
+	JsonResult init(String orderNo);
+
+	JsonResult info(Long id);
+
+	Page<PhRefund> findByPage(Long userId, Pageable page);
+
+	String canRefund(String orderNo);
 }

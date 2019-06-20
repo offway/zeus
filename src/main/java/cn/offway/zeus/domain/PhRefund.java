@@ -8,7 +8,7 @@ import java.util.Date;
  * 退款/退货
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-01 11:26:00 Exp $
+ * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
  */
 @Entity
 @Table(name = "ph_refund")
@@ -29,10 +29,10 @@ public class PhRefund implements Serializable {
     /** 快递运单号 **/
     private String mailNo;
 
-    /** 类型[0-仅退款,1-退货退款] **/
+    /** 类型[0-仅退款,1-退货退款,2-换货] **/
     private String type;
 
-    /** 状态[0-已申请,1-审核通过,2-审核拒绝,3-退款中,4-退款成功] **/
+    /** 状态[0-审核中,1-待退货,2-退货中,3-退款中,4-退款成功,5-退款取消,6-审核失败] **/
     private String status;
 
     /** 退款原因 **/
@@ -61,6 +61,15 @@ public class PhRefund implements Serializable {
 
     /** 版本号 **/
     private Long version;
+
+    /** 是否整单退款[0-否,1-是] **/
+    private String isComplete;
+    
+    /** 退款商品数量 **/
+    private Long goodsCount;
+    
+    /** 快递公司编码 **/
+    private String expressCode;
 
 
     @Id
@@ -210,5 +219,34 @@ public class PhRefund implements Serializable {
     public void setVersion(Long version) {
         this.version = version;
     }
+
+    @Column(name = "is_complete", length = 2)
+    public String getIsComplete() {
+        return isComplete;
+    }
+
+    public void setIsComplete(String isComplete) {
+        this.isComplete = isComplete;
+    }
+    
+    @Column(name = "goods_count", length = 11)
+    public Long getGoodsCount() {
+        return goodsCount;
+    }
+
+    public void setGoodsCount(Long goodsCount) {
+        this.goodsCount = goodsCount;
+    }
+
+    @Column(name = "express_code", length = 50)
+	public String getExpressCode() {
+		return expressCode;
+	}
+
+	public void setExpressCode(String expressCode) {
+		this.expressCode = expressCode;
+	}
+    
+    
 
 }

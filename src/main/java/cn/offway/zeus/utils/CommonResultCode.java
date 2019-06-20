@@ -67,6 +67,11 @@ public enum CommonResultCode implements ResultCode {
     /** 您已经打过call了  */
     CALL_LIMIT("1020", "CALL_LIMIT"),
     
+    /** 一笔订单只能提交一次退款申请  */
+    REFUND_APPLIED("1021", "REFUND_APPLIED"),
+    
+    /** 确认收货后七天不能退款  */
+    REFUND_TIMEOUT("1022", "REFUND_TIMEOUT"),
     ;
 	
 	
