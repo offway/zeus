@@ -1,5 +1,7 @@
 package cn.offway.zeus.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +19,6 @@ public interface PhRefundRepository extends JpaRepository<PhRefund,Long>,JpaSpec
 	//	@Query(nativeQuery=true,value="select count(*) from ph_refund r where  r.`status` in ('0','1','3','4') and r.is_complete='1' and r.order_no=?1")
 	@Query(nativeQuery=true,value="select count(*) from ph_refund r where  r.`status` not in ('5','6') and r.order_no=?1")
 	int isCompleteOrderNo(String orderNo);
+	
+	int countByUserIdAndStatusIn(Long userId,List<String> status);
 }

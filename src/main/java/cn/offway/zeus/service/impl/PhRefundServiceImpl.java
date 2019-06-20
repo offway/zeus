@@ -211,7 +211,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 
 		phRefund.setGoodsCount(goodsNum);
 		phRefund = save(phRefund);
-		return jsonResultHelper.buildSuccessJsonResult(null);
+		return jsonResultHelper.buildSuccessJsonResult(phRefund.getId());
 	}
 	
 	@Override

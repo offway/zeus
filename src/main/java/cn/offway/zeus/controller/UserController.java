@@ -1,5 +1,6 @@
 package cn.offway.zeus.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.WxuserInfo;
 import cn.offway.zeus.repository.PhInviteInfoRepository;
+import cn.offway.zeus.repository.PhRefundRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.repository.PhVoucherInfoRepository;
 import cn.offway.zeus.service.PhCapitalFlowService;
@@ -42,6 +44,7 @@ import cn.offway.zeus.service.PhCollectService;
 import cn.offway.zeus.service.PhNoticeService;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhPreorderInfoService;
+import cn.offway.zeus.service.PhRefundService;
 import cn.offway.zeus.service.PhUserChannelService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhVoucherInfoService;
@@ -123,6 +126,9 @@ public class UserController {
 	@Autowired
 	private PhUserChannelService phUserChannelService;
 	
+	@Autowired
+	private PhRefundRepository phRefundRepository;
+	
 	
 	
 	
@@ -160,12 +166,18 @@ public class UserController {
 	public JsonResult sms(@ApiParam("手机号") @RequestParam String phone,HttpServletRequest request){
 		int code = 123456;
 		//慢慢的手机号为了审核需要特殊处理
-		if(isPrd && !"18016388248".equals(phone)){
+		if(isPrd && !"+8618016388248".equals(phone)){
 			code = RandomUtils.nextInt(100000, 999999);
 		}
-//		String msg = "【HENCHAO】Verification code: "+code+". This verification code is only used to verify the identity by logging in to HENCHAO. Please do not forward it to others and it will be valid within 10 minutes. ";
-		boolean result = smsService.sendMsg(phone, "【OFFWAY】验证码："+code+"。此验证码只用于登陆OFFWAY验证身份，请勿转发他人，10分钟内有效。",IpUtil.getIpAddr(request));
-//		boolean result = smsService.sendMsg(phone, msg,IpUtil.getIpAddr(request));
+		String msg = "【HENCHAO】Verification code: "+code+". This verification code is only used to verify the identity by logging in to HENCHAO. Please do not forward it to others and it will be valid within 10 minutes. ";
+
+		//大陆、台湾、香港、澳门
+		if(phone.indexOf("+")<0 || phone.startsWith("+86") || phone.startsWith("+852")
+				|| phone.startsWith("+853")|| phone.startsWith("+886")){
+			msg = "【很潮】验证码："+code+"。此验证码只用于登陆 很潮 验证身份，请勿转发他人，10分钟内有效。";
+		}
+		
+		boolean result = smsService.sendMsg(phone, msg, IpUtil.getIpAddr(request));
 
 		if(result){
     		stringRedisTemplate.opsForValue().set(SMS_CODE_KEY+"_"+phone, ""+code, 10, TimeUnit.MINUTES);
@@ -335,10 +347,18 @@ public class UserController {
 		//0-已下单,1-已付款,2-已发货,3-已收货,4-取消
 		map.put("pendingShip", phOrderInfoService.countByUserIdAndStatus(userId, "1"));
 		map.put("pendingReceipt", phOrderInfoService.countByUserIdAndStatus(userId, "2"));
-		map.put("goodsReturn", 0L);
 		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
 		map.put("shoppingCartNum", phShoppingCarts.size());
 		map.put("noticeNum", phNoticeService.countByUserIdAndIsRead(userId, "0"));
+		List<String> status = new ArrayList<>();
+		//0-审核中,1-待退货,2-退货中,3-退款中,4-退款成功,5-退款取消,6-审核失败
+		status.add("0");
+		status.add("1");
+		status.add("2");
+		status.add("3");
+		status.add("6");
+		map.put("refundNum", phRefundRepository.countByUserIdAndStatusIn(userId, status));
+
 		return map;
 	}
 	
