@@ -165,6 +165,9 @@ public class UserController {
 	@PostMapping("/sms")
 	public JsonResult sms(@ApiParam("手机号") @RequestParam String phone,HttpServletRequest request){
 		int code = 123456;
+		
+		phone = phone.contains("+")?phone:"+86"+phone;
+		
 		//慢慢的手机号为了审核需要特殊处理
 		if(isPrd && !"+8618016388248".equals(phone)){
 			code = RandomUtils.nextInt(100000, 999999);
@@ -199,6 +202,8 @@ public class UserController {
 			@ApiParam("头像") @RequestParam(required=false) String headimgurl,
 			@ApiParam("邀请用户ID") @RequestParam(required=false) Long inviteUserId){
 		
+		phone = phone.contains("+")?phone:"+86"+phone;
+
     	String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
     	if(StringUtils.isBlank(smsCode)){
     		return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);
@@ -242,6 +247,8 @@ public class UserController {
 		PhUserInfo phUserInfo = null;
 		if(StringUtils.isNotBlank(phone)){
 			
+			phone = phone.contains("+")?phone:"+86"+phone;
+
 			String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
 			if(StringUtils.isBlank(smsCode)){
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);
