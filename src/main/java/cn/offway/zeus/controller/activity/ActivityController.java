@@ -34,23 +34,22 @@ public class ActivityController {
 	@PostMapping("/exchange")
 	public JsonResult exchange(
 			@ApiParam("用户ID") @RequestParam Long userId,
-			@ApiParam("抽奖码") @RequestParam String code){
+			@ApiParam("抽奖码") @RequestParam String code,
+			@ApiParam("活动批次") @RequestParam String type){
 		
 		String name = null;
-		PhLaborPrize phLaborPrize = phLaborPrizeRepository.findByTypeAndStatusAndRemark("2", "0", code);
+		PhLaborPrize phLaborPrize = phLaborPrizeRepository.findByTypeAndStatusAndRemark(type, "0", code);
 		if(null!=phLaborPrize){
 			phLaborPrize.setStatus("1");
 			phLaborPrizeRepository.save(phLaborPrize);
 			name = phLaborPrize.getName();
-			if(!"猫咪便签本".equals(name)){
-				Long vpid = phLaborPrize.getVoucherProjectId();
-				if(null!=vpid){
-					boolean result = phVoucherInfoService.giveVoucher(userId, vpid);
-					if(result){
-						return jsonResultHelper.buildSuccessJsonResult(name);
-					}else{
-						return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
-					}
+			Long vpid = phLaborPrize.getVoucherProjectId();
+			if(null!=vpid){
+				boolean result = phVoucherInfoService.giveVoucher(userId, vpid);
+				if(result){
+					return jsonResultHelper.buildSuccessJsonResult(name);
+				}else{
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 				}
 			}
 		}
