@@ -126,7 +126,7 @@ public class RefundController {
 	private void subscribeExpressInfo(PhRefund phRefund) throws Exception {
 	    String key = "uyUDaSuE5009";
 	    Map<String, String> innerInnerParam = new HashMap<>();
-	    innerInnerParam.put("callbackurl", "https://admin.offway.cn/callbackRefund/express?id=" +phRefund.getId() );
+	    innerInnerParam.put("callbackurl", "https://admin.offway.cn/callback/expressRefund?id=" +phRefund.getId() );
 	    String innerInnerParamStr = JSON.toJSONString(innerInnerParam);
 	    Map<String, String> innerParam = new HashMap<>();
 	    innerParam.put("company", phRefund.getExpressCode());
