@@ -72,6 +72,9 @@ public enum CommonResultCode implements ResultCode {
     
     /** 确认收货后七天不能退款  */
     REFUND_TIMEOUT("1022", "REFUND_TIMEOUT"),
+    
+    /** 兑换码错误或已使用  */
+    CODE_ERROR("1023", "CODE_ERROR"),
     ;
 	
 	

@@ -52,9 +52,13 @@ public class ActivityController {
 					return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 				}
 			}
+			return jsonResultHelper.buildSuccessJsonResult(name);
+
+		}else{
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.CODE_ERROR);
+
 		}
 		
-		return jsonResultHelper.buildSuccessJsonResult(name);
 	}
 	
 	@ApiOperation(value = "潮流展抽奖")

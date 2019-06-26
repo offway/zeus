@@ -49,6 +49,9 @@ public class GoodsDto implements Serializable {
     
     @ApiModelProperty(value ="排序类型[saleCount-销量,viewCount-人气,createTime-新品,price-价格]")
     private String sortName;
+    
+    @ApiModelProperty(value ="风格")
+    private String style;
 
     public String getName() {
         return name;
@@ -146,6 +149,14 @@ public class GoodsDto implements Serializable {
 
 	public void setMerchantId(Long merchantId) {
 		this.merchantId = merchantId;
+	}
+
+	public String getStyle() {
+		return style;
+	}
+
+	public void setStyle(String style) {
+		this.style = style;
 	}
     
 }

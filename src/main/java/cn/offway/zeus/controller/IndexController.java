@@ -214,7 +214,7 @@ public class IndexController {
 		map.put("banners", banners);
 		map.put("promoteSales", promoteSales);
 
-		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES","INDEX_BRAND_LOGO","INDEX_BRAND_GOODS","INDEX_CATEGORY");
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES","INDEX_BRAND_LOGO","INDEX_BRAND_GOODS","INDEX_CATEGORY","INDEX_STYLE");
 		for (PhConfig phConfig : configs) {
 			String name = phConfig.getName().toLowerCase();
 			String content = phConfig.getContent();

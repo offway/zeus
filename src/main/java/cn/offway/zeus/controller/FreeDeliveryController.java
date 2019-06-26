@@ -111,12 +111,12 @@ public class FreeDeliveryController {
 		
 		try {
 			
-			Date now = new Date();
+			/*Date now = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			if(now.before(sdf.parse("2019-06-18 00:00:00")) || now.after(sdf.parse("2019-06-20 23:59:59"))){
 				//不在活动时间范围
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
-			}
+			}*/
 			
 			PhFreeDelivery phFreeDelivery = phFreeDeliveryService.findOne(freeDeliveryId);
 			if("1".equals(phFreeDelivery.getStatus())){

@@ -85,6 +85,9 @@ public class PhGoods implements Serializable {
     
     /** 标签,该字段为二进制位运算标识,0否1是,从右到左第一位表示品牌保障,第二位表示7天退换货,第三位表示限量商品,第四位表示特殊商品。 **/
     private Long tag;
+    
+    /** 风格 **/
+    private String style;
 
 
     @Id
@@ -306,7 +309,17 @@ public class PhGoods implements Serializable {
 	public void setTag(Long tag) {
 		this.tag = tag;
 	}
+
+	@Column(name = "style",length = 20)
+	public String getStyle() {
+		return style;
+	}
+
+	public void setStyle(String style) {
+		this.style = style;
+	}
     
+	
     
 
 }
