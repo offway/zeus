@@ -166,7 +166,7 @@ public class IndexController {
 	@ApiOperation(value = "首页banner")
 	@GetMapping("/banners")
 	@ResponseBody
-	public JsonResult banners(@ApiParam("展示位置[0-首页顶部,1-首页腹部,2-广告页]") @RequestParam(required = false) String position){
+	public JsonResult banners(@ApiParam("展示位置[0-首页顶部,1-首页腹部,2-广告页,3-资讯]") @RequestParam(required = false) String position){
 		return jsonResultHelper.buildSuccessJsonResult(phBannerService.banners(StringUtils.isBlank(position)?"0":position));
 	}
 	
