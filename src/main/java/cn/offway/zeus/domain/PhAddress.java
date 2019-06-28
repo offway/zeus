@@ -2,6 +2,9 @@ package cn.offway.zeus.domain;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
@@ -14,37 +17,37 @@ import java.util.Date;
 @Table(name = "ph_address")
 public class PhAddress implements Serializable {
 
-    /** ID **/
+    @ApiModelProperty(value ="ID")
     private Long id;
 
-    /** 用户ID **/
+    @ApiModelProperty(value ="用户ID")
     private Long userId;
 
-    /** 姓名 **/
+    @ApiModelProperty(value ="姓名")
     private String realName;
 
-    /** 手机号 **/
+    @ApiModelProperty(value ="手机号")
     private String phone;
 
-    /** 省份 **/
+    @ApiModelProperty(value ="省份")
     private String province;
 
-    /** 城市 **/
+    @ApiModelProperty(value ="城市")
     private String city;
 
-    /** 区/县 **/
+    @ApiModelProperty(value ="区/县")
     private String county;
 
-    /** 详细地址 **/
+    @ApiModelProperty(value ="详细地址")
     private String content;
 
-    /** 是否默认[0-否,1-是] **/
+    @ApiModelProperty(value ="是否默认[0-否,1-是]")
     private String isDefault;
 
-    /** 创建时间 **/
+    @ApiModelProperty(value ="创建时间")
     private Date createTime;
 
-    /** 备注 **/
+    @ApiModelProperty(value ="备注")
     private String remark;
 
 
