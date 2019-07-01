@@ -41,6 +41,7 @@ public class ActivityController {
 		PhLaborPrize phLaborPrize = phLaborPrizeRepository.findByTypeAndStatusAndRemark(type, "0", code);
 		if(null!=phLaborPrize){
 			phLaborPrize.setStatus("1");
+			phLaborPrize.setUserId(userId);
 			phLaborPrizeRepository.save(phLaborPrize);
 			name = phLaborPrize.getName();
 			Long vpid = phLaborPrize.getVoucherProjectId();

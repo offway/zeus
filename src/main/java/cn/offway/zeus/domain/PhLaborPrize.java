@@ -37,6 +37,9 @@ public class PhLaborPrize implements Serializable {
 
     /** 备注 **/
     private String remark;
+    
+    /** 用户ID **/
+    private Long userId;
 
 
     @Id
@@ -114,5 +117,16 @@ public class PhLaborPrize implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    @Column(name = "user_id", length = 11)
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+    
+    
 
 }
