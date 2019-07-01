@@ -146,7 +146,7 @@ public class ArticleController {
 		phArticle.setViewCount(phArticle.getViewCount()+1L);
 		phArticle = phArticleService.save(phArticle);
 		html = html.replaceAll("###TITLE###", phArticle.getTitle());
-		html = html.replaceAll("###TYPE###", ArticleTypeEnum.getByCode(phArticle.getType()).getDesc());
+		html = html.replaceAll("###TYPE###", phArticle.getTag());
 		html = html.replaceAll("###VIEWCOUNT###", phArticle.getViewCount()+"");
 		Date date = phArticle.getApproval();
 		html = html.replaceAll("###CREATETIME###", DateFormatUtils.format(null==date?phArticle.getCreateTime():date, "yyyy-MM-dd"));
