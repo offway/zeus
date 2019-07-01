@@ -2,6 +2,7 @@ package cn.offway.zeus.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,7 +148,8 @@ public class ArticleController {
 		html = html.replaceAll("###TITLE###", phArticle.getTitle());
 		html = html.replaceAll("###TYPE###", ArticleTypeEnum.getByCode(phArticle.getType()).getDesc());
 		html = html.replaceAll("###VIEWCOUNT###", phArticle.getViewCount()+"");
-		html = html.replaceAll("###CREATETIME###", DateFormatUtils.format(phArticle.getApproval(), "yyyy-MM-dd"));
+		Date date = phArticle.getApproval();
+		html = html.replaceAll("###CREATETIME###", DateFormatUtils.format(null==date?phArticle.getCreateTime():date, "yyyy-MM-dd"));
 		html = html.replaceAll("###CONTENT###", phArticle.getContent());
 		html = html.replaceAll("###IMAGE###", phArticle.getImage());
 		html = html.replaceAll("###NAME###", phArticle.getName());
