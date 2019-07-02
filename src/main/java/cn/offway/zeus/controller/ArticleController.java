@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -26,7 +27,6 @@ import com.alibaba.fastjson.JSON;
 
 import cn.offway.zeus.domain.PhArticle;
 import cn.offway.zeus.dto.ArticleDto;
-import cn.offway.zeus.enums.ArticleTypeEnum;
 import cn.offway.zeus.service.PhArticleService;
 import cn.offway.zeus.service.PhConfigService;
 import cn.offway.zeus.service.PhGoodsService;
@@ -150,7 +150,7 @@ public class ArticleController {
 		html = html.replaceAll("###VIEWCOUNT###", phArticle.getViewCount()+"");
 		Date date = phArticle.getApproval();
 		html = html.replaceAll("###CREATETIME###", DateFormatUtils.format(null==date?phArticle.getCreateTime():date, "yyyy-MM-dd"));
-		html = html.replaceAll("###CONTENT###", phArticle.getContent());
+		html = html.replaceAll("###CONTENT###", Matcher.quoteReplacement(phArticle.getContent()));
 		html = html.replaceAll("###IMAGE###", phArticle.getImage());
 		html = html.replaceAll("###NAME###", phArticle.getName());
 		

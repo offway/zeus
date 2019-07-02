@@ -100,7 +100,7 @@ public class IndexController {
 	@GetMapping("/")
 	@ApiOperation(value = "欢迎页")
 	public String index() {
-		return "欢迎访问OFFWAY API服务";
+		return "欢迎访问很潮API服务";
 	}
 
 	/**

@@ -51,8 +51,8 @@ public class PayController {
 		/*//修改订单状态位支付中
 		phPreorderInfo.setStatus("3");
 		phPreorderInfoService.save(phPreorderInfo);*/
-		String body = "OFFWAY商品购买";
-		String subject = "OFFWAY商品购买";
+		String body = "很潮商品购买";
+		String subject = "很潮商品购买";
 		double amount = phPreorderInfo.getAmount();
 		AlipayTradeAppPayResponse response = alipayService.trade(preorderNo, body, subject, amount);
 		if(response.isSuccess()){
