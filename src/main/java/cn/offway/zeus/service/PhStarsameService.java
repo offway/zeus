@@ -21,9 +21,9 @@ public interface PhStarsameService{
 
 	List<PhStarsame> indexData();
 
-	Page<PhStarsame> findByPage(Pageable page);
-
 	int praise(Long id);
 	
 	int praisecancel(Long id);
+
+	Page<PhStarsame> findByPage(String starName, Pageable page);
 }

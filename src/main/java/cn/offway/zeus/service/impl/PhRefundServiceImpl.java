@@ -104,7 +104,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 
 		List<RefundGoodsDto> goodsDtos = refundDto.getGoods();
 		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
-		if(phOrderInfo.getUserId() != refundDto.getUserId()){
+		if(phOrderInfo.getUserId().longValue() != refundDto.getUserId().longValue()){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
 		

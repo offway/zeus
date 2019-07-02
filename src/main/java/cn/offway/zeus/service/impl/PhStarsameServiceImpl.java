@@ -59,7 +59,7 @@ public class PhStarsameServiceImpl implements PhStarsameService {
 	}
 	
 	@Override
-	public Page<PhStarsame> findByPage(Pageable page){
+	public Page<PhStarsame> findByPage(String starName,Pageable page){
 		return phStarsameRepository.findAll(new Specification<PhStarsame>() {
 			
 			@Override
@@ -67,6 +67,9 @@ public class PhStarsameServiceImpl implements PhStarsameService {
 				List<Predicate> params = new ArrayList<Predicate>();
 				
                 Predicate[] predicates = new Predicate[params.size()];
+                if(StringUtils.isNotBlank(starName)){
+                	params.add(criteriaBuilder.like(root.get("starName"), "%"+starName+"%"));
+                }
                 criteriaQuery.where(params.toArray(predicates));
                 criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
 				return null;

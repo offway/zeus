@@ -63,9 +63,10 @@ public class StarsameController {
 	@GetMapping("/list")
 	public JsonResult list(
 			@ApiParam("页码,从0开始") @RequestParam int page,
-		    @ApiParam("页大小") @RequestParam int size){
+		    @ApiParam("页大小") @RequestParam int size,
+		    @ApiParam("明星姓名") @RequestParam(required = false) String starName){
 		
-		return jsonResultHelper.buildSuccessJsonResult(phStarsameService.findByPage(new PageRequest(page,size)));
+		return jsonResultHelper.buildSuccessJsonResult(phStarsameService.findByPage(starName,new PageRequest(page,size)));
 	}
 	
 	@SuppressWarnings("unchecked")
