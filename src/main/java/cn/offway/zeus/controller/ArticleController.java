@@ -82,7 +82,14 @@ public class ArticleController {
 				map.put("goods", phGoodsService.findByIds(Arrays.asList(ids)));
 			}
 		}
-		List<PhArticle> recommends = phArticleService.findRecommendByType(phArticle.getType(),3,id);
+		
+		int size = 3;//推荐3条
+		List<PhArticle> recommends = phArticleService.findRecommendByTypeAndTag(phArticle.getType(),size,id, phArticle.getTag());
+		int s = size - recommends.size();
+		if(s>0){
+			List<PhArticle> recommends1 = phArticleService.findRecommendByType(phArticle.getType(),s,id);
+			recommends.addAll(recommends1);
+		}
 		map.put("recommends", recommends);
 
 		return jsonResultHelper.buildSuccessJsonResult(map);

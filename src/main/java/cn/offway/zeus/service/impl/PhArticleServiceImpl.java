@@ -56,6 +56,12 @@ public class PhArticleServiceImpl implements PhArticleService {
 	}
 	
 	@Override
+	public List<PhArticle> findRecommendByTypeAndTag(String type, int limit,Long id,String tag){
+		return phArticleRepository.findRecommendByTypeAndTag(type, limit, id, tag);
+	}
+
+	
+	@Override
 	public Page<PhArticle> findByPage(final ArticleDto articleDto,Pageable page){
 		return phArticleRepository.findAll(new Specification<PhArticle>() {
 			

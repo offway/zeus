@@ -194,7 +194,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 				}
 			}
 			
-			if(MathUtils.add(amount, null == phOrderInfo.getMailFee()?0D:phOrderInfo.getMailFee())==phOrderInfo.getAmount()){
+			if(MathUtils.add(amount, null == phOrderInfo.getMailFee()?0D:phOrderInfo.getMailFee())==phOrderInfo.getAmount().doubleValue()){
 				phRefund.setAmount(phOrderInfo.getAmount());
 				phRefund.setIsComplete("1");
 			}else{
@@ -208,7 +208,13 @@ public class PhRefundServiceImpl implements PhRefundService {
 			}
 
 		}
-
+		
+		/*if(phRefund.getReason().equals("尺码拍错/不喜欢/效果差") || phRefund.getReason().equals("其他")){
+			if("1".equals(phRefund.getIsComplete())){
+				phRefund.setAmount(MathUtils.sub(phRefund.getAmount(), null == phOrderInfo.getMailFee()?0D:phOrderInfo.getMailFee()));
+			}
+		}*/
+		
 		phRefund.setGoodsCount(goodsNum);
 		phRefund = save(phRefund);
 		return jsonResultHelper.buildSuccessJsonResult(phRefund.getId());

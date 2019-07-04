@@ -23,4 +23,6 @@ public interface PhArticleService{
 	Page<PhArticle> findByPage(ArticleDto articleDto, Pageable page);
 
 	List<PhArticle> findRecommendByType(String type, int limit,Long id);
+
+	List<PhArticle> findRecommendByTypeAndTag(String type, int limit, Long id, String tag);
 }

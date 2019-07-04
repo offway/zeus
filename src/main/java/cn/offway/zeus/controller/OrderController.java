@@ -93,10 +93,11 @@ public class OrderController {
 			return phOrderInfoService.add(orderAddDto);
 		}catch (StockException e) {
 			e.printStackTrace();
-			logger.info("减库存失败",e);
+			logger.error("减库存失败",e);
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.STOCK_SHORTAGE);
 		}catch (Exception e) {
 			e.printStackTrace();
+			logger.error("下订单失败",e);
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
 	}
