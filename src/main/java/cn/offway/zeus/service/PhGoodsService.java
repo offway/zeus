@@ -31,4 +31,8 @@ public interface PhGoodsService{
 	List<PhGoods> findBrandRecommend(Long brandId);
 
 	List<PhGoods> findByIds(List<String> ids);
+
+	int updateSort();
+
+	List<String> searchCategory(String brandName);
 }

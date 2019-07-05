@@ -464,6 +464,8 @@ public class UserController {
 			@ApiParam("验证码") @RequestParam String code,
 			@ApiParam("渠道[HY-欢阅传媒]") @RequestParam String channel){
 		
+		phone = phone.contains("+")?phone:"+86"+phone;
+
     	String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
     	if(StringUtils.isBlank(smsCode)){
     		return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);

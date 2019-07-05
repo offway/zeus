@@ -41,5 +41,14 @@ public interface PhGoodsRepository extends JpaRepository<PhGoods,Long>,JpaSpecif
 	@Query(nativeQuery=true,value="select * from ph_goods g where g.`status`='1' and g.id in(?1) ")
 	List<PhGoods> findByIds(List<String> ids);
 	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_goods set sort = RAND() where status='1'")
+	int updateSort();
+	
+	@Query(nativeQuery=true,value="select CONCAT(brand_name,' ',category) from ph_goods where `brand_name` =?1 group by category")
+	List<String> searchCategory(String brandName);
+
+	
 	
 }

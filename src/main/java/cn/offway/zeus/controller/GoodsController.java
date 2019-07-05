@@ -1,11 +1,13 @@
 package cn.offway.zeus.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +80,8 @@ public class GoodsController {
 	@Autowired
 	private VPickGoodsService vPickGoodsService;
 	
+	private static Date updateDate = null;
+	
 	
 	
 	@ApiOperation("查询商品类目")
@@ -89,14 +93,22 @@ public class GoodsController {
 	@ApiOperation("商品列表")
 	@PostMapping("/list")
 	public JsonResult list(@RequestBody @ApiParam("商品属性") GoodsDto goodsDto ){
+		
+		//24小时随机排序
+		Date now = new Date();
+		if (null == updateDate || updateDate.before(DateUtils.addDays(now, -1))) {
+			phGoodsService.updateSort();
+			updateDate = now;
+		}
+		
 		String sortDir = StringUtils.isBlank(goodsDto.getSortDir())?"desc":goodsDto.getSortDir();
-		String sortName = StringUtils.isBlank(goodsDto.getSortName())?"upTime":goodsDto.getSortName();
+		String sortName = StringUtils.isBlank(goodsDto.getSortName())?"sort":goodsDto.getSortName();
 
-		sortName = "createTime".equals(sortName)?"upTime":sortName;
+		sortName = ("createTime".equals(sortName)||"upTime".equals(sortName))?"sort":sortName;
 		
 		PageRequest pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName);
 		if("saleCount".equals(sortName)){
-			pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName,"upTime");
+			pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName,"sort");
 		}
 		
 		Page<PhGoods> pages = phGoodsService.findByPage(goodsDto,pageRequest);

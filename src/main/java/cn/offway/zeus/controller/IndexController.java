@@ -274,6 +274,28 @@ public class IndexController {
 		
 		return jsonResultHelper.buildSuccessJsonResult(s);
 	}
+	
+	@ApiOperation("搜索")
+	@GetMapping("/search/v2")
+	@ResponseBody
+	public JsonResult searchv2(@ApiParam("搜索关键字") @RequestParam String wd){
+		
+		
+		List<String> s = new ArrayList<>();
+		//匹配品牌
+		List<String> brands = phBrandService.findNameLike("%"+wd+"%");
+		int size = brands.size();
+		if(size>1){
+			s = brands;
+		}else if(size==1){
+			String name = brands.get(0);
+			s.add(name);
+			List<String> c = phGoodsService.searchCategory(name);
+			s.addAll(c);
+		}
+		
+		return jsonResultHelper.buildSuccessJsonResult(s);
+	}
 			
 	
 	/*public static void main(String[] args) {

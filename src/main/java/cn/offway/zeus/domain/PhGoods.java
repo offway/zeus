@@ -88,6 +88,9 @@ public class PhGoods implements Serializable {
     
     /** 风格 **/
     private String style;
+    
+    /** 排序 **/
+    private Double sort;
 
 
     @Id
@@ -318,7 +321,15 @@ public class PhGoods implements Serializable {
 	public void setStyle(String style) {
 		this.style = style;
 	}
-    
+	
+    @Column(name = "sort", precision = 20, scale = 20)
+    public Double getSort() {
+        return sort;
+    }
+
+    public void setSort(Double sort) {
+        this.sort = sort;
+    }
 	
     
 

@@ -33,4 +33,6 @@ public interface PhBrandService{
 	List<PhBrand> findAll(String type);
 
 	List<PhBrand> findByMerchantId(Long merchantId);
+
+	List<String> findNameLike(String name);
 }

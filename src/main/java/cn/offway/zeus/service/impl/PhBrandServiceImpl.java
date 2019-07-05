@@ -95,6 +95,11 @@ public class PhBrandServiceImpl implements PhBrandService {
 	}
 	
 	@Override
+	public List<String> findNameLike(String name){
+		return phBrandRepository.findNameLike(name);
+	}
+	
+	@Override
 	public Page<PhBrand> findByPage(final BrandDto brandDto,final String isRecommend,Pageable page){
 		return phBrandRepository.findAll(new Specification<PhBrand>() {
 			

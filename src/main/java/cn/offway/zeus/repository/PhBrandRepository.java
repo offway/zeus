@@ -20,11 +20,15 @@ public interface PhBrandRepository extends JpaRepository<PhBrand,Long>,JpaSpecif
 	
 	List<PhBrand> findByTypeOrderByNameAsc(String type);
 	
-	List<PhBrand> findByNameLike(String name);
-	
 	@Query(nativeQuery=true,value="select * from ph_brand where name =?1 limit 1")
 	PhBrand findByName(String name);
 	
 	@Query(nativeQuery=true,value="select * from ph_brand where id in (select brand_id from ph_merchant_brand where merchant_id=?1 )")
 	List<PhBrand> findByMerchantId(Long merchantId);
+	
+	@Query(nativeQuery=true,value="select * from ph_brand where name like ?1")
+	List<PhBrand> findByNameLike(String name);
+	
+	@Query(nativeQuery=true,value="select name from ph_brand where name like ?1")
+	List<String> findNameLike(String name);
 }

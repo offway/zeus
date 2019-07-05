@@ -78,6 +78,16 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 	}
 	
 	@Override
+	public int updateSort(){
+		return phGoodsRepository.updateSort();
+	}
+	
+	@Override
+	public List<String> searchCategory(String brandName){
+		return phGoodsRepository.searchCategory(brandName);
+	}
+	
+	@Override
 	public Page<PhGoods> findByPage(final GoodsDto goodsDto,Pageable page){
 		return phGoodsRepository.findAll(new Specification<PhGoods>() {
 			
@@ -90,8 +100,20 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 					params.add(criteriaBuilder.like(root.get("brandName"), "%"+goodsDto.getBrandName()+"%"));
 				}
 				
-				if(StringUtils.isNotBlank(goodsDto.getName())){
-					params.add(criteriaBuilder.like(root.get("name"), "%"+goodsDto.getName()+"%"));
+				String name = goodsDto.getName();
+				if (StringUtils.isNotBlank(name)) {
+					String[] names = name.split(" ");
+					if (names.length == 1) {
+						params.add(criteriaBuilder.like(root.get("name"),
+								"%" + name + "%"));
+					} else {
+						params.add(criteriaBuilder.or(criteriaBuilder.and(
+								criteriaBuilder.like(root.get("brandName"), "%" + names[0] + "%"),
+								criteriaBuilder.like(root.get("category"), "%" + names[1] + "%")),
+								criteriaBuilder.like(root.get("name"),
+										"%" + name.replaceAll(" ", "%") + "%")
+								));
+					}
 				}
 				
 				if(null != goodsDto.getBrandId()){
