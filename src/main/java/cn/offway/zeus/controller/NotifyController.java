@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +52,9 @@ public class NotifyController {
 	
 	@Autowired
 	private PhPreorderInfoService phPreorderInfoService;
+	
+	@Value("${is-prd}")
+	private boolean isPrd;
 	
 
 	/**
@@ -118,11 +122,13 @@ public class NotifyController {
 
     }
 	
-	/*@ApiOperation("支付成功")
+	@ApiOperation("支付成功-测试使用")
 	@PostMapping("/ok")
     public String ok(@ApiParam("预订单号") @RequestParam String preorderNo) throws Exception{
-		phPreorderInfoService.wxpay("SUCCESS", preorderNo);
+		if(!isPrd){
+			phPreorderInfoService.wxpay("SUCCESS", preorderNo);
+		}
 	    return "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>" + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
-	}*/
+	}
 	
 }
