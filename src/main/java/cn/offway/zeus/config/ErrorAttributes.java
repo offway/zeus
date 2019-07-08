@@ -32,12 +32,15 @@ public class ErrorAttributes extends DefaultErrorAttributes {
 	public Map<String, Object> getErrorAttributes(RequestAttributes requestAttributes,
 			boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<String, Object>();
-		errorAttributes.put("timestamp", new Date());
 		addStatus(errorAttributes, requestAttributes);
 		addErrorDetails(errorAttributes, requestAttributes, includeStackTrace);
 		addPath(errorAttributes, requestAttributes);
-		logger.error("系统异常，错误信息：{}",errorAttributes,getError(requestAttributes));
-		return errorAttributes;
+//		logger.error("系统异常，错误信息：{}",errorAttributes,getError(requestAttributes));
+		Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+		resultMap.put("code", "500");
+		resultMap.put("msg", "系统繁忙，请稍后再试。");
+		resultMap.put("data", errorAttributes);
+		return resultMap;
 	}
 	
 	private void addStatus(Map<String, Object> errorAttributes,
