@@ -32,6 +32,7 @@ public class ErrorAttributes extends DefaultErrorAttributes {
 	public Map<String, Object> getErrorAttributes(RequestAttributes requestAttributes,
 			boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<String, Object>();
+		errorAttributes.put("timestamp", new Date());
 		addStatus(errorAttributes, requestAttributes);
 		addErrorDetails(errorAttributes, requestAttributes, includeStackTrace);
 		addPath(errorAttributes, requestAttributes);

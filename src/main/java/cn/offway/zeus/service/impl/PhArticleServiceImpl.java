@@ -1,6 +1,7 @@
 package cn.offway.zeus.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -84,8 +85,8 @@ public class PhArticleServiceImpl implements PhArticleService {
 				}
 				
 				params.add(criteriaBuilder.equal(root.get("status"), "1"));
+				params.add(criteriaBuilder.lessThanOrEqualTo(root.get("approval"), new Date()));
 
-				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
                 criteriaQuery.orderBy(criteriaBuilder.desc(root.get("approval")));

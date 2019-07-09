@@ -80,7 +80,7 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
-                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
+                criteriaQuery.orderBy(criteriaBuilder.asc(root.get("sort")));
 				return null;
 			}
 		}, page);

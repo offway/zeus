@@ -79,6 +79,9 @@ public class PhMerchant implements Serializable {
 
     /** 背景图 **/
     private String background;
+    
+    /** 排序 **/
+    private Long sort;
 
 
     @Id
@@ -282,6 +285,15 @@ public class PhMerchant implements Serializable {
 
     public void setBackground(String background) {
         this.background = background;
+    }
+    
+    @Column(name = "sort", length = 11)
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
     }
 
 }
