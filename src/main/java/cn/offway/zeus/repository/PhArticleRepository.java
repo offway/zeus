@@ -16,9 +16,9 @@ import java.util.List;
  */
 public interface PhArticleRepository extends JpaRepository<PhArticle,Long>,JpaSpecificationExecutor<PhArticle> {
 
-	@Query(nativeQuery=true,value="select * from ph_article where status='1' and id !=?3 and type=?1 order by create_time desc limit ?2")
+	@Query(nativeQuery=true,value="select * from ph_article where status='1' and approval<=Now() and id !=?3 and type=?1 order by create_time desc limit ?2")
 	List<PhArticle> findRecommendByType(String type,int limit,Long id);
 	
-	@Query(nativeQuery=true,value="select * from ph_article where status='1' and id !=?3 and type=?1 and tag=?4 order by create_time desc limit ?2")
+	@Query(nativeQuery=true,value="select * from ph_article where status='1' and approval<=Now() and id !=?3 and type=?1 and tag=?4 order by create_time desc limit ?2")
 	List<PhArticle> findRecommendByTypeAndTag(String type, int limit,Long id,String tag);
 }
