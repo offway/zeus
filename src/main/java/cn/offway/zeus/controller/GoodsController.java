@@ -104,11 +104,9 @@ public class GoodsController {
 		String sortDir = StringUtils.isBlank(goodsDto.getSortDir())?"desc":goodsDto.getSortDir();
 		String sortName = StringUtils.isBlank(goodsDto.getSortName())?"sort":goodsDto.getSortName();
 
-		sortName = ("createTime".equals(sortName)||"upTime".equals(sortName))?"sort":sortName;
-		
 		PageRequest pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName);
 		if("saleCount".equals(sortName)){
-			pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName,"sort");
+			pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),"saleCount","sort");
 		}
 		
 		Page<PhGoods> pages = phGoodsService.findByPage(goodsDto,pageRequest);

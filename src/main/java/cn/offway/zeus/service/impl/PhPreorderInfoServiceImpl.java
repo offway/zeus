@@ -12,6 +12,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.CriteriaBuilder.In;
 
+import cn.offway.zeus.domain.*;
+import cn.offway.zeus.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,15 +26,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.offway.zeus.service.PhOrderInfoService;
-import cn.offway.zeus.service.PhPreorderInfoService;
-import cn.offway.zeus.service.PhUserInfoService;
-import cn.offway.zeus.service.SmsService;
-import cn.offway.zeus.domain.PhCapitalFlow;
-import cn.offway.zeus.domain.PhOrderGoods;
-import cn.offway.zeus.domain.PhOrderInfo;
-import cn.offway.zeus.domain.PhPreorderInfo;
-import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.repository.PhCapitalFlowRepository;
 import cn.offway.zeus.repository.PhGoodsRepository;
 import cn.offway.zeus.repository.PhGoodsStockRepository;
@@ -79,6 +72,9 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	
 	@Autowired
 	private SmsService smsService;
+
+	@Autowired
+	private PhSettlementInfoService phSettlementInfoService;
 	
 	@Override
 	public PhPreorderInfo save(PhPreorderInfo phPreorderInfo){
@@ -303,11 +299,15 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 					smsService.sendMsg(obj[0].toString(), "【很潮】您有一笔新订单，订单编号："+obj[1].toString()+"，商品件数："+obj[2].toString()+"件，请及时登录后台进行发货哦~");
 				}
 				smsService.sendMsg("15001775461", "【很潮】提醒您：亲，您有一笔新订单来啦！请尽快发货！");
-				
+
+				//保存结算数据
+				phSettlementInfoService.save(preorderNo);
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error("短信通知商户异常preorderNo="+preorderNo);
 			}
 		}
 	}
+
+
 }
