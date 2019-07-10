@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.offway.zeus.domain.*;
+import cn.offway.zeus.dto.VOrderRefundDto;
+import cn.offway.zeus.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -26,24 +29,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.offway.zeus.domain.PhAddress;
-import cn.offway.zeus.domain.PhOrderExpressInfo;
-import cn.offway.zeus.domain.PhOrderGoods;
-import cn.offway.zeus.domain.PhOrderInfo;
-import cn.offway.zeus.domain.PhPreorderInfo;
 import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.dto.OrderInfoDto;
 import cn.offway.zeus.dto.PreorderDto;
 import cn.offway.zeus.enums.ExpressCodeEnum;
 import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhRefundRepository;
-import cn.offway.zeus.service.Kuaidi100Service;
-import cn.offway.zeus.service.PhAddressService;
-import cn.offway.zeus.service.PhOrderExpressInfoService;
-import cn.offway.zeus.service.PhOrderGoodsService;
-import cn.offway.zeus.service.PhOrderInfoService;
-import cn.offway.zeus.service.PhPreorderInfoService;
-import cn.offway.zeus.service.PhRefundService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -83,6 +74,12 @@ public class OrderController {
 	
 	@Autowired
 	private PhRefundService phRefundService;
+
+	@Autowired
+	private VOrderRefundService vOrderRefundService;
+
+	@Autowired
+	private PhRefundGoodsService phRefundGoodsService;
 	
 	
 
@@ -170,6 +167,13 @@ public class OrderController {
 		
 		Page<PhOrderInfo> page2 = phOrderInfoService.findByPage(userId, status.trim(), new PageRequest(page,size));
 		List<PhOrderInfo> phOrderInfos = page2.getContent();
+		List<OrderInfoDto> dtos = getOrderInfoDtos(phOrderInfos);
+
+		Page<OrderInfoDto> page3 = new PageImpl<>(dtos, new PageRequest(page,size), page2.getTotalElements());
+		return jsonResultHelper.buildSuccessJsonResult(page3);
+	}
+
+	private List<OrderInfoDto> getOrderInfoDtos(List<PhOrderInfo> phOrderInfos) {
 		List<OrderInfoDto> dtos = new ArrayList<>();
 		for (PhOrderInfo phOrderInfo : phOrderInfos) {
 			OrderInfoDto dto = new OrderInfoDto();
@@ -178,11 +182,65 @@ public class OrderController {
 			dto.setGoods(goods);
 			dtos.add(dto);
 		}
-		
-		Page<OrderInfoDto> page3 = new PageImpl<>(dtos, new PageRequest(page,size), page2.getTotalElements());
+		return dtos;
+	}
+
+	@ApiOperation("用户全部订单")
+	@GetMapping("/user/all")
+	public JsonResult userAll(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("页码,从0开始") @RequestParam int page,
+			@ApiParam("页大小") @RequestParam int size){
+
+		Page<VOrderRefund> page2 = vOrderRefundService.findByPage(userId, new PageRequest(page,size));
+		List<VOrderRefund> vOrderRefundList = page2.getContent();
+		List<VOrderRefundDto> dtos = new ArrayList<>();
+		for (VOrderRefund vOrderRefund : vOrderRefundList) {
+			VOrderRefundDto dto = new VOrderRefundDto();
+			BeanUtils.copyProperties(vOrderRefund, dto);
+			List<Map<String,Object>> goods = new ArrayList<>();
+			if ("order".equals(vOrderRefund.getStyle())){
+				putGoods(vOrderRefund, goods);
+				dto.setGoods(goods);
+			}else{
+				if("1".equals(vOrderRefund.getIsComplete())){
+					putGoods(vOrderRefund, goods);
+				}else{
+					List<PhRefundGoods> phRefundGoodss = phRefundGoodsService.findByRefundId(vOrderRefund.getRefundId());
+					for (PhRefundGoods phRefundGoods : phRefundGoodss) {
+						PhOrderGoods phOrderGoods = phOrderGoodsService.findOne(phRefundGoods.getOrderGoodsId());
+						Map<String, Object> map1 = new HashMap<>();
+						map1.put("image", phOrderGoods.getGoodsImage());
+						map1.put("name", phOrderGoods.getGoodsName());
+						map1.put("count", phRefundGoods.getGoodsCount());
+						map1.put("price", MathUtils.mul(MathUtils.div(phOrderGoods.getPrice(), phOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));
+						map1.put("property", phOrderGoods.getRemark());
+						goods.add(map1);
+					}
+				}
+				dto.setGoods(goods);
+			}
+
+			dtos.add(dto);
+		}
+
+		Page<VOrderRefundDto> page3 = new PageImpl<>(dtos, new PageRequest(page,size), page2.getTotalElements());
 		return jsonResultHelper.buildSuccessJsonResult(page3);
 	}
-	
+
+	private void putGoods(VOrderRefund vOrderRefund, List<Map<String, Object>> goods) {
+		List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(vOrderRefund.getOrderNo());
+		for (PhOrderGoods phOrderGoods : phOrderGoodss) {
+			Map<String, Object> map1 = new HashMap<>();
+			map1.put("image", phOrderGoods.getGoodsImage());
+			map1.put("name", phOrderGoods.getGoodsName());
+			map1.put("count", phOrderGoods.getGoodsCount());
+			map1.put("price", phOrderGoods.getPrice());
+			map1.put("property", phOrderGoods.getRemark());
+			goods.add(map1);
+		}
+	}
+
 	@ApiOperation("用户待付款订单")
 	@GetMapping("/user/pending")
 	public JsonResult userPending(
@@ -196,14 +254,7 @@ public class OrderController {
 		for (PhPreorderInfo phPreorderInfo : phOrderInfos) {
 			PreorderDto preorderDto = new PreorderDto();
 			List<PhOrderInfo> orderInfos = phOrderInfoService.findByPreorderNoAndStatus(phPreorderInfo.getOrderNo(), "0");
-			List<OrderInfoDto> dtos = new ArrayList<>();
-			for (PhOrderInfo phOrderInfo2 : orderInfos) {
-				OrderInfoDto dto = new OrderInfoDto();
-				List<PhOrderGoods> goods = phOrderGoodsService.findByOrderNo(phOrderInfo2.getOrderNo());
-				BeanUtils.copyProperties(phOrderInfo2, dto);
-				dto.setGoods(goods);
-				dtos.add(dto);
-			}
+			List<OrderInfoDto> dtos = getOrderInfoDtos(orderInfos);
 			BeanUtils.copyProperties(phPreorderInfo, preorderDto);
 			preorderDto.setOrderInfos(dtos);
 			preorderDtos.add(preorderDto);

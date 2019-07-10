@@ -83,6 +83,7 @@ public class PhSettlementInfoServiceImpl implements PhSettlementInfoService {
 			settlementDetail.setWalletAmount(orderInfo.getWalletAmount());
 			/* 状态[0-待结算,1-结算中,2-已结算] */
 			settlementDetail.setStatus("0");
+			settlementDetail.setRemark(orderInfo.getStatus());
 			phSettlementDetails.add(settlementDetail);
 
 			PhSettlementInfo settlementInfo = phSettlementInfoRepository.findByMerchantId(merchantId);
