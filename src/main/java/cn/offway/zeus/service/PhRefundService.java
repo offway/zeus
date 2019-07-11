@@ -32,4 +32,6 @@ public interface PhRefundService{
 	Page<PhRefund> findByPage(Long userId, Pageable page);
 
 	String canRefund(String orderNo);
+
+	PhRefund findByOrderNoEnd(String orderNo);
 }

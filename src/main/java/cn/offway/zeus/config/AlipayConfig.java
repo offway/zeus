@@ -1,5 +1,6 @@
 package cn.offway.zeus.config;
 
+import com.aliyun.mq.http.MQClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -24,5 +25,10 @@ public class AlipayConfig {
 		//实例化客户端
 		AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", alipayProperties.getAppid(), alipayProperties.getPrivatekey(), "json", "UTF-8", alipayProperties.getPublickey(), "RSA2");
 		return alipayClient;
+	}
+
+	@Bean
+	public MQClient mqClient(){
+		return  new MQClient(alipayProperties.getAccountEndpoint(),alipayProperties.getAccessId(),alipayProperties.getAccessKey());
 	}
 }

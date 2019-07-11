@@ -365,4 +365,8 @@ public class PhRefundServiceImpl implements PhRefundService {
 		}, page);
 	}
 
+	@Override
+	public PhRefund findByOrderNoEnd(String orderNo) {
+		return phRefundRepository.findByOrderNoEnd(orderNo);
+	}
 }

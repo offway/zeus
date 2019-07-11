@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.offway.zeus.domain.*;
-import cn.offway.zeus.dto.VOrderRefundDto;
+import cn.offway.zeus.dto.*;
 import cn.offway.zeus.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -29,9 +29,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.offway.zeus.dto.OrderAddDto;
-import cn.offway.zeus.dto.OrderInfoDto;
-import cn.offway.zeus.dto.PreorderDto;
 import cn.offway.zeus.enums.ExpressCodeEnum;
 import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhRefundRepository;
@@ -80,8 +77,7 @@ public class OrderController {
 
 	@Autowired
 	private PhRefundGoodsService phRefundGoodsService;
-	
-	
+
 
 	@ApiOperation("下订单")
 	@PostMapping("/add")
@@ -303,7 +299,7 @@ public class OrderController {
 			for (PhOrderInfo phOrderInfo : orderInfos) {
 				goods.addAll(phOrderGoodsService.findByOrderNo(phOrderInfo.getOrderNo()));
 			}
-			
+			resultMap.put("goods", goods);
 		}else{
 			PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
 			amount = phOrderInfo.getAmount();
@@ -317,13 +313,41 @@ public class OrderController {
 			addrId = phOrderInfo.getAddrId();
 			createTime = phOrderInfo.getCreateTime();
 			goods = phOrderGoodsService.findByOrderNo(orderNo);
-			
-			//是否可以申请退款
+
+			//查询该笔订单是否有退款申请
+			PhRefund phRefund = phRefundService.findByOrderNoEnd(orderNo);
+			if (null != phRefund){
+				String isComplete = phRefund.getIsComplete();
+				List<OrderGoodsDto> orderGoodsDtos = new ArrayList<>();
+				if("0".equals(isComplete)){
+					//不是整单退款,查询退款商品
+					List<PhRefundGoods> phRefundGoodsList = phRefundGoodsService.findByRefundId(phRefund.getId());
+					for (PhOrderGoods phOrderGoods : goods) {
+						OrderGoodsDto orderGoodsDto = new OrderGoodsDto();
+						BeanUtils.copyProperties(phOrderGoods,orderGoodsDto);
+						for (PhRefundGoods phRefundGoods : phRefundGoodsList) {
+							if (phOrderGoods.getId().longValue() == phRefundGoods.getOrderGoodsId().longValue()){
+								orderGoodsDto.setRefundStatus(phRefund.getStatus());
+							}
+						}
+						orderGoodsDtos.add(orderGoodsDto);
+					}
+				}else{
+					for (PhOrderGoods phOrderGoods : goods) {
+						OrderGoodsDto orderGoodsDto = new OrderGoodsDto();
+						BeanUtils.copyProperties(phOrderGoods,orderGoodsDto);
+						orderGoodsDto.setRefundStatus(phRefund.getStatus());
+						orderGoodsDtos.add(orderGoodsDto);
+					}
+				}
+				resultMap.put("goods", orderGoodsDtos);
+			}else{
+				resultMap.put("goods", goods);
+			}
 			resultMap.put("canRefund", phRefundService.canRefund(orderNo));
-			
 		}
 		
-		resultMap.put("goods", goods);
+
 		resultMap.put("amount", amount);
 		resultMap.put("orderNo", orderNo);
 		resultMap.put("mailFee", mailFee);

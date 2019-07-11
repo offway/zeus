@@ -6,6 +6,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.aliyun.mq.http.MQClient;
+import com.aliyun.mq.http.MQProducer;
+import com.aliyun.mq.http.model.TopicMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,12 @@ public class AlipayService {
 	/** 系统地址 **/
 	@Value("${system.url}")
 	private String systemUrl;
+
+	@Autowired
+	private MQClient mqClient;
+
+	@Value("${is-prd}")
+	private boolean isPrd;
 	
 	/**
 	 * 生成 APP支付订单信息
@@ -67,6 +76,24 @@ public class AlipayService {
 		        e.printStackTrace();
 		}
 		return null;
+	}
+
+	public void publishMessage(String message,String topicName){
+		if(isPrd){
+			try {
+				// 获取Topic的生产者
+				MQProducer producer = mqClient.getProducer("MQ_INST_1021766862384088_BayRNaow", topicName);
+				TopicMessage pubMsg = new TopicMessage(message.getBytes(),"A");
+				// 同步发送消息，只要不抛异常就是成功
+				TopicMessage pubResultMsg = producer.publishMessage(pubMsg);
+				// 同步发送消息，只要不抛异常就是成功
+				logger.info(" Send mq message success.  msgId is: " + pubResultMsg.getMessageId()
+						+ ", bodyMD5 is: " + pubResultMsg.getMessageBodyMD5());
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Send mq message Exception. message:{}",message,e);
+			}
+		}
 	}
 	
 	public boolean transfer(){

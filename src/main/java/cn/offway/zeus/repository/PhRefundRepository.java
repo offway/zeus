@@ -21,4 +21,8 @@ public interface PhRefundRepository extends JpaRepository<PhRefund,Long>,JpaSpec
 	int isCompleteOrderNo(String orderNo);
 	
 	int countByUserIdAndStatusIn(Long userId,List<String> status);
+
+	@Query(nativeQuery = true,value = "select * from ph_refund where `status` not in ('5','6')  and order_no =?1 order by id desc limit 1")
+	PhRefund findByOrderNoEnd(String orderNo);
+
 }

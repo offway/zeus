@@ -14,10 +14,16 @@ import javax.persistence.criteria.CriteriaBuilder.In;
 
 import cn.offway.zeus.domain.*;
 import cn.offway.zeus.service.*;
+import com.aliyun.mq.http.MQClient;
+import com.aliyun.mq.http.MQProducer;
+import com.aliyun.mq.http.common.ClientException;
+import com.aliyun.mq.http.common.ServiceException;
+import com.aliyun.mq.http.model.TopicMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -74,7 +80,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	private SmsService smsService;
 
 	@Autowired
-	private PhSettlementInfoService phSettlementInfoService;
+	private AlipayService alipayService;
 	
 	@Override
 	public PhPreorderInfo save(PhPreorderInfo phPreorderInfo){
@@ -288,8 +294,9 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			for (PhOrderGoods goods : phOrderGoods) {
 				phGoodsRepository.updateSaleCount(goods.getGoodsId(), goods.getGoodsCount());
 			}
-			
-			
+
+			//推送成功消息
+			alipayService.publishMessage(preorderNo,"ORDER_PAY_SUCCESS");
 			
 			try {
 				//短信通知商户
@@ -299,9 +306,6 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 					smsService.sendMsg(obj[0].toString(), "【很潮】您有一笔新订单，订单编号："+obj[1].toString()+"，商品件数："+obj[2].toString()+"件，请及时登录后台进行发货哦~");
 				}
 				smsService.sendMsg("15001775461", "【很潮】提醒您：亲，您有一笔新订单来啦！请尽快发货！");
-
-				//保存结算数据
-				phSettlementInfoService.save(preorderNo);
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error("短信通知商户异常preorderNo="+preorderNo);
