@@ -14,6 +14,7 @@ import java.util.Date;
 @Table(name = "v_order_refund")
 public class VOrderRefund implements Serializable {
 
+    private String id;
     /**  **/
     private String style;
 
@@ -41,6 +42,15 @@ public class VOrderRefund implements Serializable {
     /** 退款ID **/
     private Long refundId;
 
+    @Id
+    @Column(name = "id", length = 20)
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @Column(name = "style", length = 6)
     public String getStyle() {
@@ -106,7 +116,6 @@ public class VOrderRefund implements Serializable {
         this.userId = userId;
     }
 
-    @Id
     @Column(name = "refund_id", length = 11)
     public Long getRefundId() {
         return refundId;
