@@ -462,7 +462,7 @@ public class UserController {
 	public  JsonResult registerCh(
 			@ApiParam("手机号") @RequestParam String phone,
 			@ApiParam("验证码") @RequestParam String code,
-			@ApiParam("渠道[HY-欢阅传媒]") @RequestParam String channel){
+			@ApiParam("渠道[HY-欢阅传媒]") @RequestParam(required = false) String channel){
 		
 		phone = phone.contains("+")?phone:"+86"+phone;
 
