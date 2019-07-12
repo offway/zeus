@@ -17,9 +17,12 @@ public class AlipayProperties {
 	/** 设置HTTP接入域名 **/
 	private String accountEndpoint;
 
+	/** MQ实例 ID **/
+	private String instanceId;
+
 	/** 阿里云身份验证，在阿里云服务器管理控制台创建 **/
 	private String accessId;
-	
+
 	/** 阿里云身份验证，在阿里云服务器管理控制台创建 **/
 	private String accessKey;
 
@@ -69,5 +72,13 @@ public class AlipayProperties {
 
 	public void setAccessKey(String accessKey) {
 		this.accessKey = accessKey;
+	}
+
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
 	}
 }

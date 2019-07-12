@@ -82,7 +82,7 @@ public class AlipayService {
 		if(isPrd){
 			try {
 				// 获取Topic的生产者
-				MQProducer producer = mqClient.getProducer("MQ_INST_1021766862384088_BayRNaow", topicName);
+				MQProducer producer = mqClient.getProducer(alipayProperties.getInstanceId(), topicName);
 				TopicMessage pubMsg = new TopicMessage(message.getBytes(),"A");
 				// 同步发送消息，只要不抛异常就是成功
 				TopicMessage pubResultMsg = producer.publishMessage(pubMsg);
