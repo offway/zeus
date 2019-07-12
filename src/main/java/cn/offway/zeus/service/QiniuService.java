@@ -79,7 +79,6 @@ public class QiniuService {
 			} 
 			return result;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error("七牛资源删除异常",e);
 			return false;
