@@ -1,16 +1,23 @@
 package cn.offway.zeus.service;
 
+
+import java.util.List;
+
 import cn.offway.zeus.domain.PhPromotionInfo;
 
 /**
  * 促销活动Service接口
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
+ * @version $v: 1.0.0, $time:2019-07-12 17:38:42 Exp $
  */
 public interface PhPromotionInfoService{
 
-	PhPromotionInfo save(PhPromotionInfo phPromotionInfo);
+    PhPromotionInfo save(PhPromotionInfo phPromotionInfo);
 	
-	PhPromotionInfo findOne(Long id);
+    PhPromotionInfo findOne(Long id);
+
+    void delete(Long id);
+
+    List<PhPromotionInfo> save(List<PhPromotionInfo> entities);
 }

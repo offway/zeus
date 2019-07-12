@@ -1,5 +1,7 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,7 @@ import cn.offway.zeus.repository.PhPromotionRuleRepository;
  * 促销活动规则Service接口实现
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
+ * @version $v: 1.0.0, $time:2019-07-12 17:38:42 Exp $
  */
 @Service
 public class PhPromotionRuleServiceImpl implements PhPromotionRuleService {
@@ -32,5 +34,15 @@ public class PhPromotionRuleServiceImpl implements PhPromotionRuleService {
 	@Override
 	public PhPromotionRule findOne(Long id){
 		return phPromotionRuleRepository.findOne(id);
+	}
+
+	@Override
+	public void delete(Long id){
+		phPromotionRuleRepository.delete(id);
+	}
+
+	@Override
+	public List<PhPromotionRule> save(List<PhPromotionRule> entities){
+		return phPromotionRuleRepository.save(entities);
 	}
 }

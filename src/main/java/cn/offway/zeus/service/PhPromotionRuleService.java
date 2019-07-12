@@ -1,16 +1,23 @@
 package cn.offway.zeus.service;
 
+
+import java.util.List;
+
 import cn.offway.zeus.domain.PhPromotionRule;
 
 /**
  * 促销活动规则Service接口
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
+ * @version $v: 1.0.0, $time:2019-07-12 17:38:42 Exp $
  */
 public interface PhPromotionRuleService{
 
-	PhPromotionRule save(PhPromotionRule phPromotionRule);
+    PhPromotionRule save(PhPromotionRule phPromotionRule);
 	
-	PhPromotionRule findOne(Long id);
+    PhPromotionRule findOne(Long id);
+
+    void delete(Long id);
+
+    List<PhPromotionRule> save(List<PhPromotionRule> entities);
 }

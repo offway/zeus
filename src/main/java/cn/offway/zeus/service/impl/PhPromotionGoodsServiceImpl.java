@@ -1,5 +1,7 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,7 @@ import cn.offway.zeus.repository.PhPromotionGoodsRepository;
  * 促销活动对应商品Service接口实现
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
+ * @version $v: 1.0.0, $time:2019-07-12 17:38:42 Exp $
  */
 @Service
 public class PhPromotionGoodsServiceImpl implements PhPromotionGoodsService {
@@ -32,5 +34,15 @@ public class PhPromotionGoodsServiceImpl implements PhPromotionGoodsService {
 	@Override
 	public PhPromotionGoods findOne(Long id){
 		return phPromotionGoodsRepository.findOne(id);
+	}
+
+	@Override
+	public void delete(Long id){
+		phPromotionGoodsRepository.delete(id);
+	}
+
+	@Override
+	public List<PhPromotionGoods> save(List<PhPromotionGoods> entities){
+		return phPromotionGoodsRepository.save(entities);
 	}
 }
