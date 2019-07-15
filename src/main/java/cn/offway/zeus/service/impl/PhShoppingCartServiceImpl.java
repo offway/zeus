@@ -276,7 +276,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		result.put("platformVouchers", phVoucherInfoService.findUseByPlatform(userId, sumAmount));
 		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
 		result.put("balance", phUserInfo.getBalance());
-		
+
+
+
 		return jsonResultHelper.buildSuccessJsonResult(result);
 
 	}
