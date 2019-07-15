@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhPromotionGoods;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * 促销活动对应商品Repository接口
@@ -13,5 +14,6 @@ import cn.offway.zeus.domain.PhPromotionGoods;
  */
 public interface PhPromotionGoodsRepository extends JpaRepository<PhPromotionGoods,Long>,JpaSpecificationExecutor<PhPromotionGoods> {
 
-	/** 此处写一些自定义的方法 **/
+    @Query(nativeQuery = true,value = "select ppg.promotion_id from ph_promotion_goods ppg,ph_promotion_info ppi where ppi.id = ppg.promotion_id and ppi.status='1' and ppg.goods_id = ?1")
+	Long findPromotionIdByGoodsId(Long goodsId);
 }

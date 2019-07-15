@@ -7,32 +7,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.offway.zeus.domain.*;
+import cn.offway.zeus.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import cn.offway.zeus.domain.PhGoodsProperty;
-import cn.offway.zeus.domain.PhGoodsStock;
-import cn.offway.zeus.domain.PhLimitedSale;
-import cn.offway.zeus.domain.PhMerchantFare;
-import cn.offway.zeus.domain.PhShoppingCart;
-import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.dto.OrderInitDto;
 import cn.offway.zeus.dto.OrderInitStockDto;
 import cn.offway.zeus.repository.PhLimitedSaleOpRepository;
 import cn.offway.zeus.repository.PhMerchantFareRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
-import cn.offway.zeus.service.PhGoodsPropertyService;
-import cn.offway.zeus.service.PhGoodsSpecialService;
-import cn.offway.zeus.service.PhGoodsStockService;
-import cn.offway.zeus.service.PhLimitedSaleService;
-import cn.offway.zeus.service.PhMerchantService;
-import cn.offway.zeus.service.PhShoppingCartService;
-import cn.offway.zeus.service.PhUserInfoService;
-import cn.offway.zeus.service.PhVoucherInfoService;
-import cn.offway.zeus.service.PhVoucherProjectService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -85,9 +72,13 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	
 	@Autowired
 	private PhLimitedSaleOpRepository phLimitedSaleOpRepository;
-	
-	
-	
+
+	@Autowired
+	private PhPromotionInfoService phPromotionInfoService;
+
+	@Autowired
+	private PhPromotionGoodsService phPromotionGoodsService;
+
 	@Override
 	public PhShoppingCart save(PhShoppingCart phShoppingCart){
 		return phShoppingCartRepository.save(phShoppingCart);
@@ -107,7 +98,37 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	public int deleteByStockIds(List<Long> ids){
 		return phShoppingCartRepository.deleteByStockIds(ids);
 	}
-	
+
+
+	@Override
+	public JsonResult shopingCarListV2(Long userId){
+		Map<Long, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();
+		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
+		for (PhShoppingCart phShoppingCart : phShoppingCarts) {
+			Long goodsId = phShoppingCart.getGoodsId();
+			Long promotionId = phPromotionGoodsService.findPromotionIdByGoodsId(goodsId);
+			List<PhShoppingCart> carts = resultMap.get(promotionId);
+			if(CollectionUtils.isEmpty(carts)){
+				carts = new ArrayList<>();
+			}
+			carts.add(phShoppingCart);
+			resultMap.put(promotionId, carts);
+		}
+		List<Map<String, Object>> list = new ArrayList<>();
+		for (Long promotionId : resultMap.keySet()) {
+			PhPromotionInfo phPromotionInfo = null;
+			if(null != promotionId){
+				phPromotionInfo = phPromotionInfoService.findOne(promotionId);
+			}
+			Map<String, Object> s = new HashMap<>();
+			s.put("promotionInfo", phPromotionInfo);
+			s.put("shoppingCarts", resultMap.get(promotionId));
+			list.add(s);
+		}
+		return jsonResultHelper.buildSuccessJsonResult(list);
+
+	}
+
 	@Override
 	public JsonResult shopingCarList(Long userId){
 		

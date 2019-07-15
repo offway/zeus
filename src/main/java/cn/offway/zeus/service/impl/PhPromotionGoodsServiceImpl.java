@@ -45,4 +45,9 @@ public class PhPromotionGoodsServiceImpl implements PhPromotionGoodsService {
 	public List<PhPromotionGoods> save(List<PhPromotionGoods> entities){
 		return phPromotionGoodsRepository.save(entities);
 	}
+
+	@Override
+	public Long findPromotionIdByGoodsId(Long goodsId) {
+		return phPromotionGoodsRepository.findPromotionIdByGoodsId(goodsId);
+	}
 }

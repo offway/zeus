@@ -38,6 +38,9 @@ public class PhPromotionInfo implements Serializable {
     /** 减价类型[0-折扣，1-满减，2-赠品] **/
     private String mode;
 
+    /** 商品数量 **/
+    private Long goodsCount;
+
     /** 赠品 **/
     private String gift;
 
@@ -152,4 +155,12 @@ public class PhPromotionInfo implements Serializable {
         this.remark = remark;
     }
 
+    @Column(name = "goods_count", length = 11)
+    public Long getGoodsCount() {
+        return goodsCount;
+    }
+
+    public void setGoodsCount(Long goodsCount) {
+        this.goodsCount = goodsCount;
+    }
 }

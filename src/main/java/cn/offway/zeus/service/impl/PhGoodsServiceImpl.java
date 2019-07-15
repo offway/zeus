@@ -10,6 +10,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import cn.offway.zeus.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import cn.offway.zeus.domain.PhBrand;
-import cn.offway.zeus.domain.PhGoods;
-import cn.offway.zeus.domain.PhLimitedSale;
-import cn.offway.zeus.domain.PhPickGoods;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.repository.PhGoodsRepository;
 import cn.offway.zeus.service.PhGoodsService;
@@ -104,8 +101,8 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				if (StringUtils.isNotBlank(name)) {
 					String[] names = name.split(" ");
 					if (names.length == 1) {
-						params.add(criteriaBuilder.like(root.get("name"),
-								"%" + name + "%"));
+						params.add(criteriaBuilder.or(criteriaBuilder.like(root.get("name"),"%" + name + "%"),
+								criteriaBuilder.like(root.get("brandName"),"%" + name + "%")));
 					} else {
 						params.add(criteriaBuilder.or(criteriaBuilder.and(
 								criteriaBuilder.like(root.get("brandName"), "%" + names[0] + "%"),
@@ -162,6 +159,17 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 							criteriaBuilder.equal(root.get("id"), subRoot.get("goodsId")),
 							criteriaBuilder.equal(subRoot.get("pickId"), goodsDto.getPickId())
 							);
+					params.add(criteriaBuilder.exists(subquery));
+				}
+
+				if(null != goodsDto.getPromotionId()){
+					Subquery<PhPromotionGoods> subquery = criteriaQuery.subquery(PhPromotionGoods.class);
+					Root<PhPromotionGoods> subRoot = subquery.from(PhPromotionGoods.class);
+					subquery.select(subRoot);
+					subquery.where(
+							criteriaBuilder.equal(root.get("id"), subRoot.get("goodsId")),
+							criteriaBuilder.equal(subRoot.get("promotionId"), goodsDto.getPromotionId())
+					);
 					params.add(criteriaBuilder.exists(subquery));
 				}
 				

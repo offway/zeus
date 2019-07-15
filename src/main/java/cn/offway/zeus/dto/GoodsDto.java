@@ -37,6 +37,9 @@ public class GoodsDto implements Serializable {
     
     @ApiModelProperty(value ="优选ID")
     private Long pickId;
+
+    @ApiModelProperty(value ="促销活动ID")
+    private Long promotionId;
     
     @ApiModelProperty(required = true,value ="页码,从0开始")
     private int page;
@@ -143,7 +146,15 @@ public class GoodsDto implements Serializable {
 		this.pickId = pickId;
 	}
 
-	public Long getMerchantId() {
+    public Long getPromotionId() {
+        return promotionId;
+    }
+
+    public void setPromotionId(Long promotionId) {
+        this.promotionId = promotionId;
+    }
+
+    public Long getMerchantId() {
 		return merchantId;
 	}
 
