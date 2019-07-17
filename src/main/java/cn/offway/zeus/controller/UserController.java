@@ -203,6 +203,7 @@ public class UserController {
 			@ApiParam("邀请用户ID") @RequestParam(required=false) Long inviteUserId){
 		
 		phone = phone.contains("+")?phone:"+86"+phone;
+		unionid = StringUtils.isBlank(unionid)?null:unionid;
 
     	String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
     	if(StringUtils.isBlank(smsCode)){
