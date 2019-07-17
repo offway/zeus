@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhPromotionInfo;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * 促销活动Repository接口
@@ -13,5 +16,9 @@ import cn.offway.zeus.domain.PhPromotionInfo;
  */
 public interface PhPromotionInfoRepository extends JpaRepository<PhPromotionInfo,Long>,JpaSpecificationExecutor<PhPromotionInfo> {
 
-	/** 此处写一些自定义的方法 **/
+    @Query(nativeQuery = true,value = "select * from ph_promotion_info ppi where ppi.`status`='1' and ppi.`type`='1' and ppi.`merchant_id`=?1 and ppi.begin_time<=NOW() and ppi.end_time >NOW() and EXISTS(select 1 from ph_promotion_goods ppg where ppi.id = ppg.promotion_id and ppg.goods_id in (?2))")
+	List<PhPromotionInfo> findByMerchantIdAndGoodsId(Long merchantId,List<Long> goodsIds);
+
+    @Query(nativeQuery = true,value = "select * from ph_promotion_info ppi where ppi.`status`='1' and ppi.`type`='0' and ppi.begin_time<=NOW() and ppi.end_time >NOW() and EXISTS(select 1 from ph_promotion_goods ppg where ppi.id = ppg.promotion_id and ppg.goods_id in (?1))")
+    List<PhPromotionInfo> findByPlatformAndGoodsId(List<Long> goodsIds);
 }

@@ -20,4 +20,8 @@ public interface PhPromotionInfoService{
     void delete(Long id);
 
     List<PhPromotionInfo> save(List<PhPromotionInfo> entities);
+
+    List<PhPromotionInfo> findByMerchantIdAndGoodsId(Long merchantId,List<Long> goodsIds);
+
+    List<PhPromotionInfo> findByPlatformAndGoodsId(List<Long> goodsIds);
 }

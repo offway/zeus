@@ -14,6 +14,9 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface PhPromotionGoodsRepository extends JpaRepository<PhPromotionGoods,Long>,JpaSpecificationExecutor<PhPromotionGoods> {
 
-    @Query(nativeQuery = true,value = "select ppg.promotion_id from ph_promotion_goods ppg,ph_promotion_info ppi where ppi.id = ppg.promotion_id and ppi.status='1' and ppg.goods_id = ?1")
+    @Query(nativeQuery = true,value = "select ppg.promotion_id from ph_promotion_goods ppg,ph_promotion_info ppi where ppi.id = ppg.promotion_id and ppi.status='1'and ppi.begin_time<=NOW() and ppi.end_time >NOW() and ppg.goods_id = ?1")
 	Long findPromotionIdByGoodsId(Long goodsId);
+
+    int countByPromotionIdAndGoodsId(Long promotionId,Long goodsId);
+
 }

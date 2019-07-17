@@ -22,4 +22,6 @@ public interface PhPromotionGoodsService{
     List<PhPromotionGoods> save(List<PhPromotionGoods> entities);
 
     Long findPromotionIdByGoodsId(Long goodsId);
+
+    int countByPromotionIdAndGoodsId(Long promotionId,Long goodsId);
 }

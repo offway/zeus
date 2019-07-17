@@ -50,4 +50,9 @@ public class PhPromotionGoodsServiceImpl implements PhPromotionGoodsService {
 	public Long findPromotionIdByGoodsId(Long goodsId) {
 		return phPromotionGoodsRepository.findPromotionIdByGoodsId(goodsId);
 	}
+
+	@Override
+	public int countByPromotionIdAndGoodsId(Long promotionId, Long goodsId) {
+		return phPromotionGoodsRepository.countByPromotionIdAndGoodsId(promotionId,goodsId);
+	}
 }

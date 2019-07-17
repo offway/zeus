@@ -45,4 +45,14 @@ public class PhPromotionInfoServiceImpl implements PhPromotionInfoService {
 	public List<PhPromotionInfo> save(List<PhPromotionInfo> entities){
 		return phPromotionInfoRepository.save(entities);
 	}
+
+	@Override
+	public List<PhPromotionInfo> findByMerchantIdAndGoodsId(Long merchantId, List<Long> goodsIds) {
+		return phPromotionInfoRepository.findByMerchantIdAndGoodsId(merchantId,goodsIds);
+	}
+
+	@Override
+	public List<PhPromotionInfo> findByPlatformAndGoodsId(List<Long> goodsIds) {
+		return phPromotionInfoRepository.findByPlatformAndGoodsId(goodsIds);
+	}
 }

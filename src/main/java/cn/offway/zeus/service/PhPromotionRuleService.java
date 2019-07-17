@@ -20,4 +20,10 @@ public interface PhPromotionRuleService{
     void delete(Long id);
 
     List<PhPromotionRule> save(List<PhPromotionRule> entities);
+
+    PhPromotionRule findByPromotionIdAnAndReduceLimit(Long promotionId,Double goodsAmount);
+
+    PhPromotionRule findByPromotionIdAndDiscountNum(Long promotionId,int discountNum);
+
+    List<PhPromotionRule> findByPlatform(List<Long> goodsIds);
 }

@@ -45,4 +45,19 @@ public class PhPromotionRuleServiceImpl implements PhPromotionRuleService {
 	public List<PhPromotionRule> save(List<PhPromotionRule> entities){
 		return phPromotionRuleRepository.save(entities);
 	}
+
+	@Override
+	public PhPromotionRule findByPromotionIdAnAndReduceLimit(Long promotionId, Double goodsAmount) {
+		return phPromotionRuleRepository.findByPromotionIdAnAndReduceLimit(promotionId,goodsAmount);
+	}
+
+	@Override
+	public PhPromotionRule findByPromotionIdAndDiscountNum(Long promotionId, int discountNum) {
+		return phPromotionRuleRepository.findByPromotionIdAndDiscountNum(promotionId,discountNum);
+	}
+
+	@Override
+	public List<PhPromotionRule> findByPlatform(List<Long> goodsIds) {
+		return phPromotionRuleRepository.findByPlatform(goodsIds);
+	}
 }

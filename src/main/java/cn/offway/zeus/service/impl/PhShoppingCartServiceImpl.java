@@ -79,6 +79,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	@Autowired
 	private PhPromotionGoodsService phPromotionGoodsService;
 
+	@Autowired
+	private PhPromotionRuleService phPromotionRuleService;
+
 	@Override
 	public PhShoppingCart save(PhShoppingCart phShoppingCart){
 		return phShoppingCartRepository.save(phShoppingCart);
@@ -172,14 +175,15 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		Long userId = orderInitDto.getUserId();
 		
 		List<PhGoodsStock>  phGoodsStocks = phGoodsStockService.findByIdIn(param.keySet());
-		
+
+		List<Long> goodsIdAll = new ArrayList<>();
 		double sumAmount = 0D;
 		Map<Long, Integer> brandGoodsNum = new HashMap<>();
 		Map<String, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();
 		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
 			
 			Long goodsId = phGoodsStock.getGoodsId();
-			
+			goodsIdAll.add(goodsId);
 			//限量发售检查
 			PhLimitedSale phLimitedSale = phLimitedSaleService.findByGoodsId(goodsId);
 			if(null != phLimitedSale){
@@ -234,6 +238,8 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			if(count == 0){
 				sumAmount = MathUtils.add(sumAmount, MathUtils.mul(phShoppingCart.getPrice(), phShoppingCart.getGoodsCount().intValue()));
 			}
+
+			//计算
 		}
 		
 		
@@ -260,15 +266,68 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 				isSf = phMerchantFare.getIsSf();
 			}
 			s.put("isSf", isSf);
-			
+
+
+			List<Long> goodsIds = new ArrayList<>();
 			//查询可用店铺券
 			double merchantSumAmount = 0D;
 			for (PhShoppingCart c : carts) {
 				merchantSumAmount= MathUtils.add(merchantSumAmount, MathUtils.mul(c.getPrice(), c.getGoodsCount().intValue()));
+				goodsIds.add(c.getGoodsId());
 			}
 			s.put("merchantVouchers", phVoucherInfoService.findUseByMerchant(userId, merchantId, merchantSumAmount));
-			s.put("merchantVPs", phVoucherProjectService.findUseByMerchant(merchantId, merchantSumAmount));
-			
+			List<PhVoucherProject> phVoucherProjects = phVoucherProjectService.findUseByMerchant(merchantId, merchantSumAmount);
+			s.put("merchantVPs", phVoucherProjects);
+
+			if(CollectionUtils.isEmpty(phVoucherProjects)){
+				//没有商户优惠券的情况，查询是否有促销活动
+				List<PhPromotionInfo> phPromotionInfos = phPromotionInfoService.findByMerchantIdAndGoodsId(merchantId,goodsIds);
+				//商户下活动总优化金额
+				double promotionAmount = 0D;
+				List<PhPromotionInfo> reachPromotions = new ArrayList<>();
+				for (PhPromotionInfo phPromotionInfo: phPromotionInfos) {
+					//查询每个活动是否满足条件
+					String mode = phPromotionInfo.getMode();//减价类型[0-折扣，1-满减，2-赠品]
+					Long promotionId = phPromotionInfo.getId();
+
+					if("1".equals(mode)){
+						//计算满足满减条件的商品总金额
+						double goodsAmount = 0D;
+						for (PhShoppingCart c : carts){
+							int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,c.getGoodsId());
+							if(count>0){
+								goodsAmount = MathUtils.add(goodsAmount, MathUtils.mul(c.getPrice(), c.getGoodsCount().intValue()));
+							}
+						}
+						PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAnAndReduceLimit(promotionId,goodsAmount);
+						if (null != phPromotionRule){
+							promotionAmount = MathUtils.add(promotionAmount,phPromotionRule.getReduceAmount());
+							reachPromotions.add(phPromotionInfo);
+						}
+					}else if("0".equals(mode)){
+						//计算满足折扣的优惠金额
+						int goodsCount = 0;
+						double goodsAmount = 0D;
+						for (PhShoppingCart c : carts){
+							int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,c.getGoodsId());
+							if(count>0){
+								goodsCount += c.getGoodsCount().intValue();
+								goodsAmount = MathUtils.add(goodsAmount, MathUtils.mul(c.getPrice(), c.getGoodsCount().intValue()));
+							}
+						}
+						PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAndDiscountNum(promotionId,goodsCount);
+						if (null != phPromotionRule){
+							promotionAmount = MathUtils.add(promotionAmount,MathUtils.mul(goodsAmount,(1-phPromotionRule.getDiscountRate())));
+							reachPromotions.add(phPromotionInfo);
+						}
+					}else if("2".equals(mode)){
+						reachPromotions.add(phPromotionInfo);
+					}
+				}
+				s.put("promotionAmount", promotionAmount);
+				s.put("reachPromotions", reachPromotions);
+			}
+
 			list.add(s);
 		}
 		
@@ -276,8 +335,28 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		result.put("platformVouchers", phVoucherInfoService.findUseByPlatform(userId, sumAmount));
 		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
 		result.put("balance", phUserInfo.getBalance());
+		//平台活动优惠金额
+		double platformPromotionAmount = 0D;
+		List<PhPromotionInfo> phPromotionInfos = phPromotionInfoService.findByPlatformAndGoodsId(goodsIdAll);
+		for (PhPromotionInfo phPromotionInfo : phPromotionInfos){
+			//计算满足折扣的优惠金额
+			int goodsCount = 0;
+			double goodsAmount = 0D;
+			Long promotionId = phPromotionInfo.getId();
+			for (PhGoodsStock c : phGoodsStocks){
+				int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,c.getGoodsId());
+				if(count>0){
+					goodsCount += param.get(c.getId()).intValue();
+					goodsAmount = MathUtils.add(goodsAmount, MathUtils.mul(c.getPrice(), param.get(c.getId()).intValue()));
+				}
+			}
+			PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAndDiscountNum(promotionId,goodsCount);
+			if (null != phPromotionRule){
+				platformPromotionAmount = MathUtils.add(platformPromotionAmount,MathUtils.mul(goodsAmount,MathUtils.sub(1d,phPromotionRule.getDiscountRate())));
+			}
 
-
+		}
+		result.put("platformPromotionAmount", platformPromotionAmount);
 
 		return jsonResultHelper.buildSuccessJsonResult(result);
 
