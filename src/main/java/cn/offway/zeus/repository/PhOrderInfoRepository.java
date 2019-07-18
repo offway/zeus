@@ -46,4 +46,7 @@ public interface PhOrderInfoRepository extends JpaRepository<PhOrderInfo,Long>,J
 	
 	@Query(nativeQuery=true,value="select a.phone,o.order_no,SUM(og.goods_count) from ph_order_info o ,ph_merchant m ,ph_address a,ph_order_goods og where o.order_no = og.order_no and o.merchant_id = m.id and m.addr_id = a.id and o.preorder_no=?1 group by a.phone,o.order_no")
 	List<Object> findMerchantPhone(String preorderno);
+
+	@Query(nativeQuery=true,value="select a.phone from ph_order_info o ,ph_merchant m ,ph_address a where  o.merchant_id = m.id and m.addr_id = a.id and o.order_no=?1")
+	String findMerchantPhoneByOrderNo(String orderNo);
 }
