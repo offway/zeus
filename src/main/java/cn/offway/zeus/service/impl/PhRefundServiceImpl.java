@@ -12,6 +12,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.CriteriaBuilder.In;
 
+import cn.offway.zeus.repository.PhOrderInfoRepository;
+import cn.offway.zeus.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -36,12 +38,6 @@ import cn.offway.zeus.dto.RefundDto;
 import cn.offway.zeus.dto.RefundGoodsDto;
 import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhRefundRepository;
-import cn.offway.zeus.service.PhAddressService;
-import cn.offway.zeus.service.PhMerchantService;
-import cn.offway.zeus.service.PhOrderGoodsService;
-import cn.offway.zeus.service.PhOrderInfoService;
-import cn.offway.zeus.service.PhRefundGoodsService;
-import cn.offway.zeus.service.PhRefundService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -80,6 +76,12 @@ public class PhRefundServiceImpl implements PhRefundService {
 	
 	@Autowired
 	private PhAddressService phAddressService;
+
+	@Autowired
+	private SmsService smsService;
+
+	@Autowired
+	private PhOrderInfoRepository phOrderInfoRepository;
 	
 	@Override
 	public PhRefund save(PhRefund phRefund){
@@ -220,6 +222,21 @@ public class PhRefundServiceImpl implements PhRefundService {
 		
 		phRefund.setGoodsCount(goodsNum);
 		phRefund = save(phRefund);
+
+		try {
+			//短信通知商户
+			String message = "【很潮】提醒您：亲，您有一笔退款申请！请及时登陆后台审核！";
+			//0-仅退款,1-退货退款,2-换货
+			if("1".equals(phRefund.getType())){
+				message = "【很潮】提醒您：亲，您有一笔退货退款申请！请及时登陆后台审核！";
+			}
+			String phone = phOrderInfoRepository.findMerchantPhoneByOrderNo(orderNo);
+			smsService.sendMsg(phone, message);
+			smsService.sendMsg("15001775461", message);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("退款申请成功短信通知商户异常orderNo="+orderNo);
+		}
 		return jsonResultHelper.buildSuccessJsonResult(phRefund.getId());
 	}
 	
