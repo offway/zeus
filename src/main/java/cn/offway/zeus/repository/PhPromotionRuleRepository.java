@@ -19,8 +19,23 @@ public interface PhPromotionRuleRepository extends JpaRepository<PhPromotionRule
     @Query(nativeQuery = true,value = "select * from ph_promotion_rule ppr where ppr.promotion_id=?1 and ppr.reduce_limit <=?2 order by ppr.reduce_amount desc limit 1")
     PhPromotionRule findByPromotionIdAnAndReduceLimit(Long promotionId,Double goodsAmount);
 
+    @Query(nativeQuery = true,value = "select * from ph_promotion_rule ppr where ppr.promotion_id=?1 and ppr.gift_limit <=?2 order by ppr.gift_limit desc limit 1")
+    PhPromotionRule findByPromotionIdAndGiftLimit(Long promotionId,Double goodsAmount);
+
     @Query(nativeQuery = true,value = "select * from ph_promotion_rule ppr where ppr.promotion_id=?1 and ppr.discount_num <=?2 order by ppr.discount_rate asc limit 1")
     PhPromotionRule findByPromotionIdAndDiscountNum(Long promotionId,int discountNum);
+
+    @Query(nativeQuery = true,value = "select * from ph_promotion_rule ppr where ppr.promotion_id=?1 and ppr.discount_num >=?2 order by ppr.discount_rate asc limit 1")
+    PhPromotionRule qucoudan(Long promotionId,int discountNum);
+
+    @Query(nativeQuery = true,value = "select * from ph_promotion_rule ppr where ppr.promotion_id=?1 and ppr.reduce_limit >=?2 order by ppr.reduce_amount desc limit 1")
+    PhPromotionRule qucoudanReduce(Long promotionId,double amount);
+
+    @Query(nativeQuery = true,value = "select * from ph_promotion_rule ppr where ppr.promotion_id=?1 and ppr.gift_limit >=?2 order by ppr.gift_limit desc limit 1")
+    PhPromotionRule qucoudanGift(Long promotionId,double amount);
+
+    @Query(nativeQuery = true,value = "select * from ph_promotion_rule ppr where ppr.promotion_id=?1 order by ppr.discount_num asc")
+    List<PhPromotionRule> findByPromotionId(Long promotionId);
 
     @Query(nativeQuery = true,value = "SELECT\n" +
             "\tppr.*\n" +

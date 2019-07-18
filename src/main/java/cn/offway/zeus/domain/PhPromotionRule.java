@@ -8,7 +8,7 @@ import java.util.Date;
  * 促销活动规则
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
+ * @version $v: 1.0.0, $time:2019-07-17 15:41:45 Exp $
  */
 @Entity
 @Table(name = "ph_promotion_rule")
@@ -37,6 +37,12 @@ public class PhPromotionRule implements Serializable {
 
     /** 备注 **/
     private String remark;
+
+    /** 赠品条件金额 **/
+    private Double giftLimit;
+
+    /** 赠品 **/
+    private String gift;
 
 
     @Id
@@ -112,6 +118,24 @@ public class PhPromotionRule implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Column(name = "gift_limit", precision = 15, scale = 2)
+    public Double getGiftLimit() {
+        return giftLimit;
+    }
+
+    public void setGiftLimit(Double giftLimit) {
+        this.giftLimit = giftLimit;
+    }
+
+    @Column(name = "gift", length = 200)
+    public String getGift() {
+        return gift;
+    }
+
+    public void setGift(String gift) {
+        this.gift = gift;
     }
 
 }

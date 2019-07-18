@@ -8,7 +8,7 @@ import java.util.Date;
  * 促销活动
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
+ * @version $v: 1.0.0, $time:2019-07-17 15:41:45 Exp $
  */
 @Entity
 @Table(name = "ph_promotion_info")
@@ -37,12 +37,6 @@ public class PhPromotionInfo implements Serializable {
 
     /** 减价类型[0-折扣，1-满减，2-赠品] **/
     private String mode;
-
-    /** 商品数量 **/
-    private Long goodsCount;
-
-    /** 赠品 **/
-    private String gift;
 
     /** 创建时间 **/
     private Date createTime;
@@ -127,15 +121,6 @@ public class PhPromotionInfo implements Serializable {
         this.mode = mode;
     }
 
-    @Column(name = "gift", length = 100)
-    public String getGift() {
-        return gift;
-    }
-
-    public void setGift(String gift) {
-        this.gift = gift;
-    }
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_time")
     public Date getCreateTime() {
@@ -155,12 +140,4 @@ public class PhPromotionInfo implements Serializable {
         this.remark = remark;
     }
 
-    @Column(name = "goods_count", length = 11)
-    public Long getGoodsCount() {
-        return goodsCount;
-    }
-
-    public void setGoodsCount(Long goodsCount) {
-        this.goodsCount = goodsCount;
-    }
 }

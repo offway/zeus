@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.offway.zeus.domain.*;
+import cn.offway.zeus.repository.PhPromotionRuleRepository;
 import cn.offway.zeus.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +83,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	@Autowired
 	private PhPromotionRuleService phPromotionRuleService;
 
+	@Autowired
+	private PhPromotionRuleRepository phPromotionRuleRepository;
+
 	@Override
 	public PhShoppingCart save(PhShoppingCart phShoppingCart){
 		return phShoppingCartRepository.save(phShoppingCart);
@@ -104,7 +108,10 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 
 
 	@Override
-	public JsonResult shopingCarListV2(Long userId){
+	public JsonResult shopingCarListV2(Long userId,List<Long> scIds){
+
+		double sumAmount = 0D;
+		Map<String, Object> endMap = new HashMap<>();
 		Map<Long, List<PhShoppingCart>> resultMap = new LinkedHashMap<>();
 		List<PhShoppingCart> phShoppingCarts = phShoppingCartRepository.findByUserIdOrderByCreateTimeDesc(userId);
 		for (PhShoppingCart phShoppingCart : phShoppingCarts) {
@@ -114,21 +121,144 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			if(CollectionUtils.isEmpty(carts)){
 				carts = new ArrayList<>();
 			}
+			if(scIds.contains(phShoppingCart.getId())){
+				phShoppingCart.setRemark("1");
+			}
 			carts.add(phShoppingCart);
 			resultMap.put(promotionId, carts);
 		}
+
 		List<Map<String, Object>> list = new ArrayList<>();
 		for (Long promotionId : resultMap.keySet()) {
 			PhPromotionInfo phPromotionInfo = null;
+			Map<String,Object> map = new HashMap<>();
 			if(null != promotionId){
+				map.put("promotionId",promotionId);
+				map.put("qucoudan",false);
 				phPromotionInfo = phPromotionInfoService.findOne(promotionId);
+				//减价类型[0-折扣，1-满减，2-赠品]
+				String mode = phPromotionInfo.getMode();
+				List<PhPromotionRule> phPromotionRules = phPromotionRuleRepository.findByPromotionId(promotionId);
+				if("0".equals(mode)){
+					//如果是折扣
+					if(phPromotionRules.size()==1 && phPromotionRules.get(0).getDiscountNum().longValue()==1L){
+						List<PhShoppingCart> shoppingCarts = resultMap.get(promotionId);
+						boolean isSelect = false;
+						double pAmount = 0D;
+						for (PhShoppingCart phShoppingCart: shoppingCarts){
+							if("1".equals(phShoppingCart.getRemark())){
+								isSelect = true;
+								pAmount = MathUtils.add(pAmount,MathUtils.mul(phShoppingCart.getPrice(),phShoppingCart.getGoodsCount()));
+							}
+						}
+						//统一折扣
+						if(isSelect){
+							pAmount = MathUtils.mul(pAmount,phPromotionRules.get(0).getDiscountRate());
+							sumAmount = MathUtils.add(sumAmount,pAmount);
+							map.put("text","已满足全场"+phPromotionRules.get(0).getDiscountRate()*10+"折");
+						}else{
+							map.put("text","全场"+phPromotionRules.get(0).getDiscountRate()*10+"折");
+
+						}
+					}else{
+						int count = 0;//选中件数
+						List<PhShoppingCart> shoppingCarts = resultMap.get(promotionId);
+						boolean isSelect = false;
+						double pAmount = 0D;
+						for (PhShoppingCart phShoppingCart: shoppingCarts){
+							if("1".equals(phShoppingCart.getRemark())){
+								isSelect = true;
+								count+=phShoppingCart.getGoodsCount().intValue();
+								pAmount = MathUtils.add(pAmount,MathUtils.mul(phShoppingCart.getPrice(),phShoppingCart.getGoodsCount()));
+
+							}
+						}
+						if(isSelect){
+							PhPromotionRule phPromotionRule = phPromotionRuleRepository.findByPromotionIdAndDiscountNum(promotionId,count);
+
+							pAmount = MathUtils.mul(pAmount,phPromotionRule.getDiscountRate());
+							sumAmount = MathUtils.add(sumAmount,pAmount);
+
+							map.put("text","已满"+phPromotionRule.getDiscountNum()+"件"+phPromotionRule.getDiscountRate()*10+"折");
+							//查询是否需要展示去凑单
+							PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudan(promotionId,phPromotionRule.getDiscountNum().intValue());
+							if(null != phPromotionRule1){
+								map.put("qucoudan",true);
+							}
+						}else{
+							PhPromotionRule phPromotionRule = phPromotionRules.get(0);
+							map.put("text","购买"+phPromotionRule.getDiscountNum()+"件立享"+phPromotionRule.getDiscountRate()*10+"折");
+						}
+					}
+				}else if("1".equals(mode)){
+					double amount = 0d;//选中总金额
+					List<PhShoppingCart> shoppingCarts = resultMap.get(promotionId);
+					boolean isSelect = false;
+					for (PhShoppingCart phShoppingCart: shoppingCarts){
+						if("1".equals(phShoppingCart.getRemark())){
+							isSelect = true;
+							amount = MathUtils.add(amount,MathUtils.mul(phShoppingCart.getPrice(),phShoppingCart.getGoodsCount()));
+						}
+					}
+					if(isSelect){
+						PhPromotionRule phPromotionRule = phPromotionRuleRepository.findByPromotionIdAnAndReduceLimit(promotionId,amount);
+
+						amount = MathUtils.sub(amount,phPromotionRule.getReduceAmount());
+						sumAmount = MathUtils.add(sumAmount,amount);
+
+						map.put("text","以满足购满"+phPromotionRule.getReduceLimit()+"元减"+phPromotionRule.getReduceAmount()+"元");
+						//查询是否需要展示去凑单
+						PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudanReduce(promotionId,phPromotionRule.getReduceLimit());
+						if(null != phPromotionRule1){
+							map.put("qucoudan",true);
+						}
+					}else{
+						PhPromotionRule phPromotionRule = phPromotionRules.get(0);
+						map.put("text","购满"+phPromotionRule.getReduceLimit()+"元立减"+phPromotionRule.getReduceAmount()+"元");
+					}
+
+				}else{
+					double amount = 0d;//选中总金额
+					List<PhShoppingCart> shoppingCarts = resultMap.get(promotionId);
+					boolean isSelect = false;
+					for (PhShoppingCart phShoppingCart: shoppingCarts){
+						if("1".equals(phShoppingCart.getRemark())){
+							isSelect = true;
+							amount = MathUtils.add(amount,MathUtils.mul(phShoppingCart.getPrice(),phShoppingCart.getGoodsCount()));
+						}
+					}
+					if(isSelect){
+						sumAmount = MathUtils.add(sumAmount,amount);
+						PhPromotionRule phPromotionRule = phPromotionRuleRepository.findByPromotionIdAndGiftLimit(promotionId,amount);
+						map.put("text"," 已满足够"+phPromotionRule.getGiftLimit()+"元送"+phPromotionRule.getGift()+"元");
+						//查询是否需要展示去凑单
+						PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudanGift(promotionId,phPromotionRule.getGiftLimit());
+						if(null != phPromotionRule1){
+							map.put("qucoudan",true);
+						}
+					}else{
+						PhPromotionRule phPromotionRule = phPromotionRules.get(0);
+						map.put("text","满"+phPromotionRule.getGiftLimit()+"元立送"+phPromotionRule.getGift());
+					}
+				}
+			}else {
+				List<PhShoppingCart> shoppingCarts = resultMap.get(promotionId);
+				double pAmount = 0D;
+				for (PhShoppingCart phShoppingCart: shoppingCarts){
+					if("1".equals(phShoppingCart.getRemark())){
+						pAmount = MathUtils.add(pAmount,MathUtils.mul(phShoppingCart.getPrice(),phShoppingCart.getGoodsCount()));
+					}
+				}
+				sumAmount = MathUtils.add(sumAmount,pAmount);
 			}
 			Map<String, Object> s = new HashMap<>();
-			s.put("promotionInfo", phPromotionInfo);
-			s.put("shoppingCarts", resultMap.get(promotionId));
+			s.put("title", map);
+			s.put("content", resultMap.get(promotionId));
 			list.add(s);
 		}
-		return jsonResultHelper.buildSuccessJsonResult(list);
+		endMap.put("sumAmount",sumAmount);
+		endMap.put("list",list);
+		return jsonResultHelper.buildSuccessJsonResult(endMap);
 
 	}
 

@@ -21,7 +21,7 @@ public interface PhShoppingCartService{
 
 	JsonResult shopingCar(Long userId, Long stockId, Long goodsCount);
 
-    JsonResult shopingCarListV2(Long userId);
+    JsonResult shopingCarListV2(Long userId,List<Long> scIds);
 
     JsonResult shopingCarList(Long userId);
 

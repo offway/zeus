@@ -188,8 +188,11 @@ public class GoodsController {
 
 	@ApiOperation("查看购物车")
 	@GetMapping("/shopingCarV2")
-	public JsonResult shopingCarListV2(@ApiParam("用户ID") @RequestParam Long userId){
-		return phShoppingCartService.shopingCarListV2(userId);
+	public JsonResult shopingCarListV2(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("购物车ID")@RequestParam(required = false) List<Long> scIds ){
+		scIds = null==scIds?new ArrayList<>():scIds;
+		return phShoppingCartService.shopingCarListV2(userId,scIds);
 	}
 	
 	@ApiOperation("删除购物车")
