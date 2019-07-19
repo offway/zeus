@@ -94,7 +94,7 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class,StockException.class})
 	public PhUserInfo register(String phone, String unionid, String weiboid, String qqid, String nickName,
-			String headimgurl, Long inviteUserId) {
+			String headimgurl, Long inviteUserId,String channel) {
 		PhUserInfo phUserInfo = new PhUserInfo();
 		phUserInfo.setPhone(phone);
 		if(StringUtils.isNotBlank(phone)){
@@ -110,6 +110,7 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		phUserInfo.setVersion(0L);
 		phUserInfo.setVoucherCount(0L);
 		phUserInfo.setCollectCount(0L);
+		phUserInfo.setChannel(channel);
 		phUserInfo.setCreateTime(new Date());
 		phUserInfo = save(phUserInfo);
 		
@@ -139,11 +140,11 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		//赠送优惠券大礼包
 		phVoucherInfoService.give(phUserInfo.getId(), Arrays.asList(content.split(",")));
 		
-		//查询渠道
+		/*//查询渠道
 		PhUserChannel phUserChannel = phUserChannelService.findByPhone(phone);
 		if(null != phUserChannel){
 			phUserInfo.setChannel(phUserChannel.getChannel());
-		}
+		}*/
 		
 		return phUserInfo;
 	}
