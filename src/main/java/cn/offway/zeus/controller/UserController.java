@@ -480,12 +480,13 @@ public class UserController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
 		}
 
-		phUserInfoService.register(phone, null, null, null, null, null, null);
-		/*PhUserChannel phUserChannel = new PhUserChannel();
+		PhUserChannel phUserChannel = new PhUserChannel();
 		phUserChannel.setChannel(channel);
 		phUserChannel.setCreateTime(new Date());
 		phUserChannel.setPhone(phone);
-		phUserChannelService.save(phUserChannel);*/
+		phUserChannelService.save(phUserChannel);
+
+		phUserInfoService.register(phone, null, null, null, null, null, null);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	
