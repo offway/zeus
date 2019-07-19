@@ -231,7 +231,7 @@ public class UserController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
 		}
 		
-		return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, weiboid, qqid, nickName, headimgurl, inviteUserId));
+		return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, weiboid, qqid, nickName, headimgurl, inviteUserId,null));
 
 	}
 
@@ -261,7 +261,7 @@ public class UserController {
 			phUserInfo = phUserInfoService.findByPhone(phone);
 			if(null==phUserInfo){
 				//手机号没有直接注册
-				phUserInfo = phUserInfoService.register(phone, null, null, null, null, null, null);
+				phUserInfo = phUserInfoService.register(phone, null, null, null, null, null, null,null);
 			}
 		}
 		
@@ -480,13 +480,13 @@ public class UserController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
 		}
 
-		PhUserChannel phUserChannel = new PhUserChannel();
+		/*PhUserChannel phUserChannel = new PhUserChannel();
 		phUserChannel.setChannel(channel);
 		phUserChannel.setCreateTime(new Date());
 		phUserChannel.setPhone(phone);
-		phUserChannelService.save(phUserChannel);
+		phUserChannelService.save(phUserChannel);*/
 
-		phUserInfoService.register(phone, null, null, null, null, null, null);
+		phUserInfoService.register(phone, null, null, null, null, null, null,channel);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	
