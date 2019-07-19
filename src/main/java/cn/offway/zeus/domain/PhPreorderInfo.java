@@ -68,6 +68,9 @@ public class PhPreorderInfo implements Serializable {
     /** 支付渠道[wxpay,alipay] **/
     private String payChannel;
 
+    /** 商户促销优惠金额 **/
+    private Double promotionAmount;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -206,5 +209,14 @@ public class PhPreorderInfo implements Serializable {
 
     public void setPayChannel(String payChannel) {
         this.payChannel = payChannel;
+    }
+
+    @Column(name = "promotion_amount", precision = 15, scale = 2)
+    public Double getPromotionAmount() {
+        return promotionAmount;
+    }
+
+    public void setPromotionAmount(Double promotionAmount) {
+        this.promotionAmount = promotionAmount;
     }
 }

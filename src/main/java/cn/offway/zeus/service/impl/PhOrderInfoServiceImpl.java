@@ -14,6 +14,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import cn.offway.zeus.domain.*;
+import cn.offway.zeus.repository.PhPromotionRuleRepository;
+import cn.offway.zeus.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +29,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.offway.zeus.domain.PhGoodsProperty;
-import cn.offway.zeus.domain.PhGoodsStock;
-import cn.offway.zeus.domain.PhMerchant;
-import cn.offway.zeus.domain.PhOrderGoods;
-import cn.offway.zeus.domain.PhOrderInfo;
-import cn.offway.zeus.domain.PhPreorderInfo;
-import cn.offway.zeus.domain.PhUserInfo;
-import cn.offway.zeus.domain.PhVoucherInfo;
 import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.dto.OrderInitStockDto;
 import cn.offway.zeus.dto.OrderMerchantDto;
@@ -41,16 +36,6 @@ import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhAddressRepository;
 import cn.offway.zeus.repository.PhOrderGoodsRepository;
 import cn.offway.zeus.repository.PhOrderInfoRepository;
-import cn.offway.zeus.service.OrderTimeoutService;
-import cn.offway.zeus.service.PhGoodsPropertyService;
-import cn.offway.zeus.service.PhGoodsSpecialService;
-import cn.offway.zeus.service.PhGoodsStockService;
-import cn.offway.zeus.service.PhMerchantService;
-import cn.offway.zeus.service.PhOrderInfoService;
-import cn.offway.zeus.service.PhPreorderInfoService;
-import cn.offway.zeus.service.PhShoppingCartService;
-import cn.offway.zeus.service.PhUserInfoService;
-import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import cn.offway.zeus.utils.MathUtils;
@@ -106,6 +91,18 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	
 	@Autowired
 	private PhGoodsSpecialService phGoodsSpecialService;
+
+	@Autowired
+	private PhPromotionInfoService phPromotionInfoService;
+
+	@Autowired
+	private PhPromotionGoodsService phPromotionGoodsService;
+
+	@Autowired
+	private PhPromotionRuleService phPromotionRuleService;
+
+	@Autowired
+	private PhPromotionRuleRepository phPromotionRuleRepository;
 	
 	
 	@Override
@@ -179,6 +176,8 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			sumpVoucherAmout = pVoucherAmount;
 		}
 
+
+
 		Date now = new Date();
 		
 		//总订单号
@@ -188,7 +187,52 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		List<PhOrderGoods> orderGoodss = new ArrayList<>();
 
 		List<OrderMerchantDto> merchantDtos =  orderAddDto.getMerchantDtos();
-		
+
+
+		//平台活动优惠金额
+		double platformPromotionAmount = 0D;
+		double sumPromotionAmount = 0D;//保持不变
+		List<Long> goodsIdAll = new ArrayList<>();
+		List<OrderInitStockDto> stockArray = new ArrayList<>();
+		for (OrderMerchantDto orderMerchantDto : merchantDtos) {
+			List<OrderInitStockDto> stocks = orderMerchantDto.getStocks();
+			stockArray.addAll(stocks);
+			for (OrderInitStockDto stock : stocks) {
+				Long stockId = stock.getStockId();
+				PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stockId);
+				goodsIdAll.add(phGoodsStock.getGoodsId());
+			}
+		}
+
+		List<Long> discountStockIds = new ArrayList<>();
+		double discountRate = 1D;
+		List<PhPromotionInfo> phPromotionInfos1 = phPromotionInfoService.findByPlatformAndGoodsId(goodsIdAll);
+		for (PhPromotionInfo phPromotionInfo : phPromotionInfos1){
+			//计算满足折扣的优惠金额
+			int goodsCount = 0;
+			double goodsAmount = 0D;
+			Long promotionId = phPromotionInfo.getId();
+			for (OrderInitStockDto stock : stockArray){
+				Long stockId = stock.getStockId();
+				PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stockId);
+				int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,phGoodsStock.getGoodsId());
+				if(count>0){
+					goodsCount += stock.getNum().intValue();
+					goodsAmount = MathUtils.add(goodsAmount, MathUtils.mul(phGoodsStock.getPrice(), stock.getNum().intValue()));
+					discountStockIds.add(phGoodsStock.getId());
+				}
+			}
+			PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAndDiscountNum(promotionId,goodsCount);
+			if (null != phPromotionRule){
+				platformPromotionAmount = MathUtils.add(platformPromotionAmount,MathUtils.mul(goodsAmount,MathUtils.sub(1d,phPromotionRule.getDiscountRate())));
+				discountRate = phPromotionRule.getDiscountRate();
+			}
+
+		}
+		sumPromotionAmount = platformPromotionAmount;
+
+
+
 		List<Long> stockIds = new ArrayList<>();
 		for (OrderMerchantDto orderMerchantDto : merchantDtos) {
 			
@@ -200,6 +244,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			double sumPrice = 0D;
 			int sumCount = 0;
 			double mVoucherAmount = 0D;
+			List<Long> goodsIds = new ArrayList<>();
 			for (OrderInitStockDto stock : stocks) {
 				Long stockId = stock.getStockId();
 				stockIds.add(stockId);
@@ -229,6 +274,10 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				phOrderGoods.setMerchantName(phGoodsStock.getMerchantName());
 				phOrderGoods.setOrderNo(orderNo);
 				phOrderGoods.setPrice(price);
+				if(discountStockIds.contains(phOrderGoods.getGoodsStockId())){
+					//计算折扣金额
+					phOrderGoods.setAmount(MathUtils.mul(price,discountRate));
+				}
 				
 				List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsStockIdOrderBySortAsc(phGoodsStock.getId());
 				StringBuilder sb = new StringBuilder();
@@ -243,16 +292,70 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				if(count == 0){
 					sumPriceByplatform = MathUtils.add(sumPriceByplatform, phOrderGoods.getPrice());
 				}
+				goodsIds.add(phOrderGoods.getGoodsId());
 				
 			}
 			String message = orderMerchantDto.getMessage();
 			PhMerchant phMerchant = phMerchantService.findOne(merchantId);
-			
+
+			//商户下活动总优惠金额
+			double promotionAmount = 0D;
+
 			PhVoucherInfo mphVoucherInfo = null;
+
 			if(null!=mVoucherId){
 				mphVoucherInfo =  phVoucherInfoService.findOne(mVoucherId);
 				sumMVoucherAmount = MathUtils.add(sumMVoucherAmount, mphVoucherInfo.getAmount());
 				mVoucherAmount = mphVoucherInfo.getAmount();
+			}else{
+
+				//没有商户优惠券的情况，查询是否有促销活动
+				List<PhPromotionInfo> phPromotionInfos = phPromotionInfoService.findByMerchantIdAndGoodsId(merchantId,goodsIds);
+				List<PhPromotionInfo> reachPromotions = new ArrayList<>();
+				for (PhPromotionInfo phPromotionInfo: phPromotionInfos) {
+					//查询每个活动是否满足条件
+					String mode = phPromotionInfo.getMode();//减价类型[0-折扣，1-满减，2-赠品]
+					Long promotionId = phPromotionInfo.getId();
+
+					if("1".equals(mode)){
+						//计算满足满减条件的商品总金额
+						double goodsAmount = 0D;
+						for (OrderInitStockDto stock : stocks){
+							PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stock.getStockId());
+							int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,phGoodsStock.getGoodsId());
+							if(count>0){
+								goodsAmount = MathUtils.add(goodsAmount, MathUtils.mul(phGoodsStock.getPrice(), stock.getNum().intValue()));
+							}
+						}
+						PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAnAndReduceLimit(promotionId,goodsAmount);
+						if (null != phPromotionRule){
+							promotionAmount = MathUtils.add(promotionAmount,phPromotionRule.getReduceAmount());
+							reachPromotions.add(phPromotionInfo);
+						}
+					}else if("0".equals(mode)){
+						//计算满足折扣的优惠金额
+						int goodsCount = 0;
+						double goodsAmount = 0D;
+						for (OrderInitStockDto stock : stocks){
+							PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stock.getStockId());
+							int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,phGoodsStock.getGoodsId());
+							if(count>0){
+								goodsCount += stock.getNum().intValue();
+								goodsAmount = MathUtils.add(goodsAmount, MathUtils.mul(phGoodsStock.getPrice(), stock.getNum().intValue()));
+							}
+						}
+						PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAndDiscountNum(promotionId,goodsCount);
+						if (null != phPromotionRule){
+							promotionAmount = MathUtils.add(promotionAmount,MathUtils.mul(goodsAmount,(1-phPromotionRule.getDiscountRate())));
+							reachPromotions.add(phPromotionInfo);
+						}
+					}else if("2".equals(mode)){
+						reachPromotions.add(phPromotionInfo);
+					}
+				}
+
+				sumPromotionAmount = MathUtils.add(sumPromotionAmount,promotionAmount);
+				//s.put("reachPromotions", reachPromotions);
 			}
 			
 			PhOrderInfo phOrderInfo = new PhOrderInfo();
@@ -269,10 +372,15 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			phOrderInfo.setMVoucherId(mVoucherId);
 			phOrderInfo.setOrderNo(orderNo);
 			phOrderInfo.setPrice(sumPrice);
+			phOrderInfo.setPromotionAmount(promotionAmount);//商户促销优惠金额
 			phOrderInfo.setIsHidden("0");
-			
-			//需要支付金额=商品总价+运费-商户优惠券金额
+
+
+
+
+			//需要支付金额=商品总价+运费-商户优惠券金额-商户优惠金额
 			double laveAmount = MathUtils.sub(MathUtils.add(sumPrice, mailFee), mVoucherAmount);
+			laveAmount = MathUtils.sub(laveAmount,promotionAmount);
 			double pVAmount =0D;
 			if(pVoucherAmount>0){
 				if(pVoucherAmount<=laveAmount){
@@ -301,7 +409,22 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			//需要支付金额=需要支付金额-钱包金额
 			laveAmount = MathUtils.sub(laveAmount, pWAmount);
 			phOrderInfo.setWalletAmount(pWAmount);
-			
+
+
+			double ppAmount =0D;
+			if(platformPromotionAmount>0){
+				if(platformPromotionAmount<=laveAmount){
+					ppAmount = platformPromotionAmount;
+					platformPromotionAmount = 0D;
+				}else{
+					ppAmount = laveAmount;
+					platformPromotionAmount=MathUtils.sub(platformPromotionAmount, laveAmount);
+				}
+			}
+			//需要支付金额=需要支付金额-钱包金额
+			laveAmount = MathUtils.sub(laveAmount, ppAmount);
+			phOrderInfo.setPlatformPromotionAmount(ppAmount);
+
 			phOrderInfo.setAmount(laveAmount);
 			phOrderInfo.setStatus("0");
 			phOrderInfo.setUserId(userId);
@@ -364,6 +487,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		phPreorderInfo.setVersion(0L);
 		phPreorderInfo.setVoucherAmount(MathUtils.add(sumMVoucherAmount, sumpVoucherAmout));
 		phPreorderInfo.setWalletAmount(orderAddDto.getWalletAmount());
+		phPreorderInfo.setPromotionAmount(sumPromotionAmount);
 		phPreorderInfoService.save(phPreorderInfo);
 		
 		hashedWheelTimer.newTimeout(new OrderTimeoutService(preorderNo,phPreorderInfoService), 30, TimeUnit.MINUTES);

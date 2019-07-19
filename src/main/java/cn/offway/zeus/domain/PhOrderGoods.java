@@ -65,6 +65,9 @@ public class PhOrderGoods implements Serializable {
     /** 商品库存ID **/
     private Long goodsStockId;
 
+    /** 优惠后的金额 **/
+    private Double amount;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -223,4 +226,12 @@ public class PhOrderGoods implements Serializable {
         this.goodsStockId = goodsStockId;
     }
 
+    @Column(name = "amount", precision = 15, scale = 2)
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
 }

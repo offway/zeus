@@ -175,16 +175,19 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 						}
 						if(isSelect){
 							PhPromotionRule phPromotionRule = phPromotionRuleRepository.findByPromotionIdAndDiscountNum(promotionId,count);
-
-							pAmount = MathUtils.mul(pAmount,phPromotionRule.getDiscountRate());
-							sumAmount = MathUtils.add(sumAmount,pAmount);
-
-							map.put("text","已满"+phPromotionRule.getDiscountNum()+"件"+phPromotionRule.getDiscountRate()*10+"折");
-							//查询是否需要展示去凑单
-							PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudan(promotionId,phPromotionRule.getDiscountNum().intValue());
-							if(null != phPromotionRule1){
-								map.put("qucoudan",true);
+							if(null !=phPromotionRule){
+								pAmount = MathUtils.mul(pAmount,phPromotionRule.getDiscountRate());
+								map.put("text","已满"+phPromotionRule.getDiscountNum()+"件"+phPromotionRule.getDiscountRate()*10+"折");
+								//查询是否需要展示去凑单
+								PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudan(promotionId,phPromotionRule.getDiscountNum().intValue());
+								if(null != phPromotionRule1){
+									map.put("qucoudan",true);
+								}
+							}else{
+								PhPromotionRule phPromotionRule1 = phPromotionRules.get(0);
+								map.put("text","购买"+phPromotionRule1.getDiscountNum()+"件立享"+phPromotionRule1.getDiscountRate()*10+"折");
 							}
+							sumAmount = MathUtils.add(sumAmount,pAmount);
 						}else{
 							PhPromotionRule phPromotionRule = phPromotionRules.get(0);
 							map.put("text","购买"+phPromotionRule.getDiscountNum()+"件立享"+phPromotionRule.getDiscountRate()*10+"折");
@@ -202,16 +205,20 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 					}
 					if(isSelect){
 						PhPromotionRule phPromotionRule = phPromotionRuleRepository.findByPromotionIdAnAndReduceLimit(promotionId,amount);
-
-						amount = MathUtils.sub(amount,phPromotionRule.getReduceAmount());
+						if(null !=phPromotionRule){
+							amount = MathUtils.sub(amount,phPromotionRule.getReduceAmount());
+							map.put("text","以满足购满"+phPromotionRule.getReduceLimit()+"元减"+phPromotionRule.getReduceAmount()+"元");
+							//查询是否需要展示去凑单
+							PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudanReduce(promotionId,phPromotionRule.getReduceLimit());
+							if(null != phPromotionRule1){
+								map.put("qucoudan",true);
+							}
+						}else{
+							PhPromotionRule phPromotionRule1 = phPromotionRules.get(0);
+							map.put("text","购满"+phPromotionRule1.getReduceLimit()+"元立减"+phPromotionRule1.getReduceAmount()+"元");
+						}
 						sumAmount = MathUtils.add(sumAmount,amount);
 
-						map.put("text","以满足购满"+phPromotionRule.getReduceLimit()+"元减"+phPromotionRule.getReduceAmount()+"元");
-						//查询是否需要展示去凑单
-						PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudanReduce(promotionId,phPromotionRule.getReduceLimit());
-						if(null != phPromotionRule1){
-							map.put("qucoudan",true);
-						}
 					}else{
 						PhPromotionRule phPromotionRule = phPromotionRules.get(0);
 						map.put("text","购满"+phPromotionRule.getReduceLimit()+"元立减"+phPromotionRule.getReduceAmount()+"元");
@@ -228,14 +235,21 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 						}
 					}
 					if(isSelect){
-						sumAmount = MathUtils.add(sumAmount,amount);
+
 						PhPromotionRule phPromotionRule = phPromotionRuleRepository.findByPromotionIdAndGiftLimit(promotionId,amount);
-						map.put("text"," 已满足够"+phPromotionRule.getGiftLimit()+"元送"+phPromotionRule.getGift()+"元");
-						//查询是否需要展示去凑单
-						PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudanGift(promotionId,phPromotionRule.getGiftLimit());
-						if(null != phPromotionRule1){
-							map.put("qucoudan",true);
+						if(null !=phPromotionRule){
+							map.put("text"," 已满足够"+phPromotionRule.getGiftLimit()+"元送"+phPromotionRule.getGift()+"元");
+							//查询是否需要展示去凑单
+							PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudanGift(promotionId,phPromotionRule.getGiftLimit());
+							if(null != phPromotionRule1){
+								map.put("qucoudan",true);
+							}
+						}else{
+							PhPromotionRule phPromotionRule1 = phPromotionRules.get(0);
+							map.put("text","满"+phPromotionRule1.getGiftLimit()+"元立送"+phPromotionRule1.getGift());
 						}
+						sumAmount = MathUtils.add(sumAmount,amount);
+
 					}else{
 						PhPromotionRule phPromotionRule = phPromotionRules.get(0);
 						map.put("text","满"+phPromotionRule.getGiftLimit()+"元立送"+phPromotionRule.getGift());
