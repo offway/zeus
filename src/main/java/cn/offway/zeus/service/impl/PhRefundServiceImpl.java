@@ -189,7 +189,9 @@ public class PhRefundServiceImpl implements PhRefundService {
 							throw new Exception("可退款商品数不足");
 						}
 						phRefundGoods.setGoodsCount(refundGoodsDto.getGoodsCount());
-						amount = MathUtils.add(amount, MathUtils.div(phOrderGoods.getPrice(), orderGoodsCount,2)*phRefundGoods.getGoodsCount());
+						//退款金额使用优惠后实付金额
+						double price = null == phOrderGoods.getAmount()?phOrderGoods.getPrice():phOrderGoods.getAmount();
+						amount = MathUtils.add(amount, MathUtils.div(price, orderGoodsCount,2)*phRefundGoods.getGoodsCount());
 						phRefundGoodss.add(phRefundGoods);
 						goodsNum+=phRefundGoods.getGoodsCount();
 					}
