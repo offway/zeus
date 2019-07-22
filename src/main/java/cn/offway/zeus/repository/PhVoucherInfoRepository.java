@@ -71,7 +71,8 @@ public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Lon
 	@Modifying
 	@Query(nativeQuery=true,value="insert into ph_voucher_info select null,?1,id,type,`name`,merchant_id,used_min_amount,amount,begin_time,end_time,'0',NOW(),NULL,merchant_name from ph_voucher_project where id =?2")// and not exists(select 1 from ph_voucher_info where voucher_project_id =?2)")
 	int giveByTime(Long userId,Long voucherProjectId);
-	
+
+	@Query(nativeQuery = true,value = "select count(*) from ph_voucher_info where user_id=?1 and voucher_project_id=?2 and `status`=?3 and NOW() BETWEEN begin_time and end_time")
 	int countByUserIdAndVoucherProjectIdAndStatus(Long userId,Long voucherProjectId,String status);
 	
 	@Query(nativeQuery=true,value="select count(*) from ph_voucher_info where user_id=?1 and `status`='0'and NOW() BETWEEN begin_time and end_time")
