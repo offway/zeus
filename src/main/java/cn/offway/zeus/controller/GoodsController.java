@@ -160,7 +160,7 @@ public class GoodsController {
 		resultMap.put("recommendGoods", recommendGoods);
 		
 		//查询改商品优惠券
-		resultMap.put("voucherProjects", phVoucherProjectRepository.findByMerchantId(phGoods.getMerchantId()));
+		resultMap.put("voucherProjects", phVoucherProjectRepository.findByMerchantIdPublic(phGoods.getMerchantId()));
 		
 		//是否售罄
 		resultMap.put("sellOut",sumStock==0); 
