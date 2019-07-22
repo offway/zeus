@@ -53,6 +53,9 @@ public class PhVoucherProject implements Serializable {
     /** 商户名称 **/
     private String merchantName;
 
+    /** 是否指定发放[0-否，1-是] **/
+    private String isPrivate;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -176,4 +179,12 @@ public class PhVoucherProject implements Serializable {
         this.merchantName = merchantName;
     }
 
+    @Column(name = "is_private", length = 2)
+    public String getIsPrivate() {
+        return isPrivate;
+    }
+
+    public void setIsPrivate(String isPrivate) {
+        this.isPrivate = isPrivate;
+    }
 }
