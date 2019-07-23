@@ -21,4 +21,6 @@ public interface PhFreeDeliveryUserService{
 	PhFreeDeliveryUser findByFreeDeliveryIdAndUserId(Long freedeliveryId, Long userId);
 	
 	List<PhFreeDeliveryUser> ranking(Long freedeliveryId);
+
+	int countByFreeDeliveryIdAndCurrentCount(Long freedeliveryId,Long currentCount);
 }

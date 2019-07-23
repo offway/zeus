@@ -24,4 +24,6 @@ public interface PhFreeDeliveryUserRepository extends JpaRepository<PhFreeDelive
 	@Query(nativeQuery=true,value="select * from ph_free_delivery_user where free_delivery_id=?1 order by current_count desc,last_time asc ")
 	List<PhFreeDeliveryUser> ranking(Long freedeliveryId);
 
+	int countByFreeDeliveryIdAndCurrentCount(Long freedeliveryId,Long currentCount);
+
 }

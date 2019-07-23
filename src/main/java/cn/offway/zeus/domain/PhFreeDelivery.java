@@ -153,6 +153,7 @@ public class PhFreeDelivery implements Serializable {
         this.status = status;
     }
 
+    @Version
     @Column(name = "version", length = 11)
     public Long getVersion() {
         return version;
