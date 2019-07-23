@@ -16,4 +16,6 @@ import java.util.List;
 public interface PhFreeDeliveryBoostRepository extends JpaRepository<PhFreeDeliveryBoost,Long>,JpaSpecificationExecutor<PhFreeDeliveryBoost> {
 
 	List<PhFreeDeliveryBoost> findByFreeDeliveryUserIdOrderByCreateTimeDesc(Long freedeliveryuserid);
+
+	int countByFreeDeliveryUserIdAndAndBoostUserId(Long freedeliveryuserid,Long bootUserId);
 }

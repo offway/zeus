@@ -33,4 +33,9 @@ public class PhFreeDeliveryBoostServiceImpl implements PhFreeDeliveryBoostServic
 	public PhFreeDeliveryBoost findOne(Long id){
 		return phFreeDeliveryBoostRepository.findOne(id);
 	}
+
+	@Override
+	public int countByFreeDeliveryUserIdAndAndBoostUserId(Long freedeliveryuserid, Long bootUserId) {
+		return phFreeDeliveryBoostRepository.countByFreeDeliveryUserIdAndAndBoostUserId(freedeliveryuserid, bootUserId);
+	}
 }

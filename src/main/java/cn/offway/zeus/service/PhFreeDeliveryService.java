@@ -1,5 +1,6 @@
 package cn.offway.zeus.service;
 
+import cn.offway.zeus.utils.JsonResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,5 +20,5 @@ public interface PhFreeDeliveryService{
 
 	Page<PhFreeDelivery> findByPage(Pageable page);
 
-	void boost(Long freeDeliveryId, Long userId, Long boostUserId) throws Exception;
+	JsonResult boost(Long freeDeliveryId, Long userId, Long boostUserId) throws Exception;
 }

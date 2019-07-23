@@ -75,6 +75,18 @@ public enum CommonResultCode implements ResultCode {
     
     /** 兑换码错误或已使用  */
     CODE_ERROR("1023", "CODE_ERROR"),
+
+    /** ta的助力已满，已经获得奖励啦~  */
+    FREE_LIMIT("1024", "FREE_LIMIT"),
+
+    /** 不能重复助力  */
+    FREE_BOOSTED("1025", "FREE_BOOSTED"),
+
+    /** 已抢光  */
+    FREE_LESS("1026", "FREE_LESS"),
+
+    /** 不能给自己助力  */
+    FREE_BOOST_MY("1027", "FREE_BOOST_MY"),
     ;
 	
 	

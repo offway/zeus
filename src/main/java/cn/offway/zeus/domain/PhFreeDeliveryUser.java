@@ -142,6 +142,7 @@ public class PhFreeDeliveryUser implements Serializable {
         this.remark = remark;
     }
 
+    @Version
     @Column(name = "version", length = 11)
     public Long getVersion() {
         return version;
