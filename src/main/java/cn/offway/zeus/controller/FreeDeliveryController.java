@@ -117,18 +117,21 @@ public class FreeDeliveryController {
 				//不在活动时间范围
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
 			}*/
-			
+
+			if(userId.longValue()==boostUserId.longValue()){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOST_MY);
+
+			}
 			PhFreeDelivery phFreeDelivery = phFreeDeliveryService.findOne(freeDeliveryId);
 			if("1".equals(phFreeDelivery.getStatus())){
 				//已抢光
-				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_LESS);
 			}
-			phFreeDeliveryService.boost(freeDeliveryId,userId,boostUserId);
+			return phFreeDeliveryService.boost(freeDeliveryId,userId,boostUserId);
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("免费送活动助理失败freeDeliveryId={},userId={},boostUserId={}",freeDeliveryId,userId,boostUserId,e);
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
-		return jsonResultHelper.buildSuccessJsonResult(null);
-
 	}
 }

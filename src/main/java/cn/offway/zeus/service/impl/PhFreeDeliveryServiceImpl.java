@@ -9,6 +9,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import cn.offway.zeus.utils.CommonResultCode;
+import cn.offway.zeus.utils.JsonResult;
+import cn.offway.zeus.utils.JsonResultHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +58,9 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 	
 	@Autowired
 	private PhFreeDeliveryBoostService phFreeDeliveryBoostService;
+
+	@Autowired
+	private JsonResultHelper jsonResultHelper;
 	
 	@Override
 	public PhFreeDelivery save(PhFreeDelivery phFreeDelivery){
@@ -84,7 +90,7 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class,StockException.class})
-	public void boost(Long freeDeliveryId,Long userId,Long boostUserId) throws Exception{
+	public JsonResult boost(Long freeDeliveryId, Long userId, Long boostUserId) throws Exception{
 		
 		Date now = new Date();
 		PhFreeDelivery phFreeDelivery = findOne(freeDeliveryId);
@@ -102,8 +108,22 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 				phFreeDeliveryUser.setNickname(phUserInfo.getNickname());
 				phFreeDeliveryUser.setUserId(userId);
 				phFreeDeliveryUser.setVersion(0L);
+			}else{
+				int count = phFreeDeliveryBoostService.countByFreeDeliveryUserIdAndAndBoostUserId(phFreeDeliveryUser.getId(),boostUserId);
+				if(count>0){
+					//不能重复助力
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOSTED);
+				}
 			}
+
+
+
+			if(phFreeDeliveryUser.getCurrentCount()+1L > phFreeDelivery.getBoostCount().intValue()){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_LIMIT);
+			}
+
 			phFreeDeliveryUser.setCurrentCount(phFreeDeliveryUser.getCurrentCount()+1L);
+
 			phFreeDeliveryUser.setLastTime(now);
 			phFreeDeliveryUser = phFreeDeliveryUserService.save(phFreeDeliveryUser);
 
@@ -124,5 +144,6 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 			phFreeDeliveryBoost.setFreeDeliveryUserId(phFreeDeliveryUser.getId());
 			phFreeDeliveryBoostService.save(phFreeDeliveryBoost);
 		}
+		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 }
