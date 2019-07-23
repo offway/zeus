@@ -106,11 +106,14 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 			phFreeDeliveryUser.setCurrentCount(phFreeDeliveryUser.getCurrentCount()+1L);
 			phFreeDeliveryUser.setLastTime(now);
 			phFreeDeliveryUser = phFreeDeliveryUserService.save(phFreeDeliveryUser);
-			if(phFreeDeliveryUser.getCurrentCount().longValue() == phFreeDeliveryUser.getBoostCount().longValue()){
+
+			//查询是否该商品是否已抢光
+			int giveCount = phFreeDeliveryUserService.countByFreeDeliveryIdAndCurrentCount(freeDeliveryId,phFreeDelivery.getBoostCount());
+			if(giveCount == phFreeDelivery.getGoodsCount().intValue()){
 				phFreeDelivery.setStatus("1");//已抢光
 				save(phFreeDelivery);
 			}
-			
+
 			PhUserInfo boostUser = phUserInfoService.findOne(boostUserId);
 			
 			PhFreeDeliveryBoost phFreeDeliveryBoost = new PhFreeDeliveryBoost();

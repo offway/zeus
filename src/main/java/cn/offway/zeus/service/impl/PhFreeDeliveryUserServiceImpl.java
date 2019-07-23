@@ -50,4 +50,9 @@ public class PhFreeDeliveryUserServiceImpl implements PhFreeDeliveryUserService 
 	public List<PhFreeDeliveryUser> ranking(Long freedeliveryId) {
 		return phFreeDeliveryUserRepository.ranking(freedeliveryId);
 	}
+
+	@Override
+	public int countByFreeDeliveryIdAndCurrentCount(Long freedeliveryId, Long currentCount) {
+		return phFreeDeliveryUserRepository.countByFreeDeliveryIdAndCurrentCount(freedeliveryId,currentCount);
+	}
 }
