@@ -64,7 +64,9 @@ public class PhBrandServiceImpl implements PhBrandService {
 				if(StringUtils.isNotBlank(type)){
 					params.add(criteriaBuilder.equal(root.get("type"), type));
 				}
-				
+				//已上架
+				params.add(criteriaBuilder.equal(root.get("status"), "1"));
+
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
                 criteriaQuery.orderBy(criteriaBuilder.asc(root.get("name")));
@@ -76,12 +78,12 @@ public class PhBrandServiceImpl implements PhBrandService {
 	
 	@Override
 	public List<PhBrand> findByIsRecommendOrderBySortAsc(String isRecommend){
-		return phBrandRepository.findByIsRecommendOrderBySortAsc(isRecommend);
+		return phBrandRepository.findByIsRecommendAndStatusOrderBySortAsc(isRecommend,"1");
 	}
 	
 	@Override
 	public List<PhBrand> findByTypeOrderByNameAsc(String type){
-		return phBrandRepository.findByTypeOrderByNameAsc(type);
+		return phBrandRepository.findByTypeAndStatusOrderByNameAsc(type,"1");
 	}
 	
 	@Override
@@ -125,7 +127,9 @@ public class PhBrandServiceImpl implements PhBrandService {
 				if(StringUtils.isNotBlank(isRecommend)){
 					params.add(criteriaBuilder.equal(root.get("isRecommend"), isRecommend));
 				}
-				
+
+				//已上架
+				params.add(criteriaBuilder.equal(root.get("status"), "1"));
 				
 				
                 Predicate[] predicates = new Predicate[params.size()];
