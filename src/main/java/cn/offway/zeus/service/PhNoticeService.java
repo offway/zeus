@@ -17,7 +17,7 @@ public interface PhNoticeService{
 
 	PhNotice save(PhNotice phNotice);
 	
-	PhNotice findOne(Long id);
+	PhNotice getOne(Long id);
 
 	Page<PhNotice> findByPage(String type, Long userId, Pageable page);
 

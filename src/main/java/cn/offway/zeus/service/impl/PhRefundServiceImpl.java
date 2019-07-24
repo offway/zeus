@@ -89,13 +89,13 @@ public class PhRefundServiceImpl implements PhRefundService {
 	}
 	
 	@Override
-	public PhRefund findOne(Long id){
-		return phRefundRepository.findOne(id);
+	public PhRefund getOne(Long id){
+		return phRefundRepository.getOne(id);
 	}
 	
 	@Override
-	public void delete(Long id){
-		phRefundRepository.delete(id);
+	public void deleteById(Long id){
+		phRefundRepository.deleteById(id);
 	}
 	
 	@Override
@@ -137,7 +137,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 		
 		Long id = refundDto.getId();
 		if(null != id){
-			delete(id);
+			deleteById(id);
 			phRefundGoodsService.deleteByRefundId(id);
 		}
 		
@@ -314,7 +314,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 	
 	@Override
 	public JsonResult info(Long id){
-		PhRefund phRefund = findOne(id);
+		PhRefund phRefund = getOne(id);
 		String isComplete = phRefund.getIsComplete();
 		String orderNo = phRefund.getOrderNo();
 		Map<String, Object> resultMap = new HashMap<>();
@@ -334,7 +334,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 		}else{
 			List<PhRefundGoods> phRefundGoodss = phRefundGoodsService.findByRefundId(id);
 			for (PhRefundGoods phRefundGoods : phRefundGoodss) {
-				PhOrderGoods phOrderGoods = phOrderGoodsService.findOne(phRefundGoods.getOrderGoodsId());
+				PhOrderGoods phOrderGoods = phOrderGoodsService.getOne(phRefundGoods.getOrderGoodsId());
 				Map<String, Object> map = new HashMap<>();
 				map.put("image", phOrderGoods.getGoodsImage());
 				map.put("name", phOrderGoods.getGoodsName());
@@ -353,9 +353,9 @@ public class PhRefundServiceImpl implements PhRefundService {
 			//退货地址
 			PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
 			Long merchantId = phOrderInfo.getMerchantId();
-			PhMerchant phMerchant = phMerchantService.findOne(merchantId);
+			PhMerchant phMerchant = phMerchantService.getOne(merchantId);
 			Long retAddrId = phMerchant.getReturnAddrId();
-			resultMap.put("addr", phAddressService.findOne(retAddrId));
+			resultMap.put("addr", phAddressService.getOne(retAddrId));
 		}
 
 		

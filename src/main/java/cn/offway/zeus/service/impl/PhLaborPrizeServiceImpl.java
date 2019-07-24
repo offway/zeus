@@ -30,7 +30,7 @@ public class PhLaborPrizeServiceImpl implements PhLaborPrizeService {
 	}
 	
 	@Override
-	public PhLaborPrize findOne(Long id){
-		return phLaborPrizeRepository.findOne(id);
+	public PhLaborPrize getOne(Long id){
+		return phLaborPrizeRepository.getOne(id);
 	}
 }

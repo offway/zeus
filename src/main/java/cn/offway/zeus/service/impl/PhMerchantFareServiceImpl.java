@@ -30,8 +30,8 @@ public class PhMerchantFareServiceImpl implements PhMerchantFareService {
 	}
 	
 	@Override
-	public PhMerchantFare findOne(Long id){
-		return phMerchantFareRepository.findOne(id);
+	public PhMerchantFare getOne(Long id){
+		return phMerchantFareRepository.getOne(id);
 	}
 	
 }

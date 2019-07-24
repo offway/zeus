@@ -45,8 +45,8 @@ public class PhBrandServiceImpl implements PhBrandService {
 	}
 	
 	@Override
-	public PhBrand findOne(Long id){
-		return phBrandRepository.findOne(id);
+	public PhBrand getOne(Long id){
+		return phBrandRepository.getOne(id);
 	}
 	
 	@Override

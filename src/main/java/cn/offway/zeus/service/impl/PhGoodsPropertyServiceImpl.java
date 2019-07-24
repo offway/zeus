@@ -32,8 +32,8 @@ public class PhGoodsPropertyServiceImpl implements PhGoodsPropertyService {
 	}
 	
 	@Override
-	public PhGoodsProperty findOne(Long id){
-		return phGoodsPropertyRepository.findOne(id);
+	public PhGoodsProperty getOne(Long id){
+		return phGoodsPropertyRepository.getOne(id);
 	}
 
 	@Override

@@ -32,8 +32,8 @@ public class PhInviteRecordServiceImpl implements PhInviteRecordService {
 	}
 	
 	@Override
-	public PhInviteRecord findOne(Long id){
-		return phInviteRecordRepository.findOne(id);
+	public PhInviteRecord getOne(Long id){
+		return phInviteRecordRepository.getOne(id);
 	}
 	
 	@Override

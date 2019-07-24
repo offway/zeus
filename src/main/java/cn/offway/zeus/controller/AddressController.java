@@ -50,13 +50,13 @@ public class AddressController {
 	@ApiOperation("查询地址")
 	@GetMapping("/info")
 	public JsonResult info(@ApiParam("地址ID") @RequestParam Long id){
-		return jsonResultHelper.buildSuccessJsonResult(phAddressService.findOne(id));
+		return jsonResultHelper.buildSuccessJsonResult(phAddressService.getOne(id));
 	}
 	
 	@ApiOperation("删除地址")
 	@PostMapping("/del")
 	public JsonResult del(@ApiParam("地址ID") @RequestParam Long id){
-		phAddressService.delete(id);
+		phAddressService.deleteById(id);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	

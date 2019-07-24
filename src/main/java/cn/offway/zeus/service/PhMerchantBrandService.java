@@ -12,5 +12,5 @@ public interface PhMerchantBrandService{
 
 	PhMerchantBrand save(PhMerchantBrand phMerchantBrand);
 	
-	PhMerchantBrand findOne(Long id);
+	PhMerchantBrand getOne(Long id);
 }

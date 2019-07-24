@@ -16,7 +16,7 @@ public interface PhFreeDeliveryService{
 
 	PhFreeDelivery save(PhFreeDelivery phFreeDelivery);
 	
-	PhFreeDelivery findOne(Long id);
+	PhFreeDelivery getOne(Long id);
 
 	Page<PhFreeDelivery> findByPage(Pageable page);
 

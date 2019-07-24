@@ -33,8 +33,8 @@ public class PhGoodsStockServiceImpl implements PhGoodsStockService {
 	}
 	
 	@Override
-	public PhGoodsStock findOne(Long id){
-		return phGoodsStockRepository.findOne(id);
+	public PhGoodsStock getOne(Long id){
+		return phGoodsStockRepository.getOne(id);
 	}
 	
 	@Override

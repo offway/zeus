@@ -12,7 +12,7 @@ public interface PhGoodsSpecialService{
 
 	PhGoodsSpecial save(PhGoodsSpecial phGoodsSpecial);
 	
-	PhGoodsSpecial findOne(Long id);
+	PhGoodsSpecial getOne(Long id);
 
 	int countByGoodsId(Long goodsId);
 }

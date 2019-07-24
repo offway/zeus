@@ -30,8 +30,8 @@ public class PhUserChannelServiceImpl implements PhUserChannelService {
 	}
 	
 	@Override
-	public PhUserChannel findOne(Long id){
-		return phUserChannelRepository.findOne(id);
+	public PhUserChannel getOne(Long id){
+		return phUserChannelRepository.getOne(id);
 	}
 	
 	@Override

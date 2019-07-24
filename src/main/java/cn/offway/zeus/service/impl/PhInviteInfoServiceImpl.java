@@ -30,8 +30,8 @@ public class PhInviteInfoServiceImpl implements PhInviteInfoService {
 	}
 	
 	@Override
-	public PhInviteInfo findOne(Long id){
-		return phInviteInfoRepository.findOne(id);
+	public PhInviteInfo getOne(Long id){
+		return phInviteInfoRepository.getOne(id);
 	}
 	
 	@Override

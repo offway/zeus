@@ -44,8 +44,8 @@ public class PhStarsameServiceImpl implements PhStarsameService {
 	}
 	
 	@Override
-	public PhStarsame findOne(Long id){
-		return phStarsameRepository.findOne(id);
+	public PhStarsame getOne(Long id){
+		return phStarsameRepository.getOne(id);
 	}
 	
 	@Override

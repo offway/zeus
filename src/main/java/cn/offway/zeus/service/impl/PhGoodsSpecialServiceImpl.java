@@ -30,8 +30,8 @@ public class PhGoodsSpecialServiceImpl implements PhGoodsSpecialService {
 	}
 	
 	@Override
-	public PhGoodsSpecial findOne(Long id){
-		return phGoodsSpecialRepository.findOne(id);
+	public PhGoodsSpecial getOne(Long id){
+		return phGoodsSpecialRepository.getOne(id);
 	}
 	
 	@Override

@@ -12,5 +12,5 @@ public interface PhMerchantFileService{
 
 	PhMerchantFile save(PhMerchantFile phMerchantFile);
 	
-	PhMerchantFile findOne(Long id);
+	PhMerchantFile getOne(Long id);
 }

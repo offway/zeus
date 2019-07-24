@@ -46,8 +46,8 @@ public class PhShareRecordServiceImpl implements PhShareRecordService {
 	}
 	
 	@Override
-	public PhShareRecord findOne(Long id){
-		return phShareRecordRepository.findOne(id);
+	public PhShareRecord getOne(Long id){
+		return phShareRecordRepository.getOne(id);
 	}
 	
 	@Override

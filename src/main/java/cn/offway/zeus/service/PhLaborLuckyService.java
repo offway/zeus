@@ -16,7 +16,7 @@ public interface PhLaborLuckyService{
 
 	PhLaborLucky save(PhLaborLucky phLaborLucky);
 	
-	PhLaborLucky findOne(Long id);
+	PhLaborLucky getOne(Long id);
 
 	List<PhLaborLucky> findByUserIdOrderByCreateTimeDesc(Long userId);
 

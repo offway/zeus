@@ -50,8 +50,8 @@ public class PhProductInfoServiceImpl implements PhProductInfoService {
 	}
 	
 	@Override
-	public PhProductInfo findOne(Long id){
-		return phProductInfoRepository.findOne(id);
+	public PhProductInfo getOne(Long id){
+		return phProductInfoRepository.getOne(id);
 	}
 	
 	@Override

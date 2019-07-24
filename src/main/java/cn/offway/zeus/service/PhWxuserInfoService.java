@@ -12,7 +12,7 @@ public interface PhWxuserInfoService{
 
 	PhWxuserInfo save(PhWxuserInfo phWxuserInfo);
 	
-	PhWxuserInfo findOne(Long id);
+	PhWxuserInfo getOne(Long id);
 	
 	PhWxuserInfo findByUnionid(String unionid);
 }

@@ -88,7 +88,7 @@ public class LotteryController {
 
 		try {
 			// 检查活动时间
-			PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
+			PhProductInfo phProductInfo = phProductInfoService.getOne(productId);
 			Date now = new Date();
 			if (now.before(phProductInfo.getBeginTime()) || now.after(phProductInfo.getEndTime())) {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
@@ -149,7 +149,7 @@ public class LotteryController {
 	public Map<String, Object> init(@ApiParam("活动ID") @RequestParam Long productId,@ApiParam("用户unionid") @RequestParam String unionid){
 		Map<String, Object> map = new HashMap<>();
 		
-		PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
+		PhProductInfo phProductInfo = phProductInfoService.getOne(productId);
 		map.put("product", phProductInfo);
 		map.put("beginTime", phProductInfo.getBeginTime());
 		map.put("endTime", phProductInfo.getEndTime());
@@ -204,7 +204,7 @@ public class LotteryController {
 			@ApiParam("渠道") @RequestParam(required = false) String channel){
 		try {
 			// 检查活动时间
-			PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
+			PhProductInfo phProductInfo = phProductInfoService.getOne(productId);
 			Date now = new Date();
 			if (now.before(phProductInfo.getBeginTime()) || now.after(phProductInfo.getEndTime())) {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);

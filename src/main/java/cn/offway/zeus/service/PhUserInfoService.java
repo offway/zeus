@@ -12,7 +12,7 @@ public interface PhUserInfoService{
 
 	PhUserInfo save(PhUserInfo phUserInfo);
 	
-	PhUserInfo findOne(Long id);
+	PhUserInfo getOne(Long id);
 
 	PhUserInfo findByPhone(String phone);
 

@@ -35,13 +35,13 @@ public class PhAddressServiceImpl implements PhAddressService {
 	}
 	
 	@Override
-	public void delete(Long id){
-		phAddressRepository.delete(id);
+	public void deleteById(Long id){
+		phAddressRepository.deleteById(id);
 	}
 	
 	@Override
-	public PhAddress findOne(Long id){
-		return phAddressRepository.findOne(id);
+	public PhAddress getOne(Long id){
+		return phAddressRepository.getOne(id);
 	}
 	
 	@Override

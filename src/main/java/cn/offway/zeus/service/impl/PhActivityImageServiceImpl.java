@@ -32,8 +32,8 @@ public class PhActivityImageServiceImpl implements PhActivityImageService {
 	}
 	
 	@Override
-	public PhActivityImage findOne(Long id){
-		return phActivityImageRepository.findOne(id);
+	public PhActivityImage getOne(Long id){
+		return phActivityImageRepository.getOne(id);
 	}
 	
 	@Override

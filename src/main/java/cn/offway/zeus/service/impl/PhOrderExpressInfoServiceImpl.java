@@ -30,8 +30,8 @@ public class PhOrderExpressInfoServiceImpl implements PhOrderExpressInfoService 
 	}
 	
 	@Override
-	public PhOrderExpressInfo findOne(Long id){
-		return phOrderExpressInfoRepository.findOne(id);
+	public PhOrderExpressInfo getOne(Long id){
+		return phOrderExpressInfoRepository.getOne(id);
 	}
 	
 	@Override

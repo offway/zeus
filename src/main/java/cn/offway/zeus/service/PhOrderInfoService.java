@@ -19,7 +19,7 @@ public interface PhOrderInfoService{
 
 	PhOrderInfo save(PhOrderInfo phOrderInfo);
 	
-	PhOrderInfo findOne(Long id);
+	PhOrderInfo getOne(Long id);
 
 	String generateOrderNo(String prefix);
 

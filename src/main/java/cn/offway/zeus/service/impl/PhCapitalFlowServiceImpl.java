@@ -39,8 +39,8 @@ public class PhCapitalFlowServiceImpl implements PhCapitalFlowService {
 	}
 	
 	@Override
-	public PhCapitalFlow findOne(Long id){
-		return phCapitalFlowRepository.findOne(id);
+	public PhCapitalFlow getOne(Long id){
+		return phCapitalFlowRepository.getOne(id);
 	}
 	
 	

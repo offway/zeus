@@ -30,7 +30,7 @@ public class PhActivityBlacklistServiceImpl implements PhActivityBlacklistServic
 	}
 	
 	@Override
-	public PhActivityBlacklist findOne(Long id){
-		return phActivityBlacklistRepository.findOne(id);
+	public PhActivityBlacklist getOne(Long id){
+		return phActivityBlacklistRepository.getOne(id);
 	}
 }

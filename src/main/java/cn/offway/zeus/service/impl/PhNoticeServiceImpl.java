@@ -41,8 +41,8 @@ public class PhNoticeServiceImpl implements PhNoticeService {
 	}
 	
 	@Override
-	public PhNotice findOne(Long id){
-		return phNoticeRepository.findOne(id);
+	public PhNotice getOne(Long id){
+		return phNoticeRepository.getOne(id);
 	}
 	
 	@Override

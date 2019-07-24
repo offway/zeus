@@ -32,8 +32,8 @@ public class PhFreeDeliveryUserServiceImpl implements PhFreeDeliveryUserService 
 	}
 	
 	@Override
-	public PhFreeDeliveryUser findOne(Long id){
-		return phFreeDeliveryUserRepository.findOne(id);
+	public PhFreeDeliveryUser getOne(Long id){
+		return phFreeDeliveryUserRepository.getOne(id);
 	}
 	
 	@Override

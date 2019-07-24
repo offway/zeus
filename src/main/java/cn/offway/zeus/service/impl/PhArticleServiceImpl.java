@@ -47,8 +47,8 @@ public class PhArticleServiceImpl implements PhArticleService {
 	}
 	
 	@Override
-	public PhArticle findOne(Long id){
-		return phArticleRepository.findOne(id);
+	public PhArticle getOne(Long id){
+		return phArticleRepository.getOne(id);
 	}
 	
 	@Override

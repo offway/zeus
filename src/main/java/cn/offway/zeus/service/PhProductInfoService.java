@@ -20,7 +20,7 @@ public interface PhProductInfoService{
 
 	PhProductInfo save(PhProductInfo phProductInfo);
 	
-	PhProductInfo findOne(Long id);
+	PhProductInfo getOne(Long id);
 
 	List<PhProductInfo> findByUnionid(String unionid);
 

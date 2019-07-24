@@ -32,8 +32,8 @@ public class PhGoodsCategoryServiceImpl implements PhGoodsCategoryService {
 	}
 	
 	@Override
-	public PhGoodsCategory findOne(Long id){
-		return phGoodsCategoryRepository.findOne(id);
+	public PhGoodsCategory getOne(Long id){
+		return phGoodsCategoryRepository.getOne(id);
 	}
 	
 	@Override

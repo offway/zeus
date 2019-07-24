@@ -30,7 +30,7 @@ public class PhMerchantBrandServiceImpl implements PhMerchantBrandService {
 	}
 	
 	@Override
-	public PhMerchantBrand findOne(Long id){
-		return phMerchantBrandRepository.findOne(id);
+	public PhMerchantBrand getOne(Long id){
+		return phMerchantBrandRepository.getOne(id);
 	}
 }

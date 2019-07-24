@@ -14,7 +14,7 @@ public interface PhSettlementDetailService{
 
 	PhSettlementDetail save(PhSettlementDetail phSettlementDetail);
 	
-	PhSettlementDetail findOne(Long id);
+	PhSettlementDetail getOne(Long id);
 
 	List<PhSettlementDetail> save(List<PhSettlementDetail> phSettlementDetails);
 }

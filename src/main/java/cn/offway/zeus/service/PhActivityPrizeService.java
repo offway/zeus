@@ -14,7 +14,7 @@ public interface PhActivityPrizeService{
 
 	PhActivityPrize save(PhActivityPrize phActivityPrize);
 	
-	PhActivityPrize findOne(Long id);
+	PhActivityPrize getOne(Long id);
 
 	PhActivityPrize findByActivityIdAndUnionid(Long activityid, String unionid);
 

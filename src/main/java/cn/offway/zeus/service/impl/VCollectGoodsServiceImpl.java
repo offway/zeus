@@ -44,8 +44,8 @@ public class VCollectGoodsServiceImpl implements VCollectGoodsService {
 	}
 	
 	@Override
-	public VCollectGoods findOne(Long id){
-		return vCollectGoodsRepository.findOne(id);
+	public VCollectGoods getOne(Long id){
+		return vCollectGoodsRepository.getOne(id);
 	}
 	
 	@Override

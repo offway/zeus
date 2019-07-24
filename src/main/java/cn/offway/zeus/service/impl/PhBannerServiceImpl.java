@@ -33,8 +33,8 @@ public class PhBannerServiceImpl implements PhBannerService {
 	}
 	
 	@Override
-	public PhBanner findOne(Long id){
-		return phBannerRepository.findOne(id);
+	public PhBanner getOne(Long id){
+		return phBannerRepository.getOne(id);
 	}
 	
 	@Override

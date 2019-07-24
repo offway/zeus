@@ -32,8 +32,8 @@ public class PhGoodsImageServiceImpl implements PhGoodsImageService {
 	}
 	
 	@Override
-	public PhGoodsImage findOne(Long id){
-		return phGoodsImageRepository.findOne(id);
+	public PhGoodsImage getOne(Long id){
+		return phGoodsImageRepository.getOne(id);
 	}
 	
 	@Override

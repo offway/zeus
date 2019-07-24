@@ -14,7 +14,7 @@ public interface PhOrderGoodsService{
 
 	PhOrderGoods save(PhOrderGoods phOrderGoods);
 	
-	PhOrderGoods findOne(Long id);
+	PhOrderGoods getOne(Long id);
 
 	List<PhOrderGoods> findByOrderNo(String orderNo);
 }

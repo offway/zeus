@@ -21,10 +21,10 @@ import com.alibaba.druid.support.http.WebStatFilter; //这个包容易导入错�
 public class DruidConfig {
  
 	
-	@Value("${security.user.name}")
+	@Value("${spring.security.user.name}")
 	private String DRUID_USERNAME;
 	
-	@Value("${security.user.password}")
+	@Value("${spring.security.user.password}")
 	private String DRUID_PASSWORD;
 	
 	

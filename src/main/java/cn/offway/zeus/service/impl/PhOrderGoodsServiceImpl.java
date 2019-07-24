@@ -32,8 +32,8 @@ public class PhOrderGoodsServiceImpl implements PhOrderGoodsService {
 	}
 	
 	@Override
-	public PhOrderGoods findOne(Long id){
-		return phOrderGoodsRepository.findOne(id);
+	public PhOrderGoods getOne(Long id){
+		return phOrderGoodsRepository.getOne(id);
 	}
 	
 	@Override

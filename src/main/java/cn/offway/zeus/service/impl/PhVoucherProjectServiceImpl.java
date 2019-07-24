@@ -32,8 +32,8 @@ public class PhVoucherProjectServiceImpl implements PhVoucherProjectService {
 	}
 	
 	@Override
-	public PhVoucherProject findOne(Long id){
-		return phVoucherProjectRepository.findOne(id);
+	public PhVoucherProject getOne(Long id){
+		return phVoucherProjectRepository.getOne(id);
 	}
 	
 	@Override

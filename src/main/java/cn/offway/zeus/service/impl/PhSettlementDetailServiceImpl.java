@@ -33,11 +33,11 @@ public class PhSettlementDetailServiceImpl implements PhSettlementDetailService 
 
 	@Override
 	public List<PhSettlementDetail> save(List<PhSettlementDetail> phSettlementDetails){
-		return phSettlementDetailRepository.save(phSettlementDetails);
+		return phSettlementDetailRepository.saveAll(phSettlementDetails);
 	}
 	
 	@Override
-	public PhSettlementDetail findOne(Long id){
-		return phSettlementDetailRepository.findOne(id);
+	public PhSettlementDetail getOne(Long id){
+		return phSettlementDetailRepository.getOne(id);
 	}
 }

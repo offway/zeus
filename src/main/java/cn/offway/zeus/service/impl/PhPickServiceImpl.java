@@ -30,7 +30,7 @@ public class PhPickServiceImpl implements PhPickService {
 	}
 	
 	@Override
-	public PhPick findOne(Long id){
-		return phPickRepository.findOne(id);
+	public PhPick getOne(Long id){
+		return phPickRepository.getOne(id);
 	}
 }

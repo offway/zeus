@@ -32,8 +32,8 @@ public class PhConfigServiceImpl implements PhConfigService {
 	}
 	
 	@Override
-	public PhConfig findOne(Long id){
-		return phConfigRepository.findOne(id);
+	public PhConfig getOne(Long id){
+		return phConfigRepository.getOne(id);
 	}
 	
 	@Override

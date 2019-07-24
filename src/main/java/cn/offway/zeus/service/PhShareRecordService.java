@@ -12,7 +12,7 @@ public interface PhShareRecordService{
 
 	PhShareRecord save(PhShareRecord phShareRecord);
 	
-	PhShareRecord findOne(Long id);
+	PhShareRecord getOne(Long id);
 
 	int countByUnionidAndProductId(String unionid, Long productId);
 

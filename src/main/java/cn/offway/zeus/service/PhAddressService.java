@@ -15,9 +15,9 @@ public interface PhAddressService{
 
 	PhAddress save(PhAddress phAddress);
 	
-	PhAddress findOne(Long id);
+	PhAddress getOne(Long id);
 
-	void delete(Long id);
+	void deleteById(Long id);
 
 	List<PhAddress> findByUserId(Long userId);
 

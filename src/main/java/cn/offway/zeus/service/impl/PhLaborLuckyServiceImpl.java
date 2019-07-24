@@ -33,8 +33,8 @@ public class PhLaborLuckyServiceImpl implements PhLaborLuckyService {
 	}
 	
 	@Override
-	public PhLaborLucky findOne(Long id){
-		return phLaborLuckyRepository.findOne(id);
+	public PhLaborLucky getOne(Long id){
+		return phLaborLuckyRepository.getOne(id);
 	}
 	
 	@Override

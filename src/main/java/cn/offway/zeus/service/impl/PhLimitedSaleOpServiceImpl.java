@@ -30,7 +30,7 @@ public class PhLimitedSaleOpServiceImpl implements PhLimitedSaleOpService {
 	}
 	
 	@Override
-	public PhLimitedSaleOp findOne(Long id){
-		return phLimitedSaleOpRepository.findOne(id);
+	public PhLimitedSaleOp getOne(Long id){
+		return phLimitedSaleOpRepository.getOne(id);
 	}
 }

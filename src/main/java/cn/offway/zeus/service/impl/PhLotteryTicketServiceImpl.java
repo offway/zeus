@@ -60,8 +60,8 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 	}
 	
 	@Override
-	public PhLotteryTicket findOne(Long id){
-		return phLotteryTicketRepository.findOne(id);
+	public PhLotteryTicket getOne(Long id){
+		return phLotteryTicketRepository.getOne(id);
 	}
 	
 	@Override
@@ -99,7 +99,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		phLotteryTickets.add(phLotteryTicket);
 		
 		
-		PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
+		PhProductInfo phProductInfo = phProductInfoService.getOne(productId);
 		String channel = StringUtils.isNotBlank(formId)?"小程序":"公众号";
 		saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
 
@@ -110,7 +110,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		}
 		
 		
-		phLotteryTicketRepository.save(phLotteryTickets);
+		phLotteryTicketRepository.saveAll(phLotteryTickets);
 		//更新抽奖码
 		phLotteryTicketRepository.updateCode();
 	}
@@ -195,11 +195,11 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 				phLotteryTickets.add(phLotteryTicket);
 			}
 			
-			phLotteryTicketRepository.save(phLotteryTickets);
+			phLotteryTicketRepository.saveAll(phLotteryTickets);
 			//更新抽奖码
 			phLotteryTicketRepository.updateCode();
 			
-			PhProductInfo phProductInfo = phProductInfoService.findOne(productId);
+			PhProductInfo phProductInfo = phProductInfoService.getOne(productId);
 			
 			saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
 		}
@@ -231,7 +231,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 					}
 				}
 
-				phLotteryTicketRepository.save(phLotteryTickets);
+				phLotteryTicketRepository.saveAll(phLotteryTickets);
 				//更新抽奖码
 				phLotteryTicketRepository.updateCode();
 				

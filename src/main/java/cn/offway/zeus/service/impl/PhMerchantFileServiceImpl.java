@@ -30,7 +30,7 @@ public class PhMerchantFileServiceImpl implements PhMerchantFileService {
 	}
 	
 	@Override
-	public PhMerchantFile findOne(Long id){
-		return phMerchantFileRepository.findOne(id);
+	public PhMerchantFile getOne(Long id){
+		return phMerchantFileRepository.getOne(id);
 	}
 }

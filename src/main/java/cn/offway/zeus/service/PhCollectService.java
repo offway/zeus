@@ -12,11 +12,11 @@ public interface PhCollectService{
 
 	PhCollect save(PhCollect phCollect);
 	
-	PhCollect findOne(Long id);
+	PhCollect getOne(Long id);
 
 	Long collect(Long userId, String type, Long matchId) throws Exception;
 
-	void delete(Long id);
+	void deleteById(Long id);
 
 	Long isCollect(Long userId, String type, Long matchId);
 }

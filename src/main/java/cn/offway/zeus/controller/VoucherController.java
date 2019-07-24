@@ -57,7 +57,7 @@ public class VoucherController {
 	@GetMapping("/info")
 	public JsonResult info(
 			@ApiParam("优惠券ID") @RequestParam Long voucherId){
-		return jsonResultHelper.buildSuccessJsonResult(phVoucherInfoService.findOne(voucherId));
+		return jsonResultHelper.buildSuccessJsonResult(phVoucherInfoService.getOne(voucherId));
 
 	}
 	

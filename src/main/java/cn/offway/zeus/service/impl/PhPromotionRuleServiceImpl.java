@@ -32,18 +32,18 @@ public class PhPromotionRuleServiceImpl implements PhPromotionRuleService {
 	}
 	
 	@Override
-	public PhPromotionRule findOne(Long id){
-		return phPromotionRuleRepository.findOne(id);
+	public PhPromotionRule getOne(Long id){
+		return phPromotionRuleRepository.getOne(id);
 	}
 
 	@Override
-	public void delete(Long id){
-		phPromotionRuleRepository.delete(id);
+	public void deleteById(Long id){
+		phPromotionRuleRepository.deleteById(id);
 	}
 
 	@Override
 	public List<PhPromotionRule> save(List<PhPromotionRule> entities){
-		return phPromotionRuleRepository.save(entities);
+		return phPromotionRuleRepository.saveAll(entities);
 	}
 
 	@Override

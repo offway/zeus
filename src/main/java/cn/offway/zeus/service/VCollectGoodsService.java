@@ -15,7 +15,7 @@ public interface VCollectGoodsService{
 
 	VCollectGoods save(VCollectGoods vCollectGoods);
 	
-	VCollectGoods findOne(Long id);
+	VCollectGoods getOne(Long id);
 
 	Page<VCollectGoods> findByPage(Long userId, Pageable page);
 }

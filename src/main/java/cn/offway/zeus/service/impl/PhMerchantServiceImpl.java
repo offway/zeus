@@ -62,8 +62,8 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 	}
 	
 	@Override
-	public PhMerchant findOne(Long id){
-		return phMerchantRepository.findOne(id);
+	public PhMerchant getOne(Long id){
+		return phMerchantRepository.getOne(id);
 	}
 	
 	@Override
@@ -102,14 +102,14 @@ public class PhMerchantServiceImpl implements PhMerchantService {
 		double fareFirstPrice = 0D;
 		double fareNextPrice = 0D;
 		
-		PhMerchant phMerchant = findOne(id);
+		PhMerchant phMerchant = getOne(id);
 		if("1".equals(phMerchant.getIsFreeFare())){
 			return amount;
 		}
 		
 		PhMerchantFare phMerchantFare = phMerchantFareRepository.findByMerchantIdAndIsDefault(id, "1");
 		Long merchantFareId = phMerchantFare.getId();
-		PhAddress phAddress = phAddressService.findOne(addrId);
+		PhAddress phAddress = phAddressService.getOne(addrId);
 		PhMerchantFareSpecial phMerchantFareSpecial = phMerchantFareSpecialRepository.findByMerchantFareIdAndProvinceAndCityAndCounty(merchantFareId,phAddress.getProvince(), phAddress.getCity(), phAddress.getCounty());
 		if(null == phMerchantFareSpecial){
 			phMerchantFareSpecial = phMerchantFareSpecialRepository.findByMerchantFareIdAndProvinceAndCityAndCounty(merchantFareId,phAddress.getProvince(), phAddress.getCity(), null);

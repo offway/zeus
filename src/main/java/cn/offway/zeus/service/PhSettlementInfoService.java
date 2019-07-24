@@ -12,7 +12,7 @@ public interface PhSettlementInfoService{
 
 	PhSettlementInfo save(PhSettlementInfo phSettlementInfo);
 	
-	PhSettlementInfo findOne(Long id);
+	PhSettlementInfo getOne(Long id);
 
     void save(String preorderNo);
 }

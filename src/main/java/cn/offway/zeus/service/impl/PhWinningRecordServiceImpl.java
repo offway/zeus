@@ -32,8 +32,8 @@ public class PhWinningRecordServiceImpl implements PhWinningRecordService {
 	}
 	
 	@Override
-	public PhWinningRecord findOne(Long id){
-		return phWinningRecordRepository.findOne(id);
+	public PhWinningRecord getOne(Long id){
+		return phWinningRecordRepository.getOne(id);
 	}
 	
 	@Override

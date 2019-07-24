@@ -17,7 +17,7 @@ public interface PhPreorderInfoService{
 
 	PhPreorderInfo save(PhPreorderInfo phPreorderInfo);
 	
-	PhPreorderInfo findOne(Long id);
+	PhPreorderInfo getOne(Long id);
 
 	PhPreorderInfo findByOrderNoAndStatus(String orderno, String status);
 

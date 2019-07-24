@@ -57,8 +57,8 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	}
 	
 	@Override
-	public PhUserInfo findOne(Long id){
-		return phUserInfoRepository.findOne(id);
+	public PhUserInfo getOne(Long id){
+		return phUserInfoRepository.getOne(id);
 	}
 	
 	@Override
@@ -117,7 +117,7 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		String content = phConfigService.findContentByName("VP_REGISTER");
 				
 		if(null != inviteUserId){
-			PhUserInfo inviteUserInfo = findOne(inviteUserId);
+			PhUserInfo inviteUserInfo = getOne(inviteUserId);
 			if(null!= inviteUserInfo){
 				PhInviteInfo phInviteInfo = new PhInviteInfo();
 				phInviteInfo.setUserId(inviteUserId);

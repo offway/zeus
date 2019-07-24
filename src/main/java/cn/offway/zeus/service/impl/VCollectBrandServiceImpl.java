@@ -43,8 +43,8 @@ public class VCollectBrandServiceImpl implements VCollectBrandService {
 	}
 	
 	@Override
-	public VCollectBrand findOne(Long id){
-		return vCollectBrandRepository.findOne(id);
+	public VCollectBrand getOne(Long id){
+		return vCollectBrandRepository.getOne(id);
 	}
 	
 	@Override

@@ -17,7 +17,7 @@ public interface PhShoppingCartService{
 
 	PhShoppingCart save(PhShoppingCart phShoppingCart);
 	
-	PhShoppingCart findOne(Long id);
+	PhShoppingCart getOne(Long id);
 
 	JsonResult shopingCar(Long userId, Long stockId, Long goodsCount);
 

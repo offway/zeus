@@ -86,7 +86,7 @@ public class RefundController {
 	@ApiOperation("退款取消")
 	@PostMapping("/cancel")
 	public JsonResult refundCancel(@ApiParam("退款申请ID") @RequestParam Long id){
-		PhRefund phRefund = phRefundService.findOne(id);
+		PhRefund phRefund = phRefundService.getOne(id);
 //		if("0".equals(phRefund.getStatus())){
 			phRefund.setStatus("5");
 			phRefundService.save(phRefund);
@@ -102,7 +102,7 @@ public class RefundController {
 			@ApiParam("退款申请ID") @RequestParam Long id,
 			@ApiParam("物流单号") @RequestParam String mailNo,
 			@ApiParam("快递公司编码") @RequestParam String expressCode){
-		PhRefund phRefund = phRefundService.findOne(id);
+		PhRefund phRefund = phRefundService.getOne(id);
 		if("1".equals(phRefund.getStatus())){
 			phRefund.setMailNo(mailNo);
 			phRefund.setExpressCode(expressCode);
@@ -180,7 +180,7 @@ public class RefundController {
 			}else{
 				List<PhRefundGoods> phRefundGoodss = phRefundGoodsService.findByRefundId(phRefund.getId());
 				for (PhRefundGoods phRefundGoods : phRefundGoodss) {
-					PhOrderGoods phOrderGoods = phOrderGoodsService.findOne(phRefundGoods.getOrderGoodsId());
+					PhOrderGoods phOrderGoods = phOrderGoodsService.getOne(phRefundGoods.getOrderGoodsId());
 					Map<String, Object> map1 = new HashMap<>();
 					map1.put("image", phOrderGoods.getGoodsImage());
 					map1.put("name", phOrderGoods.getGoodsName());

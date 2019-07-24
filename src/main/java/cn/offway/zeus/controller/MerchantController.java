@@ -64,7 +64,7 @@ public class MerchantController {
 	@GetMapping("/info")
 	public JsonResult info(
 			@ApiParam("商户Id") @RequestParam Long id) throws Exception{
-		PhMerchant phMerchant = phMerchantService.findOne(id);
+		PhMerchant phMerchant = phMerchantService.getOne(id);
 		MerchantInfoDto dto = new MerchantInfoDto();
 		BeanUtils.copyProperties(phMerchant, dto);
 		List<PhBrand> brands = phBrandService.findByMerchantId(id);

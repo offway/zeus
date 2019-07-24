@@ -44,8 +44,8 @@ public class PhActivityPrizeServiceImpl implements PhActivityPrizeService {
 	}
 	
 	@Override
-	public PhActivityPrize findOne(Long id){
-		return phActivityPrizeRepository.findOne(id);
+	public PhActivityPrize getOne(Long id){
+		return phActivityPrizeRepository.getOne(id);
 	}
 	
 	@Override
@@ -69,7 +69,7 @@ public class PhActivityPrizeServiceImpl implements PhActivityPrizeService {
 		 * 5、保存中奖记录
 		 */
 		
-		PhActivityInfo phActivityInfo = phActivityInfoService.findOne(activityId);
+		PhActivityInfo phActivityInfo = phActivityInfoService.getOne(activityId);
 		
 		//获得中奖用户
 		List<PhActivityJoin> activityJoins = phActivityJoinService.luckly(phActivityInfo.getId(),phActivityInfo.getWinNum());
@@ -93,7 +93,7 @@ public class PhActivityPrizeServiceImpl implements PhActivityPrizeService {
 		}
 		
 		phActivityJoinService.updateLuckly(ids);
-		phActivityPrizeRepository.save(phActivityPrizes);
+		phActivityPrizeRepository.saveAll(phActivityPrizes);
 		
 		
 	}

@@ -30,8 +30,8 @@ public class PhSmsInfoServiceImpl implements PhSmsInfoService {
 	}
 	
 	@Override
-	public PhSmsInfo findOne(Long id){
-		return phSmsInfoRepository.findOne(id);
+	public PhSmsInfo getOne(Long id){
+		return phSmsInfoRepository.getOne(id);
 	}
 	
 	@Override

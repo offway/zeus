@@ -18,7 +18,7 @@ public interface PhGoodsService{
 
 	PhGoods save(PhGoods phGoods);
 	
-	PhGoods findOne(Long id);
+	PhGoods getOne(Long id);
 
 	List<PhGoods> indexData();
 

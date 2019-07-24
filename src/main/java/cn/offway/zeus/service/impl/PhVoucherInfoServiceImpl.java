@@ -48,8 +48,8 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
-	public PhVoucherInfo findOne(Long id){
-		return phVoucherInfoRepository.findOne(id);
+	public PhVoucherInfo getOne(Long id){
+		return phVoucherInfoRepository.getOne(id);
 	}
 	
 	@Override
@@ -128,7 +128,7 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	@Override
 	public boolean giveVoucher(Long userId,Long voucherProjectId){
 		int count = 0;
-		PhVoucherProject phVoucherProject = phVoucherProjectRepository.findOne(voucherProjectId);
+		PhVoucherProject phVoucherProject = phVoucherProjectRepository.getOne(voucherProjectId);
 		if(null==phVoucherProject.getValidNum()){
 			count = phVoucherInfoRepository.giveByTime(userId, voucherProjectId);
 		}else{

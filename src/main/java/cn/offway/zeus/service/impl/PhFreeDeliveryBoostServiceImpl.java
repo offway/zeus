@@ -30,8 +30,8 @@ public class PhFreeDeliveryBoostServiceImpl implements PhFreeDeliveryBoostServic
 	}
 	
 	@Override
-	public PhFreeDeliveryBoost findOne(Long id){
-		return phFreeDeliveryBoostRepository.findOne(id);
+	public PhFreeDeliveryBoost getOne(Long id){
+		return phFreeDeliveryBoostRepository.getOne(id);
 	}
 
 	@Override

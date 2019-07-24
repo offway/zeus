@@ -30,7 +30,7 @@ public class PhStarsameGoodsServiceImpl implements PhStarsameGoodsService {
 	}
 	
 	@Override
-	public PhStarsameGoods findOne(Long id){
-		return phStarsameGoodsRepository.findOne(id);
+	public PhStarsameGoods getOne(Long id){
+		return phStarsameGoodsRepository.getOne(id);
 	}
 }

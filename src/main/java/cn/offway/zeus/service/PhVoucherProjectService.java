@@ -14,7 +14,7 @@ public interface PhVoucherProjectService{
 
 	PhVoucherProject save(PhVoucherProject phVoucherProject);
 	
-	PhVoucherProject findOne(Long id);
+	PhVoucherProject getOne(Long id);
 
 	List<PhVoucherProject> findUseByMerchant(Long merchantId, Double amount);
 }

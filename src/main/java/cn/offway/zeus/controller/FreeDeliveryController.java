@@ -92,7 +92,7 @@ public class FreeDeliveryController {
 			@ApiParam("免费送ID") @RequestParam Long freeDeliveryId,
 			@ApiParam("用户ID") @RequestParam(required = false) Long userId){
 		Map<String, Object> resultMap = new HashMap<>();
-		resultMap.put("freeDelivery", phFreeDeliveryService.findOne(freeDeliveryId));
+		resultMap.put("freeDelivery", phFreeDeliveryService.getOne(freeDeliveryId));
 		resultMap.put("ranking", phFreeDeliveryUserService.ranking(freeDeliveryId));
 		PhFreeDeliveryUser phFreeDeliveryUser = phFreeDeliveryUserService.findByFreeDeliveryIdAndUserId(freeDeliveryId, userId);
 		if(null!=phFreeDeliveryUser){
@@ -122,7 +122,7 @@ public class FreeDeliveryController {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOST_MY);
 
 			}
-			PhFreeDelivery phFreeDelivery = phFreeDeliveryService.findOne(freeDeliveryId);
+			PhFreeDelivery phFreeDelivery = phFreeDeliveryService.getOne(freeDeliveryId);
 			if("1".equals(phFreeDelivery.getStatus())){
 				//已抢光
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_LESS);

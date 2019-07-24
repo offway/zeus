@@ -88,8 +88,8 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	}
 	
 	@Override
-	public PhPreorderInfo findOne(Long id){
-		return phPreorderInfoRepository.findOne(id);
+	public PhPreorderInfo getOne(Long id){
+		return phPreorderInfoRepository.getOne(id);
 	}
 	
 	@Override
@@ -185,7 +185,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			Double walletAmount = phPreorderInfo.getWalletAmount();
 			if(null != walletAmount){
 				Long userId = phPreorderInfo.getUserId();
-				PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+				PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 				phUserInfo.setBalance(phUserInfo.getBalance()+walletAmount);
 				phUserInfoService.save(phUserInfo);
 			}
@@ -232,7 +232,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			Double walletAmount = phPreorderInfo.getWalletAmount();
 			if(null != walletAmount){
 				Long userId = phPreorderInfo.getUserId();
-				PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+				PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 				phUserInfo.setBalance(phUserInfo.getBalance()+walletAmount);
 				phUserInfoService.save(phUserInfo);
 			}

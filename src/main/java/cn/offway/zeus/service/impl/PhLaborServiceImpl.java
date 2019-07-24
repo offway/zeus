@@ -71,8 +71,8 @@ public class PhLaborServiceImpl implements PhLaborService {
 	}
 	
 	@Override
-	public PhLabor findOne(Long id){
-		return phLaborRepository.findOne(id);
+	public PhLabor getOne(Long id){
+		return phLaborRepository.getOne(id);
 	}
 	@Override
 	public PhLabor findByUserId(Long userId){
@@ -89,7 +89,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.LOTTERYNUM_LESS);
 		}
 		
-		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 		
 		
 		Date now = new Date();

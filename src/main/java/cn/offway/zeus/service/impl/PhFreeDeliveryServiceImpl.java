@@ -68,8 +68,8 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 	}
 	
 	@Override
-	public PhFreeDelivery findOne(Long id){
-		return phFreeDeliveryRepository.findOne(id);
+	public PhFreeDelivery getOne(Long id){
+		return phFreeDeliveryRepository.getOne(id);
 	}
 	
 	@Override
@@ -93,12 +93,12 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 	public JsonResult boost(Long freeDeliveryId, Long userId, Long boostUserId) throws Exception{
 		
 		Date now = new Date();
-		PhFreeDelivery phFreeDelivery = findOne(freeDeliveryId);
+		PhFreeDelivery phFreeDelivery = getOne(freeDeliveryId);
 		if("0".equals(phFreeDelivery.getStatus())){
 			PhFreeDeliveryUser phFreeDeliveryUser = phFreeDeliveryUserService.findByFreeDeliveryIdAndUserId(freeDeliveryId, userId);
 			if(null == phFreeDeliveryUser){
 				
-				PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+				PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 				phFreeDeliveryUser = new PhFreeDeliveryUser();
 				phFreeDeliveryUser.setBoostCount(phFreeDelivery.getBoostCount());
 				phFreeDeliveryUser.setCreateTime(now);
@@ -134,7 +134,7 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 				save(phFreeDelivery);
 			}
 
-			PhUserInfo boostUser = phUserInfoService.findOne(boostUserId);
+			PhUserInfo boostUser = phUserInfoService.getOne(boostUserId);
 			
 			PhFreeDeliveryBoost phFreeDeliveryBoost = new PhFreeDeliveryBoost();
 			phFreeDeliveryBoost.setBoostHeadimgurl(boostUser.getHeadimgurl());

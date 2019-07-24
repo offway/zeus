@@ -47,8 +47,8 @@ public class VPickGoodsServiceImpl implements VPickGoodsService {
 	}
 	
 	@Override
-	public VPickGoods findOne(Long id){
-		return vPickGoodsRepository.findOne(id);
+	public VPickGoods getOne(Long id){
+		return vPickGoodsRepository.getOne(id);
 	}
 	
 	@Override

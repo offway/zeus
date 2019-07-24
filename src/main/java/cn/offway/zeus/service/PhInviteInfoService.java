@@ -12,7 +12,7 @@ public interface PhInviteInfoService{
 
 	PhInviteInfo save(PhInviteInfo phInviteInfo);
 	
-	PhInviteInfo findOne(Long id);
+	PhInviteInfo getOne(Long id);
 
 	int countByUserId(Long userId);
 }

@@ -88,7 +88,7 @@ public class BrandController {
 	@ApiOperation("品牌详情")
 	@GetMapping("/info")
 	public JsonResult info(@ApiParam("品牌ID")@RequestParam Long id){
-		return jsonResultHelper.buildSuccessJsonResult(phBrandService.findOne(id));
+		return jsonResultHelper.buildSuccessJsonResult(phBrandService.getOne(id));
 	}
 	
 	@ApiOperation("品牌详情")

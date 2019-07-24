@@ -204,7 +204,7 @@ public class OrderController {
 				}else{
 					List<PhRefundGoods> phRefundGoodss = phRefundGoodsService.findByRefundId(vOrderRefund.getRefundId());
 					for (PhRefundGoods phRefundGoods : phRefundGoodss) {
-						PhOrderGoods phOrderGoods = phOrderGoodsService.findOne(phRefundGoods.getOrderGoodsId());
+						PhOrderGoods phOrderGoods = phOrderGoodsService.getOne(phRefundGoods.getOrderGoodsId());
 						Map<String, Object> map1 = new HashMap<>();
 						map1.put("image", phOrderGoods.getGoodsImage());
 						map1.put("name", phOrderGoods.getGoodsName());
@@ -361,7 +361,7 @@ public class OrderController {
 		
 		//0-已下单,1-已付款,2-已发货,3-已收货,4-取消
 		if("0".equals(status) || "1".equals(status)|| "4".equals(status)){
-			PhAddress phAddress = phAddressService.findOne(addrId);
+			PhAddress phAddress = phAddressService.getOne(addrId);
 			addrMap.put("city", phAddress.getCity());
 			addrMap.put("content", phAddress.getContent());
 			addrMap.put("county", phAddress.getCounty());

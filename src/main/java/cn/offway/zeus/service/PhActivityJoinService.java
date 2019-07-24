@@ -17,7 +17,7 @@ public interface PhActivityJoinService{
 
 	PhActivityJoin save(PhActivityJoin phActivityJoin);
 	
-	PhActivityJoin findOne(Long id);
+	PhActivityJoin getOne(Long id);
 
 	int countByUnionidAndActivityId(String unionid, Long activityId);
 

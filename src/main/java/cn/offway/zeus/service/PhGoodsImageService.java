@@ -14,7 +14,7 @@ public interface PhGoodsImageService{
 
 	PhGoodsImage save(PhGoodsImage phGoodsImage);
 	
-	PhGoodsImage findOne(Long id);
+	PhGoodsImage getOne(Long id);
 
 	List<PhGoodsImage> findByGoodsId(Long goodsId);
 

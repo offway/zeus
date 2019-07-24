@@ -295,7 +295,7 @@ public class UserController {
 	@PostMapping("/update")
 	public JsonResult update(@RequestBody @ApiParam("用户信息")  PhUserInfo userInfo){
 		
-		PhUserInfo phUserInfo = phUserInfoService.findOne(userInfo.getId());
+		PhUserInfo phUserInfo = phUserInfoService.getOne(userInfo.getId());
 		
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
@@ -319,7 +319,7 @@ public class UserController {
 			@ApiParam("微博ID") @RequestParam(required=false) String weiboid,
 			@ApiParam("QQID") @RequestParam(required=false) String qqid){
 		
-		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
 		}
@@ -334,7 +334,7 @@ public class UserController {
 	@ApiOperation("我的")
 	@GetMapping("/home")
 	public JsonResult home(@ApiParam("用户ID") @RequestParam Long userId){
-		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
 		}
@@ -373,7 +373,7 @@ public class UserController {
 	@ApiOperation("用户信息")
 	@GetMapping("/info")
 	public JsonResult info(@ApiParam("用户ID") @RequestParam Long userId){
-		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
 		}
@@ -422,7 +422,7 @@ public class UserController {
 	@ApiOperation("删除收藏")
 	@DeleteMapping("/collect")
 	public JsonResult collect(@ApiParam("收藏ID") @RequestParam Long collectId){
-		phCollectService.delete(collectId);
+		phCollectService.deleteById(collectId);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	
@@ -438,7 +438,7 @@ public class UserController {
 	@ApiOperation("成为赚钱达人")
 	@PostMapping("/mm")
 	public  JsonResult mm(@ApiParam("用户ID") @RequestParam Long userId){
-		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 		phUserInfo.setIsMm("1");
 		phUserInfoService.save(phUserInfo);
 		return jsonResultHelper.buildSuccessJsonResult(null);

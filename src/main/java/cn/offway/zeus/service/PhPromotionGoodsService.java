@@ -15,9 +15,9 @@ public interface PhPromotionGoodsService{
 
     PhPromotionGoods save(PhPromotionGoods phPromotionGoods);
 	
-    PhPromotionGoods findOne(Long id);
+    PhPromotionGoods getOne(Long id);
 
-    void delete(Long id);
+    void deleteById(Long id);
 
     List<PhPromotionGoods> save(List<PhPromotionGoods> entities);
 

@@ -111,8 +111,8 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 	}
 	
 	@Override
-	public PhOrderInfo findOne(Long id){
-		return phOrderInfoRepository.findOne(id);
+	public PhOrderInfo getOne(Long id){
+		return phOrderInfoRepository.getOne(id);
 	}
 	
 	@Override
@@ -152,7 +152,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		}
 		
 		if(walletAmount>0){
-			PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+			PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 			double balance = phUserInfo.getBalance()==null?0D:MathUtils.sub(phUserInfo.getBalance(), walletAmount);
 			if(balance<0){
 				throw new Exception("余额不足");
@@ -171,7 +171,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		
 		double pVoucherAmount = 0D;
 		if(null!=pVoucherId){
-			PhVoucherInfo pphVoucherInfo =  phVoucherInfoService.findOne(pVoucherId);
+			PhVoucherInfo pphVoucherInfo =  phVoucherInfoService.getOne(pVoucherId);
 			pVoucherAmount = pphVoucherInfo.getAmount();
 			sumpVoucherAmout = pVoucherAmount;
 		}
@@ -199,7 +199,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			stockArray.addAll(stocks);
 			for (OrderInitStockDto stock : stocks) {
 				Long stockId = stock.getStockId();
-				PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stockId);
+				PhGoodsStock phGoodsStock=  phGoodsStockService.getOne(stockId);
 				goodsIdAll.add(phGoodsStock.getGoodsId());
 			}
 		}
@@ -214,7 +214,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			Long promotionId = phPromotionInfo.getId();
 			for (OrderInitStockDto stock : stockArray){
 				Long stockId = stock.getStockId();
-				PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stockId);
+				PhGoodsStock phGoodsStock=  phGoodsStockService.getOne(stockId);
 				int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,phGoodsStock.getGoodsId());
 				if(count>0){
 					goodsCount += stock.getNum().intValue();
@@ -248,7 +248,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			for (OrderInitStockDto stock : stocks) {
 				Long stockId = stock.getStockId();
 				stockIds.add(stockId);
-				PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stockId);
+				PhGoodsStock phGoodsStock=  phGoodsStockService.getOne(stockId);
 				double price = phGoodsStock.getPrice() * stock.getNum().intValue();
 				sumPrice = MathUtils.add(sumPrice, price);
 				sumCount += stock.getNum().intValue();
@@ -296,7 +296,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				
 			}
 			String message = orderMerchantDto.getMessage();
-			PhMerchant phMerchant = phMerchantService.findOne(merchantId);
+			PhMerchant phMerchant = phMerchantService.getOne(merchantId);
 
 			//商户下活动总优惠金额
 			double promotionAmount = 0D;
@@ -304,7 +304,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			PhVoucherInfo mphVoucherInfo = null;
 
 			if(null!=mVoucherId){
-				mphVoucherInfo =  phVoucherInfoService.findOne(mVoucherId);
+				mphVoucherInfo =  phVoucherInfoService.getOne(mVoucherId);
 				sumMVoucherAmount = MathUtils.add(sumMVoucherAmount, mphVoucherInfo.getAmount());
 				mVoucherAmount = mphVoucherInfo.getAmount();
 			}else{
@@ -321,7 +321,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 						//计算满足满减条件的商品总金额
 						double goodsAmount = 0D;
 						for (OrderInitStockDto stock : stocks){
-							PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stock.getStockId());
+							PhGoodsStock phGoodsStock=  phGoodsStockService.getOne(stock.getStockId());
 							int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,phGoodsStock.getGoodsId());
 							if(count>0){
 								goodsAmount = MathUtils.add(goodsAmount, MathUtils.mul(phGoodsStock.getPrice(), stock.getNum().intValue()));
@@ -337,7 +337,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 						int goodsCount = 0;
 						double goodsAmount = 0D;
 						for (OrderInitStockDto stock : stocks){
-							PhGoodsStock phGoodsStock=  phGoodsStockService.findOne(stock.getStockId());
+							PhGoodsStock phGoodsStock=  phGoodsStockService.getOne(stock.getStockId());
 							int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,phGoodsStock.getGoodsId());
 							if(count>0){
 								goodsCount += stock.getNum().intValue();
@@ -444,8 +444,8 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			}
 			
 		}
-		phOrderInfoRepository.save(phOrderInfos);
-		phOrderGoodsRepository.save(orderGoodss);
+		phOrderInfoRepository.saveAll(phOrderInfos);
+		phOrderGoodsRepository.saveAll(orderGoodss);
 		
 		if(null !=pVoucherId){
 			int c = phVoucherInfoService.updateStatus(pVoucherId,sumPriceByplatform,userId);

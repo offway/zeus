@@ -14,7 +14,7 @@ public interface PhWinningRecordService{
 
 	PhWinningRecord save(PhWinningRecord phWinningRecord);
 	
-	PhWinningRecord findOne(Long id);
+	PhWinningRecord getOne(Long id);
 
 	List<PhWinningRecord> findByProductId(Long productId);
 }

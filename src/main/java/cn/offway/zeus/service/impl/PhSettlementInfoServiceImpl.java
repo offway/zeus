@@ -50,8 +50,8 @@ public class PhSettlementInfoServiceImpl implements PhSettlementInfoService {
 	}
 	
 	@Override
-	public PhSettlementInfo findOne(Long id){
-		return phSettlementInfoRepository.findOne(id);
+	public PhSettlementInfo getOne(Long id){
+		return phSettlementInfoRepository.getOne(id);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class PhSettlementInfoServiceImpl implements PhSettlementInfoService {
 			settlementDetail.setAmount(orderInfo.getAmount());
 			settlementDetail.setCreateTime(new Date());
 			Long merchantId = orderInfo.getMerchantId();
-			PhMerchant phMerchant = phMerchantService.findOne(merchantId);
+			PhMerchant phMerchant = phMerchantService.getOne(merchantId);
 			settlementDetail.setCutRate(phMerchant.getRatio());
 			settlementDetail.setCutAmount(orderInfo.getAmount() * phMerchant.getRatio() / 100);
 			settlementDetail.setMailFee(orderInfo.getMailFee());
@@ -108,6 +108,6 @@ public class PhSettlementInfoServiceImpl implements PhSettlementInfoService {
 			phSettlementInfos.add(settlementInfo);
 		}
 		phSettlementDetailService.save(phSettlementDetails);
-		phSettlementInfoRepository.save(phSettlementInfos);
+		phSettlementInfoRepository.saveAll(phSettlementInfos);
 	}
 }

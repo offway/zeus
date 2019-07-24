@@ -52,8 +52,8 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 	}
 	
 	@Override
-	public PhActivityJoin findOne(Long id){
-		return phActivityJoinRepository.findOne(id);
+	public PhActivityJoin getOne(Long id){
+		return phActivityJoinRepository.getOne(id);
 	}
 	
 	@Override

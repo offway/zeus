@@ -32,8 +32,8 @@ public class PhStarsameImageServiceImpl implements PhStarsameImageService {
 	}
 	
 	@Override
-	public PhStarsameImage findOne(Long id){
-		return phStarsameImageRepository.findOne(id);
+	public PhStarsameImage getOne(Long id){
+		return phStarsameImageRepository.getOne(id);
 	}
 	
 }

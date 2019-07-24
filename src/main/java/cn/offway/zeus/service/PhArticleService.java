@@ -18,7 +18,7 @@ public interface PhArticleService{
 
 	PhArticle save(PhArticle phArticle);
 	
-	PhArticle findOne(Long id);
+	PhArticle getOne(Long id);
 
 	Page<PhArticle> findByPage(ArticleDto articleDto, Pageable page);
 

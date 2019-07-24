@@ -56,7 +56,7 @@ public class LimitedSaleController {
 	public JsonResult info(
 			@ApiParam("限量发售ID") @RequestParam Long id,
 			@ApiParam("用户ID") @RequestParam(required = false) Long userId){
-		PhLimitedSale phLimitedSale = phLimitedSaleService.findOne(id);
+		PhLimitedSale phLimitedSale = phLimitedSaleService.getOne(id);
 		LimitedSaleInfoDto dto = new LimitedSaleInfoDto();
 		BeanUtils.copyProperties(phLimitedSale, dto);
 		boolean assisted = false;

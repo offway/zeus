@@ -41,8 +41,8 @@ public class VOrderRefundServiceImpl implements VOrderRefundService {
 	}
 	
 	@Override
-	public VOrderRefund findOne(Long id){
-		return vOrderRefundRepository.findOne(id);
+	public VOrderRefund getOne(Long id){
+		return vOrderRefundRepository.getOne(id);
 	}
 
 	@Override

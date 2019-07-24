@@ -19,9 +19,9 @@ public interface PhRefundService{
 
 	PhRefund save(PhRefund phRefund);
 	
-	PhRefund findOne(Long id);
+	PhRefund getOne(Long id);
 
-	void delete(Long id);
+	void deleteById(Long id);
 
 	JsonResult apply(RefundDto refundDto) throws Exception;
 

@@ -12,5 +12,5 @@ public interface PhGoodsTypeService{
 
 	PhGoodsType save(PhGoodsType phGoodsType);
 	
-	PhGoodsType findOne(Long id);
+	PhGoodsType getOne(Long id);
 }

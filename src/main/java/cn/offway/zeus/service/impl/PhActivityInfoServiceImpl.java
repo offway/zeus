@@ -55,8 +55,8 @@ public class PhActivityInfoServiceImpl implements PhActivityInfoService {
 	}
 	
 	@Override
-	public PhActivityInfo findOne(Long id){
-		return phActivityInfoRepository.findOne(id);
+	public PhActivityInfo getOne(Long id){
+		return phActivityInfoRepository.getOne(id);
 	}
 	
 	@Override
@@ -70,7 +70,7 @@ public class PhActivityInfoServiceImpl implements PhActivityInfoService {
 	@Override
 	public Map<String, Object> detail(Long activityId,String unionid){
 		Map<String, Object> resultMap = new HashMap<>();
-		PhActivityInfo phActivityInfo = findOne(activityId);
+		PhActivityInfo phActivityInfo = getOne(activityId);
 		
 		ActivityInfo activityInfo = new ActivityInfo();
 		BeanUtils.copyProperties(phActivityInfo, activityInfo);

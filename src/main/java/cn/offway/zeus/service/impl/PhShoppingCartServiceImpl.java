@@ -92,8 +92,8 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	}
 	
 	@Override
-	public PhShoppingCart findOne(Long id){
-		return phShoppingCartRepository.findOne(id);
+	public PhShoppingCart getOne(Long id){
+		return phShoppingCartRepository.getOne(id);
 	}
 	
 	@Override
@@ -135,7 +135,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			if(null != promotionId){
 				map.put("promotionId",promotionId);
 				map.put("qucoudan",false);
-				phPromotionInfo = phPromotionInfoService.findOne(promotionId);
+				phPromotionInfo = phPromotionInfoService.getOne(promotionId);
 				//减价类型[0-折扣，1-满减，2-赠品]
 				String mode = phPromotionInfo.getMode();
 				List<PhPromotionRule> phPromotionRules = phPromotionRuleRepository.findByPromotionId(promotionId);
@@ -477,7 +477,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		
 		result.put("merchants", list);
 		result.put("platformVouchers", phVoucherInfoService.findUseByPlatform(userId, sumAmount));
-		PhUserInfo phUserInfo = phUserInfoService.findOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
 		result.put("balance", phUserInfo.getBalance());
 		//平台活动优惠金额
 		double platformPromotionAmount = 0D;
@@ -521,7 +521,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setGoodsCount(goodsCount);
 			phShoppingCart.setUserId(userId);
 			phShoppingCart.setGoodsStockId(stockId);
-			PhGoodsStock phGoodsStock = phGoodsStockService.findOne(stockId);
+			PhGoodsStock phGoodsStock = phGoodsStockService.getOne(stockId);
 			
 			phShoppingCart.setMerchantId(phGoodsStock.getMerchantId());
 			phShoppingCart.setMerchantLogo(phGoodsStock.getMerchantLogo());

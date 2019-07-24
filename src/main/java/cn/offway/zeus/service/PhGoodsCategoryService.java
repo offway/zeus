@@ -14,7 +14,7 @@ public interface PhGoodsCategoryService{
 
 	PhGoodsCategory save(PhGoodsCategory phGoodsCategory);
 	
-	PhGoodsCategory findOne(Long id);
+	PhGoodsCategory getOne(Long id);
 
 	List<PhGoodsCategory> findByGoodsTypeNameOrderBySortAsc(String goodsTypeName);
 }

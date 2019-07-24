@@ -12,7 +12,7 @@ public interface PhUserChannelService{
 
 	PhUserChannel save(PhUserChannel phUserChannel);
 	
-	PhUserChannel findOne(Long id);
+	PhUserChannel getOne(Long id);
 
 	PhUserChannel findByPhone(String phone);
 }

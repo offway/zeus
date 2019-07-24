@@ -12,6 +12,6 @@ public interface PhMerchantFareService{
 
 	PhMerchantFare save(PhMerchantFare phMerchantFare);
 	
-	PhMerchantFare findOne(Long id);
+	PhMerchantFare getOne(Long id);
 
 }

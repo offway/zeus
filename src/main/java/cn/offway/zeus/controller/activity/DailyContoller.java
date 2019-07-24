@@ -97,7 +97,7 @@ public class DailyContoller {
 			if(null == phWxuserInfo){
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
 			}
-			PhActivityInfo phActivityInfo = phActivityInfoService.findOne(activityId);
+			PhActivityInfo phActivityInfo = phActivityInfoService.getOne(activityId);
 			if(null == phActivityInfo){
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 			}

@@ -15,7 +15,7 @@ public interface VPickGoodsService{
 
 	VPickGoods save(VPickGoods vPickGoods);
 	
-	VPickGoods findOne(Long id);
+	VPickGoods getOne(Long id);
 
 	Page<VPickGoods> findByPage(Long pickId, Pageable page);
 }

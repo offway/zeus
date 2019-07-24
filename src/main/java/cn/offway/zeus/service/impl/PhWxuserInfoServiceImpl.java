@@ -30,8 +30,8 @@ public class PhWxuserInfoServiceImpl implements PhWxuserInfoService {
 	}
 	
 	@Override
-	public PhWxuserInfo findOne(Long id){
-		return phWxuserInfoRepository.findOne(id);
+	public PhWxuserInfo getOne(Long id){
+		return phWxuserInfoRepository.getOne(id);
 	}
 
 	@Override

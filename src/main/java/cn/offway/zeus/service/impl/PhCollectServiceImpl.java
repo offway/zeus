@@ -39,17 +39,17 @@ public class PhCollectServiceImpl implements PhCollectService {
 	}
 	
 	@Override
-	public PhCollect findOne(Long id){
-		return phCollectRepository.findOne(id);
+	public PhCollect getOne(Long id){
+		return phCollectRepository.getOne(id);
 	}
 	
 	@Override
-	public void delete(Long id){
-		PhCollect phCollect = findOne(id);
+	public void deleteById(Long id){
+		PhCollect phCollect = getOne(id);
 		if(null != phCollect){
 			phUserInfoService.subCollect(phCollect.getUserId());
 		}
-		phCollectRepository.delete(id);
+		phCollectRepository.deleteById(id);
 
 	}
 	

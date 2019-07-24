@@ -32,13 +32,13 @@ public class PhRefundGoodsServiceImpl implements PhRefundGoodsService {
 	}
 	
 	@Override
-	public PhRefundGoods findOne(Long id){
-		return phRefundGoodsRepository.findOne(id);
+	public PhRefundGoods getOne(Long id){
+		return phRefundGoodsRepository.getOne(id);
 	}
 	
 	@Override
 	public List<PhRefundGoods> save(List<PhRefundGoods> phRefundGoodss){
-		return phRefundGoodsRepository.save(phRefundGoodss);
+		return phRefundGoodsRepository.saveAll(phRefundGoodss);
 	}
 
 	@Override

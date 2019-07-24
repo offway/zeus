@@ -32,18 +32,18 @@ public class PhPromotionInfoServiceImpl implements PhPromotionInfoService {
 	}
 	
 	@Override
-	public PhPromotionInfo findOne(Long id){
-		return phPromotionInfoRepository.findOne(id);
+	public PhPromotionInfo getOne(Long id){
+		return phPromotionInfoRepository.getOne(id);
 	}
 
 	@Override
-	public void delete(Long id){
-		phPromotionInfoRepository.delete(id);
+	public void deleteById(Long id){
+		phPromotionInfoRepository.deleteById(id);
 	}
 
 	@Override
 	public List<PhPromotionInfo> save(List<PhPromotionInfo> entities){
-		return phPromotionInfoRepository.save(entities);
+		return phPromotionInfoRepository.saveAll(entities);
 	}
 
 	@Override
