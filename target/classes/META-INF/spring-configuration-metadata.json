@@ -1,0 +1,114 @@
+{
+  "groups": [
+    {
+      "name": "alipay",
+      "type": "cn.offway.zeus.properties.AlipayProperties",
+      "sourceType": "cn.offway.zeus.properties.AlipayProperties"
+    },
+    {
+      "name": "qiniu",
+      "type": "cn.offway.zeus.properties.QiniuProperties",
+      "sourceType": "cn.offway.zeus.properties.QiniuProperties"
+    },
+    {
+      "name": "spring.datasource",
+      "type": "javax.sql.DataSource",
+      "sourceType": "cn.offway.zeus.config.DruidConfig",
+      "sourceMethod": "druid()"
+    },
+    {
+      "name": "wxpay",
+      "type": "cn.offway.zeus.properties.WxpayProperties",
+      "sourceType": "cn.offway.zeus.properties.WxpayProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "alipay.access-id",
+      "type": "java.lang.String",
+      "description": "阿里云身份验证，在阿里云服务器管理控制台创建",
+      "sourceType": "cn.offway.zeus.properties.AlipayProperties"
+    },
+    {
+      "name": "alipay.access-key",
+      "type": "java.lang.String",
+      "description": "阿里云身份验证，在阿里云服务器管理控制台创建",
+      "sourceType": "cn.offway.zeus.properties.AlipayProperties"
+    },
+    {
+      "name": "alipay.account-endpoint",
+      "type": "java.lang.String",
+      "description": "设置HTTP接入域名",
+      "sourceType": "cn.offway.zeus.properties.AlipayProperties"
+    },
+    {
+      "name": "alipay.appid",
+      "type": "java.lang.String",
+      "description": "APPID即创建应用后生成",
+      "sourceType": "cn.offway.zeus.properties.AlipayProperties"
+    },
+    {
+      "name": "alipay.instance-id",
+      "type": "java.lang.String",
+      "description": "MQ实例 ID",
+      "sourceType": "cn.offway.zeus.properties.AlipayProperties"
+    },
+    {
+      "name": "alipay.privatekey",
+      "type": "java.lang.String",
+      "description": "开发者应用私钥，由开发者自己生成",
+      "sourceType": "cn.offway.zeus.properties.AlipayProperties"
+    },
+    {
+      "name": "alipay.publickey",
+      "type": "java.lang.String",
+      "description": "支付宝公钥，由支付宝生成",
+      "sourceType": "cn.offway.zeus.properties.AlipayProperties"
+    },
+    {
+      "name": "qiniu.access-key",
+      "type": "java.lang.String",
+      "sourceType": "cn.offway.zeus.properties.QiniuProperties"
+    },
+    {
+      "name": "qiniu.bucket",
+      "type": "java.lang.String",
+      "sourceType": "cn.offway.zeus.properties.QiniuProperties"
+    },
+    {
+      "name": "qiniu.expire-seconds",
+      "type": "java.lang.Long",
+      "sourceType": "cn.offway.zeus.properties.QiniuProperties",
+      "defaultValue": 3600
+    },
+    {
+      "name": "qiniu.secret-key",
+      "type": "java.lang.String",
+      "sourceType": "cn.offway.zeus.properties.QiniuProperties"
+    },
+    {
+      "name": "qiniu.url",
+      "type": "java.lang.String",
+      "sourceType": "cn.offway.zeus.properties.QiniuProperties"
+    },
+    {
+      "name": "wxpay.appid",
+      "type": "java.lang.String",
+      "description": "APPID即创建应用后生成",
+      "sourceType": "cn.offway.zeus.properties.WxpayProperties"
+    },
+    {
+      "name": "wxpay.mch-id",
+      "type": "java.lang.String",
+      "description": "商户号",
+      "sourceType": "cn.offway.zeus.properties.WxpayProperties"
+    },
+    {
+      "name": "wxpay.paterner-key",
+      "type": "java.lang.String",
+      "description": "密钥",
+      "sourceType": "cn.offway.zeus.properties.WxpayProperties"
+    }
+  ],
+  "hints": []
+}
