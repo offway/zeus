@@ -40,6 +40,9 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 	/** 云片APIKEY **/
 	@Value("${yunpian.apikey}")
 	private String APIKEY;
+
+	@Value("${is-prd}")
+	private boolean isPrd;
 	
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
@@ -54,12 +57,14 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http
-				.authorizeRequests()
-				// swagger页面需要添加登录校验
-				.antMatchers("/swagger-ui.html").authenticated()
-				.and()
-				.formLogin();
+		if(isPrd){
+			http
+					.authorizeRequests()
+					// swagger页面需要添加登录校验
+					.antMatchers("/swagger-ui.html").authenticated()
+					.and()
+					.formLogin();
+		}
 	}
 	
 	@Bean
@@ -76,20 +81,20 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 	
 	@Bean
     public Docket api(){
-		ParameterBuilder ticketPar = new ParameterBuilder();
+		/*ParameterBuilder ticketPar = new ParameterBuilder();
 		List<Parameter> pars = new ArrayList<Parameter>();
 		ticketPar.name("Authorization").description("认证token")
 				.modelRef(new ModelRef("string")).parameterType("header")
 				.required(false).build(); //header中的ticket参数非必填，传空也可以
-		pars.add(ticketPar.build());    //根据每个方法名也知道当前方法在设置什么参数
+		pars.add(ticketPar.build());    //根据每个方法名也知道当前方法在设置什么参数*/
 
 
 		return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("cn.offway"))
                 .paths(PathSelectors.any())
-                .build()
-				.globalOperationParameters(pars);
+                .build();
+//				.globalOperationParameters(pars);
 	}
 	
 	@Bean

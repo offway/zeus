@@ -1,0 +1,124 @@
+#服务配置
+server:
+  port: 8086
+  undertow:
+    # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+    # 不要设置过大，如果过大，启动项目会报错：打开文件数过多
+    io-threads: 4
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞IO操作, undertow会从这个线程池中取得线程
+    # 它的值设置取决于系统线程执行任务的阻塞系数，默认值是IO线程数*8
+    worker-threads: 32
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分，不要设置太大，以免影响其他应用，合适即可
+    buffer-size: 1024
+    # 是否分配的直接内存(NIO直接分配的堆外内存)
+    direct-buffers: true
+
+#数据库配置
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url:  jdbc:mysql://rm-uf6bdv92a95017474oo.mysql.rds.aliyuncs.com:3306/phweb_dev?useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: puhao
+    password: Puhao2018
+    driverClassName:  com.mysql.cj.jdbc.Driver
+  # 下面为连接池的补充设置，应用到上面所有数据源中
+  # 初始化大小，最小，最大
+    initialSize:  5
+    minIdle:  5
+    maxActive:  10
+  # 配置获取连接等待超时的时间
+    maxWait:  60000
+  # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis:  60000
+  # 配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 300000
+  # 校验SQL，Oracle配置 spring.datasource.validationQuery=SELECT 1 FROM DUAL，如果不配validationQuery项，则下面三项配置无用
+    validationQuery:  select 1
+    testWhileIdle:  true
+    testOnBorrow: false
+    testOnReturn: false
+  # 打开PSCache，并且指定每个连接上PSCache的大小
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize:  20
+  # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters:  stat,wall,slf4j
+  # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+  # 合并多个DruidDataSource的监控数据
+    useGlobalDataSourceStat:  true
+
+
+
+  #JPA配置
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect:  org.hibernate.dialect.MySQL5Dialect
+#消息配置
+  messages:
+    basename: locale/messages
+  #权限
+  security:
+    user:
+      name: weinan
+      password: puhao@#2019.
+#redis配置
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+    timeout:  10000
+    pool:
+      max-wait: 1000
+
+#微信公众号配置
+wx:
+  appid:  wx1afc7441418d2417
+  secret: 410a0d284dea856571621dfbd9639845
+mini:
+  appid:  wx12d022a9493f1b26
+  secret: 52ba3a89ae58aa6a2294806d516d6107
+
+  #神策数据接收地址
+sa:
+  server:
+    url:  http://101.132.142.203:8106/sa?project=default
+
+
+
+  #短信KEY
+yunpian:
+  apikey: d7c58b5d229428d28434533b17ff084a
+
+  #是否生产环境
+is-prd: false
+
+qiniu:
+  url:  http://qiniu.offway.cn
+  access-key: WU33Cpp1WJZAf4oIIHknc2ga3ZhQpgJo3UL-JUdB
+  secret-key: ALb95JFSVi3mvSScoQa564HzDby_y2EasUhhmniV
+  bucket: offwaypro
+
+system:
+  url:  https://t.offway.cn
+
+alipay:
+  appid:  2019032863746574
+  privatekey: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCCnPID+2SZzACH8sSpH9lvqpDsLRBs32JkcRa4D1Zi7k6DVOTCpVljkCDMdKsw3rJLGLyjeAeEEBkRrZ10X3wAk9Acd0iY7EbmDZJ9sc5BhfFJwHul8ap+NZK9Fq5S/mHfUeQffVZwJ3bwbYZPTy3NXLEQKnWM/ARpVlWkOjk4a1dHZluF88yO6d53A3jZ0OOZbbVSazlnO5lv2zxA1dvTUYlYJDFpZBecpa2wpiPfTpsM6ywPLqHhqDaObu5o9uPCrbw64MlLCJAoeysOkfV+wFnZLuI6U6ItBYUDzk2Ge0bDRWYx3a5E9EJfvnZ92h5tVwCqF9TKi0lq4pbhJEMPAgMBAAECggEAUWH/PlHuzhGZpxuyQ/sPXY+2uyIdIOlTgmggktEjr4LzMsu7ujiS6QGOHjb3z/yCtV4Vc/m/HR92r1gxSqiQOD/hpUsB1h8q0f9U7rLSZGtT+/NOWAirhfZVlzJBrn7IdwCslp5fNISyjH6B+HrKfDIsNXlvQ0hoa0YbGLganTcDf9GjMSlhe7V/0ujx6gU2OuwZb+BsKu+Tx7LWwAkhADs+cob+X01I4cgfBxuJk9AM9VDmQ803GQo8fhCjWm4kuK4mhlRPiZqKxDIvdSRR6ECz1tgR7SzXsYpmteM+0yBqS47qfj+iKJ857NAW0knZrRSsXQgNjRmZdJtojnuHwQKBgQDj56QFTaySG+5s6bpA6KsB5bZBo3af6aJ2bphi8ZeNl7QtzXNPYcm3KsZeJDb3ZDC8ygqyKjzbVR6TXvtCbK27Jc/Mr4oxMk9oDsr8ZvIhLnQZktSvPg1aih1tfEGZxERioAMnTqjWy9M09vfV/euo4ovIg3ijXhFdiIlAf8VHbwKBgQCStuln7NT4JwtYUoVHJRSnCnkaZgpCV1ba4Hg9gOu1pW4Irx/XRrqkjvrYkLZpcJShz91AC2148rQeuRVjQcHWprdvicQHZ9IGIsXBqfOae81DUXSeZJgmNPoOw3BcejsR7Xl9Kf8k3sl05l2FXu7N3k8bRu/F2C9tmPUEizXuYQKBgElzpLdY21+TxPoxMigtVMAdyunIxziu0f+dkVuCRbgKxrVkW9+fwqVYEerRfS2qitKtw1i8qDSAcIRKvmwgHrYMb7amdMF6V4FQEzfZ7funvx9m5Uk9lIwzq1xYCcSHLwsiSyHmBiCEPKP7XNEJL2SU7zxGsyDj9nDQynuRMoHdAoGAfFZBps6iio/kYHzG8M1vHEWW7pVtul10gVhc7pq0qCPEBd4MmRAbG10FH8Y8oU1E2YFlG2LT6v2dQrBOfOj8kqKFsSRLGo+VAZg0inUyu0iSY6vDrnzIKREanqppLiZ0qzPbkwSlc6TPjJ+ywFX9AkGWPyK2D7CwOSy48ZndIeECgYBc1XtQ/h1Pqy/FmvpqZE9UshY4+YIIbJZcvmoGLjUGVb6qBGJz2BgIe+7jVPpWkwkwKQXFaMGCZZGKBpOuifEPTeWkpC+e3dHsxdZMY3JDL7ZppB8ppiGywGFQZvaJ2bmcNcUgXt4TRF65Y9YvNyzSUycFUg5Ajr22dgTtUs1bIw==
+  publickey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnzzD10iXx/jzFGqPWFrvSrsbvMk173bKnkxofqrtvh/e1MsUuSRBt4xNj1mxmZFeQuRgaZo6PgcqrRb1ImyOTqzQiTWYUAjBfRFTL9YmvVrefohnvwfGuTwIkkaMB/y9gG0rzhoVfFREWVTlQ4aXDWwtKMh4Ve497lCnxuesnBCD7Z0qCqmycqineiEspE9+f/hjDSMJYQdaChvOn/5GhzkXHrAKEpGrr68tB53LhGwIfYQsChZZLd3HkPlCAXSoJSDufNhSqrpn4UJ7B4gikQul7FA+kvJO4SdQN3EwaLHohT6pezFNOj6It2f47bRupgCWTsw4ORzcHnofNdEE/wIDAQAB
+  account-endpoint: http://1021766862384088.mqrest.cn-shanghai-internal.aliyuncs.com
+  instance-id: MQ_INST_1021766862384088_BbBUuFSI
+  access-id: LTAIp3JnL0OkoWAc
+  access-key: MGOZFUbEZh8DLwWMQZhTu9tMBggl0F
+
+wxpay:
+  appid: wx6d864009d94d2cd7
+  mch-id: 1531089441
+  paterner-key: 441bf662209846edb9e633ec0b7c5c0f
+springfox:
+  documentation:
+    swagger:
+      v2:
+        host: t.offway.cn
