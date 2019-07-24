@@ -66,7 +66,7 @@ public class StarsameController {
 		    @ApiParam("页大小") @RequestParam int size,
 		    @ApiParam("明星姓名") @RequestParam(required = false) String starName){
 		
-		return jsonResultHelper.buildSuccessJsonResult(phStarsameService.findByPage(starName,new PageRequest(page,size)));
+		return jsonResultHelper.buildSuccessJsonResult(phStarsameService.findByPage(starName,PageRequest.of(page,size)));
 	}
 	
 	@SuppressWarnings("unchecked")

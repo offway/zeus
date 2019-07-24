@@ -87,7 +87,7 @@ public class PhProductInfoServiceImpl implements PhProductInfoService {
 			total = phProductInfoRepository.countByBefore(channel);
 		}
 		
-		return new PageImpl<ProductInfo>(productInfos, new PageRequest(page, size), total);
+		return new PageImpl<ProductInfo>(productInfos, PageRequest.of(page, size), total);
 		
 		
 	}

@@ -410,9 +410,9 @@ public class UserController {
 			@ApiParam("页大小") @RequestParam int size){
 		
 		if("0".equals(type)){
-			return jsonResultHelper.buildSuccessJsonResult(vCollectGoodsService.findByPage(userId, new PageRequest(page, size)));
+			return jsonResultHelper.buildSuccessJsonResult(vCollectGoodsService.findByPage(userId, PageRequest.of(page, size)));
 		}else if("1".equals(type)){
-			return jsonResultHelper.buildSuccessJsonResult(vCollectBrandService.findByPage(userId, new PageRequest(page, size)));
+			return jsonResultHelper.buildSuccessJsonResult(vCollectBrandService.findByPage(userId, PageRequest.of(page, size)));
 		}
 
 		return jsonResultHelper.buildSuccessJsonResult(null);

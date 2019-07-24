@@ -104,9 +104,9 @@ public class GoodsController {
 		String sortDir = StringUtils.isBlank(goodsDto.getSortDir())?"desc":goodsDto.getSortDir();
 		String sortName = StringUtils.isBlank(goodsDto.getSortName())?"sort":goodsDto.getSortName();
 
-		PageRequest pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName);
+		PageRequest pageRequest = PageRequest.of(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),sortName);
 		if("saleCount".equals(sortName)){
-			pageRequest = new PageRequest(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),"saleCount","sort");
+			pageRequest = PageRequest.of(goodsDto.getPage(), goodsDto.getSize(),Direction.fromString(sortDir),"saleCount","sort");
 		}
 		
 		Page<PhGoods> pages = phGoodsService.findByPage(goodsDto,pageRequest);
@@ -221,6 +221,6 @@ public class GoodsController {
 			@ApiParam("优选ID") @RequestParam Long pickId,
 			@ApiParam("页码,从0开始") @RequestParam int page,
 			@ApiParam("页大小") @RequestParam int size){
-		return jsonResultHelper.buildSuccessJsonResult(vPickGoodsService.findByPage(pickId, new PageRequest(page, size)));
+		return jsonResultHelper.buildSuccessJsonResult(vPickGoodsService.findByPage(pickId, PageRequest.of(page, size)));
 	}
 }

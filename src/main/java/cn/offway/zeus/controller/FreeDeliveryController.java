@@ -58,7 +58,7 @@ public class FreeDeliveryController {
 			@ApiParam("用户ID") @RequestParam(required = false) Long userId,
 			@ApiParam("页码,从0开始") @RequestParam int page,
 			@ApiParam("页大小") @RequestParam int size){
-		Page<PhFreeDelivery> pages = phFreeDeliveryService.findByPage(new PageRequest(page, size));
+		Page<PhFreeDelivery> pages = phFreeDeliveryService.findByPage(PageRequest.of(page, size));
 		List<PhFreeDelivery> phFreeDeliveries = pages.getContent();
 		List<PhFreeDeliveryDto> dtos = new ArrayList<>();
 		for (PhFreeDelivery phFreeDelivery : phFreeDeliveries) {
@@ -83,7 +83,7 @@ public class FreeDeliveryController {
 			dto.setBoosts(maps);
 			dtos.add(dto);
 		}
-		return jsonResultHelper.buildSuccessJsonResult(new PageImpl<>(dtos, new PageRequest(page,size), pages.getTotalElements()));
+		return jsonResultHelper.buildSuccessJsonResult(new PageImpl<>(dtos, PageRequest.of(page,size), pages.getTotalElements()));
 	}
 	
 	@ApiOperation("详情")

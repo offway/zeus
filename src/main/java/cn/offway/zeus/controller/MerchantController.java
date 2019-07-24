@@ -48,7 +48,7 @@ public class MerchantController {
 	public JsonResult listByPage(
 			@ApiParam("商户属性") @RequestBody MerchantDto merchantDto) throws Exception{
 	    
-		Page<PhMerchant> pages = phMerchantService.findByPage(merchantDto, new PageRequest(merchantDto.getPage(), merchantDto.getSize()));
+		Page<PhMerchant> pages = phMerchantService.findByPage(merchantDto, PageRequest.of(merchantDto.getPage(), merchantDto.getSize()));
 
 		return jsonResultHelper.buildSuccessJsonResult(pages);
 	}

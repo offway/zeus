@@ -47,7 +47,7 @@ public class LimitedSaleController {
 	@ApiOperation("限量发售列表")
 	@PostMapping("/list")
 	public JsonResult list(@RequestBody @ApiParam("请求参数") LimitedSaleDto limitedSaleDto){
-		Page<PhLimitedSale> pages = phLimitedSaleService.findByPage(limitedSaleDto, new PageRequest(limitedSaleDto.getPage(), limitedSaleDto.getSize()));
+		Page<PhLimitedSale> pages = phLimitedSaleService.findByPage(limitedSaleDto, PageRequest.of(limitedSaleDto.getPage(), limitedSaleDto.getSize()));
 		return jsonResultHelper.buildSuccessJsonResult(pages);
 	}
 	

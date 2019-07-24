@@ -58,7 +58,7 @@ public class BrandController {
 	@PostMapping("/recommends")
 	public JsonResult recommends(@RequestBody @ApiParam("品牌属性") BrandDto brandDto) throws Exception{
 	    
-		Page<PhBrand> pages = phBrandService.findByPage(brandDto, "1", new PageRequest(brandDto.getPage(), brandDto.getSize()));
+		Page<PhBrand> pages = phBrandService.findByPage(brandDto, "1", PageRequest.of(brandDto.getPage(), brandDto.getSize()));
 		
 		List<PhBrand> phBrands = pages.getContent();
 		List<BrandRecommendDto> dtos = new ArrayList<>();
@@ -73,14 +73,14 @@ public class BrandController {
 			dto.setGoods(goods);
 			dtos.add(dto);
 		}
-		return jsonResultHelper.buildSuccessJsonResult(new PageImpl<>(dtos, new PageRequest(brandDto.getPage(), brandDto.getSize()), pages.getTotalElements()));
+		return jsonResultHelper.buildSuccessJsonResult(new PageImpl<>(dtos, PageRequest.of(brandDto.getPage(), brandDto.getSize()), pages.getTotalElements()));
 	}
 	
 	@ApiOperation("品牌列表分页")
 	@PostMapping("/listByPage")
 	public JsonResult listByPage(@RequestBody @ApiParam("品牌属性") BrandDto brandDto) throws Exception{
 	    
-		Page<PhBrand> pages = phBrandService.findByPage(brandDto, null, new PageRequest(brandDto.getPage(), brandDto.getSize()));
+		Page<PhBrand> pages = phBrandService.findByPage(brandDto, null, PageRequest.of(brandDto.getPage(), brandDto.getSize()));
 
 		return jsonResultHelper.buildSuccessJsonResult(pages);
 	}

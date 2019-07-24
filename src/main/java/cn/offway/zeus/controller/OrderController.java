@@ -161,11 +161,11 @@ public class OrderController {
 			@ApiParam("页码,从0开始") @RequestParam int page,
 		    @ApiParam("页大小") @RequestParam int size){
 		
-		Page<PhOrderInfo> page2 = phOrderInfoService.findByPage(userId, status.trim(), new PageRequest(page,size));
+		Page<PhOrderInfo> page2 = phOrderInfoService.findByPage(userId, status.trim(), PageRequest.of(page,size));
 		List<PhOrderInfo> phOrderInfos = page2.getContent();
 		List<OrderInfoDto> dtos = getOrderInfoDtos(phOrderInfos);
 
-		Page<OrderInfoDto> page3 = new PageImpl<>(dtos, new PageRequest(page,size), page2.getTotalElements());
+		Page<OrderInfoDto> page3 = new PageImpl<>(dtos, PageRequest.of(page,size), page2.getTotalElements());
 		return jsonResultHelper.buildSuccessJsonResult(page3);
 	}
 
@@ -188,7 +188,7 @@ public class OrderController {
 			@ApiParam("页码,从0开始") @RequestParam int page,
 			@ApiParam("页大小") @RequestParam int size){
 
-		Page<VOrderRefund> page2 = vOrderRefundService.findByPage(userId, new PageRequest(page,size));
+		Page<VOrderRefund> page2 = vOrderRefundService.findByPage(userId, PageRequest.of(page,size));
 		List<VOrderRefund> vOrderRefundList = page2.getContent();
 		List<VOrderRefundDto> dtos = new ArrayList<>();
 		for (VOrderRefund vOrderRefund : vOrderRefundList) {
@@ -220,7 +220,7 @@ public class OrderController {
 			dtos.add(dto);
 		}
 
-		Page<VOrderRefundDto> page3 = new PageImpl<>(dtos, new PageRequest(page,size), page2.getTotalElements());
+		Page<VOrderRefundDto> page3 = new PageImpl<>(dtos, PageRequest.of(page,size), page2.getTotalElements());
 		return jsonResultHelper.buildSuccessJsonResult(page3);
 	}
 
@@ -245,7 +245,7 @@ public class OrderController {
 		    @ApiParam("页大小") @RequestParam int size){
 		
 		List<PreorderDto> preorderDtos = new ArrayList<>();
-		Page<PhPreorderInfo> page2 = phPreorderInfoService.findByPage(userId, new PageRequest(page,size));
+		Page<PhPreorderInfo> page2 = phPreorderInfoService.findByPage(userId, PageRequest.of(page,size));
 		List<PhPreorderInfo> phOrderInfos = page2.getContent();
 		for (PhPreorderInfo phPreorderInfo : phOrderInfos) {
 			PreorderDto preorderDto = new PreorderDto();
@@ -257,7 +257,7 @@ public class OrderController {
 			
 		}
 		
-		Page<PreorderDto> page3 = new PageImpl<>(preorderDtos, new PageRequest(page,size), page2.getTotalElements());
+		Page<PreorderDto> page3 = new PageImpl<>(preorderDtos, PageRequest.of(page,size), page2.getTotalElements());
 		return jsonResultHelper.buildSuccessJsonResult(page3);
 	}
 	

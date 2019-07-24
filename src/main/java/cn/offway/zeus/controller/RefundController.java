@@ -155,7 +155,7 @@ public class RefundController {
 			@ApiParam("页码,从0开始") @RequestParam int page,
 		    @ApiParam("页大小") @RequestParam int size){
 		
-		Page<PhRefund> pages = phRefundService.findByPage(userId, new PageRequest(page,size));
+		Page<PhRefund> pages = phRefundService.findByPage(userId, PageRequest.of(page,size));
 		List<Map<String, Object>> dtos = new ArrayList<>();
 		List<PhRefund> phRefunds = pages.getContent();
 		for (PhRefund phRefund : phRefunds) {
@@ -193,7 +193,7 @@ public class RefundController {
 			map.put("goods", goods);
 			dtos.add(map);
 		}
-		Page<Map<String, Object>> page3 = new PageImpl<>(dtos, new PageRequest(page,size), pages.getTotalElements());
+		Page<Map<String, Object>> page3 = new PageImpl<>(dtos, PageRequest.of(page,size), pages.getTotalElements());
 		return jsonResultHelper.buildSuccessJsonResult(page3);
 
 	}

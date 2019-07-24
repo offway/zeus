@@ -58,7 +58,7 @@ public class ArticleController {
 	@ApiOperation("列表")
 	@PostMapping("/list")
 	public JsonResult list(@ApiParam("请求参数") @RequestBody ArticleDto articleDto){
-		Page<PhArticle> page =  phArticleService.findByPage(articleDto, new PageRequest(articleDto.getPage(), articleDto.getSize()));
+		Page<PhArticle> page =  phArticleService.findByPage(articleDto, PageRequest.of(articleDto.getPage(), articleDto.getSize()));
 		return jsonResultHelper.buildSuccessJsonResult(page);
 	}
 	
