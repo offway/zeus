@@ -18,7 +18,7 @@ public interface PhFreeDeliveryService{
 	
 	PhFreeDelivery findOne(Long id);
 
-	Page<PhFreeDelivery> findByPage(Pageable page);
+	Page<PhFreeDelivery> findByPage(String batch,Pageable page);
 
 	JsonResult boost(Long freeDeliveryId, Long userId, Long boostUserId) throws Exception;
 }

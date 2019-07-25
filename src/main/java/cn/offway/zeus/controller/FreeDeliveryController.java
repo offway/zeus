@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -57,8 +58,10 @@ public class FreeDeliveryController {
 	public JsonResult list(
 			@ApiParam("用户ID") @RequestParam(required = false) Long userId,
 			@ApiParam("页码,从0开始") @RequestParam int page,
-			@ApiParam("页大小") @RequestParam int size){
-		Page<PhFreeDelivery> pages = phFreeDeliveryService.findByPage(new PageRequest(page, size));
+			@ApiParam("页大小") @RequestParam int size,
+			@ApiParam("活动批次") @RequestParam(required = false) String batch){
+		batch = StringUtils.isBlank(batch)?"0":batch;
+		Page<PhFreeDelivery> pages = phFreeDeliveryService.findByPage(batch, new PageRequest(page, size));
 		List<PhFreeDelivery> phFreeDeliveries = pages.getContent();
 		List<PhFreeDeliveryDto> dtos = new ArrayList<>();
 		for (PhFreeDelivery phFreeDelivery : phFreeDeliveries) {

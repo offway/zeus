@@ -50,6 +50,9 @@ public class PhFreeDelivery implements Serializable {
     /** 版本号 **/
     private Long version;
 
+    /** 活动批次 **/
+    private String batch;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -163,4 +166,12 @@ public class PhFreeDelivery implements Serializable {
         this.version = version;
     }
 
+    @Column(name = "batch", length = 10)
+    public String getBatch() {
+        return batch;
+    }
+
+    public void setBatch(String batch) {
+        this.batch = batch;
+    }
 }
