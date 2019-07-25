@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.offway.zeus.service.*;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -41,19 +42,6 @@ import cn.offway.zeus.repository.PhInviteInfoRepository;
 import cn.offway.zeus.repository.PhRefundRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.repository.PhVoucherInfoRepository;
-import cn.offway.zeus.service.PhCapitalFlowService;
-import cn.offway.zeus.service.PhCollectService;
-import cn.offway.zeus.service.PhNoticeService;
-import cn.offway.zeus.service.PhOrderInfoService;
-import cn.offway.zeus.service.PhPreorderInfoService;
-import cn.offway.zeus.service.PhRefundService;
-import cn.offway.zeus.service.PhUserChannelService;
-import cn.offway.zeus.service.PhUserInfoService;
-import cn.offway.zeus.service.PhVoucherInfoService;
-import cn.offway.zeus.service.PhWxuserInfoService;
-import cn.offway.zeus.service.SmsService;
-import cn.offway.zeus.service.VCollectBrandService;
-import cn.offway.zeus.service.VCollectGoodsService;
 import cn.offway.zeus.service.impl.PhVoucherInfoServiceImpl;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.IpUtil;
@@ -130,6 +118,9 @@ public class UserController {
 	
 	@Autowired
 	private PhRefundRepository phRefundRepository;
+
+	@Autowired
+	private PhWithdrawInfoService phWithdrawInfoService;
 	
 	
 	
@@ -494,6 +485,35 @@ public class UserController {
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 
+	@ApiOperation("资金流水")
+	@GetMapping("/capitalFlow")
+	public JsonResult capitalFlow(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("页码,从0开始") @RequestParam int page,
+			@ApiParam("页大小") @RequestParam int size){
+
+		return jsonResultHelper.buildSuccessJsonResult(phCapitalFlowService.findByPage(userId,PageRequest.of(page,size)));
+	}
+
+	@ApiOperation("提现申请")
+	@PostMapping("/withdraw")
+	public JsonResult withdraw(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("提现金额[单位:元]") @RequestParam double amount){
+		if(amount == 0D){
+			return  jsonResultHelper.buildSuccessJsonResult(CommonResultCode.PARAM_ERROR);
+		}
+		return jsonResultHelper.buildSuccessJsonResult(phWithdrawInfoService.withdraw(userId, amount));
+	}
+
+	@ApiOperation("提现记录")
+	@GetMapping("/withdraw")
+	public JsonResult withdraw(
+			@ApiParam("用户ID") @RequestParam Long userId,
+			@ApiParam("页码,从0开始") @RequestParam int page,
+			@ApiParam("页大小") @RequestParam int size){
+		return jsonResultHelper.buildSuccessJsonResult(phWithdrawInfoService.findByPage(userId,PageRequest.of(page,size)));
+	}
 
 
 }

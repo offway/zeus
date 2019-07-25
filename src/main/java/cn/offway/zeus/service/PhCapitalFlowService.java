@@ -3,6 +3,8 @@ package cn.offway.zeus.service;
 import java.util.List;
 
 import cn.offway.zeus.domain.PhCapitalFlow;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * 资金流水Service接口
@@ -19,4 +21,6 @@ public interface PhCapitalFlowService{
 	void calculateReturnAmount() throws Exception;
 
 	List<PhCapitalFlow> findByBusinessTypeAndUserIdOrderByCreateTimeDesc(String businesstype, Long userId);
+
+    Page<PhCapitalFlow> findByPage(Long userId, Pageable page);
 }

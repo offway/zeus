@@ -87,6 +87,9 @@ public enum CommonResultCode implements ResultCode {
 
     /** 不能给自己助力  */
     FREE_BOOST_MY("1027", "FREE_BOOST_MY"),
+
+    /** 余额不足  */
+    BALANCE_LESS("1028", "BALANCE_LESS"),
     ;
 	
 	

@@ -135,7 +135,8 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		if(countSequence==0){
 			phOrderInfoRepository.sequence(s);
 		}
-		return phOrderInfoRepository.nextval(s);
+		String orderNo = phOrderInfoRepository.nextval(s);
+		return Long.toOctalString(Long.parseLong(orderNo));
 	}
 	
 	@Override
