@@ -31,7 +31,7 @@ public class PhWithdrawInfo implements Serializable {
     /** 金额 **/
     private Double amount;
 
-    /** 状态[0-申请,1-审核成功,2-审核失败,3-提现成功,4-提现失败] **/
+    /** 状态[0-申请,1-提现成功,2-提现失败] **/
     private String status;
 
     /** 审核人 **/
