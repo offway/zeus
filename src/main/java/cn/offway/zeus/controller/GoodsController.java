@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.offway.zeus.repository.PhPromotionInfoRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -79,6 +80,9 @@ public class GoodsController {
 	
 	@Autowired
 	private VPickGoodsService vPickGoodsService;
+
+	@Autowired
+	private PhPromotionInfoRepository phPromotionInfoRepository;
 	
 	private static Date updateDate = null;
 	
@@ -161,7 +165,10 @@ public class GoodsController {
 		
 		//查询改商品优惠券
 		resultMap.put("voucherProjects", phVoucherProjectRepository.findByMerchantIdPublic(phGoods.getMerchantId()));
-		
+
+		//促销活动名称
+		resultMap.put("promotionName", phPromotionInfoRepository.findNameByGoodsId(id));
+
 		//是否售罄
 		resultMap.put("sellOut",sumStock==0); 
 		//更新商品浏览量

@@ -21,4 +21,7 @@ public interface PhPromotionInfoRepository extends JpaRepository<PhPromotionInfo
 
     @Query(nativeQuery = true,value = "select * from ph_promotion_info ppi where ppi.`status`='1' and ppi.`type`='0' and ppi.begin_time<=NOW() and ppi.end_time >NOW() and EXISTS(select 1 from ph_promotion_goods ppg where ppi.id = ppg.promotion_id and ppg.goods_id in (?1))")
     List<PhPromotionInfo> findByPlatformAndGoodsId(List<Long> goodsIds);
+
+    @Query(nativeQuery = true,value = "select ppi.name from ph_promotion_info ppi where ppi.`status`='1' and ppi.begin_time<=NOW() and ppi.end_time >NOW() and EXISTS(select 1 from ph_promotion_goods ppg where ppi.id = ppg.promotion_id and ppg.goods_id = ?1) order by ppi.id limit 1")
+    String findNameByGoodsId(Long goodsId);
 }

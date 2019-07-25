@@ -206,7 +206,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 						PhPromotionRule phPromotionRule = phPromotionRuleRepository.findByPromotionIdAnAndReduceLimit(promotionId,amount);
 						if(null !=phPromotionRule){
 							amount = MathUtils.sub(amount,phPromotionRule.getReduceAmount());
-							map.put("text","以满足购满"+phPromotionRule.getReduceLimit()+"元减"+phPromotionRule.getReduceAmount()+"元");
+							map.put("text","已满足购满"+phPromotionRule.getReduceLimit()+"元减"+phPromotionRule.getReduceAmount()+"元");
 							//查询是否需要展示去凑单
 							PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudanReduce(promotionId,phPromotionRule.getReduceLimit());
 							if(null != phPromotionRule1){
@@ -385,7 +385,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			//计算
 		}
 		
-		
+		double sumPromotionAmount = 0d;
 		List<Map<String, Object>> list = new ArrayList<>();
 		for (String key : resultMap.keySet()) {
 			String[] keyArray = key.split("#####");
@@ -469,13 +469,14 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 				}
 				s.put("promotionAmount", promotionAmount);
 				s.put("reachPromotions", reachPromotions);
+				sumPromotionAmount = MathUtils.add(sumPromotionAmount,promotionAmount);
 			}
 
 			list.add(s);
 		}
 		
 		result.put("merchants", list);
-		result.put("platformVouchers", phVoucherInfoService.findUseByPlatform(userId, sumAmount));
+		result.put("platformVouchers", phVoucherInfoService.findUseByPlatform(userId, MathUtils.sub(sumAmount,sumPromotionAmount)));
 		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		result.put("balance", phUserInfo.getBalance());
 		//平台活动优惠金额
