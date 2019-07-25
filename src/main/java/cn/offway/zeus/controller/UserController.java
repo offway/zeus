@@ -499,10 +499,24 @@ public class UserController {
 	@PostMapping("/withdraw")
 	public JsonResult withdraw(
 			@ApiParam("用户ID") @RequestParam Long userId,
-			@ApiParam("提现金额[单位:元]") @RequestParam double amount){
+			@ApiParam("提现金额[单位:元]") @RequestParam double amount,
+            @ApiParam("验证码") @RequestParam String code){
 		if(amount == 0D){
 			return  jsonResultHelper.buildSuccessJsonResult(CommonResultCode.PARAM_ERROR);
 		}
+
+        PhUserInfo phUserInfo = phUserInfoService.findById(userId);
+        String phone = phUserInfo.getPhone();
+
+        String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
+        if(StringUtils.isBlank(smsCode)){
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);
+        }
+
+        if(!code.equals(smsCode)){
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_ERROR);
+        }
+
 		return phWithdrawInfoService.withdraw(userId, amount);
 	}
 

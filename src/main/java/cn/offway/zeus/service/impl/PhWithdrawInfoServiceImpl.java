@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import cn.offway.zeus.domain.PhCapitalFlow;
 import cn.offway.zeus.domain.PhUserInfo;
+import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.service.PhOrderInfoService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
@@ -25,6 +26,9 @@ import cn.offway.zeus.service.PhWithdrawInfoService;
 
 import cn.offway.zeus.domain.PhWithdrawInfo;
 import cn.offway.zeus.repository.PhWithdrawInfoRepository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -96,6 +100,7 @@ public class PhWithdrawInfoServiceImpl implements PhWithdrawInfoService {
 		}, page);
 	}
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class, StockException.class})
 	public JsonResult withdraw(Long userId, double amount){
 		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		double balance = phUserInfo.getBalance();
@@ -104,6 +109,8 @@ public class PhWithdrawInfoServiceImpl implements PhWithdrawInfoService {
 			//余额不足
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.BALANCE_LESS);
 		}
+		phUserInfo.setBalance(balance);
+		phUserInfoService.save(phUserInfo);
 		PhWithdrawInfo phWithdrawInfo = new PhWithdrawInfo();
 		phWithdrawInfo.setAmount(amount);
 		phWithdrawInfo.setCreateTime(new Date());
@@ -113,6 +120,6 @@ public class PhWithdrawInfoServiceImpl implements PhWithdrawInfoService {
         phWithdrawInfo.setAlipayUserId(phUserInfo.getAlipayUserId());
 		phWithdrawInfo.setVersion(0L);
 		save(phWithdrawInfo);
-		return jsonResultHelper.buildSuccessJsonResult(null);
+		return jsonResultHelper.buildSuccessJsonResult(balance);
 	}
 }
