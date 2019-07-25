@@ -61,7 +61,7 @@ public class FreeDeliveryController {
 			@ApiParam("页大小") @RequestParam int size,
 			@ApiParam("活动批次") @RequestParam(required = false) String batch){
 		batch = StringUtils.isBlank(batch)?"0":batch;
-		Page<PhFreeDelivery> pages = phFreeDeliveryService.findByPage(batch, new PageRequest(page, size));
+		Page<PhFreeDelivery> pages = phFreeDeliveryService.findByPage(batch, PageRequest.of(page, size));
 		List<PhFreeDelivery> phFreeDeliveries = pages.getContent();
 		List<PhFreeDeliveryDto> dtos = new ArrayList<>();
 		for (PhFreeDelivery phFreeDelivery : phFreeDeliveries) {
