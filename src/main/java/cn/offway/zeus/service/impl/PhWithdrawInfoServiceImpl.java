@@ -105,11 +105,12 @@ public class PhWithdrawInfoServiceImpl implements PhWithdrawInfoService {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.BALANCE_LESS);
 		}
 		PhWithdrawInfo phWithdrawInfo = new PhWithdrawInfo();
-		phWithdrawInfo.setAmount(balance);
+		phWithdrawInfo.setAmount(amount);
 		phWithdrawInfo.setCreateTime(new Date());
 		phWithdrawInfo.setOrderNo(phOrderInfoService.generateOrderNo("12"));
 		phWithdrawInfo.setStatus("0");
 		phWithdrawInfo.setUserId(userId);
+        phWithdrawInfo.setAlipayUserId(phUserInfo.getAlipayUserId());
 		phWithdrawInfo.setVersion(0L);
 		save(phWithdrawInfo);
 		return jsonResultHelper.buildSuccessJsonResult(null);

@@ -1,5 +1,7 @@
 package cn.offway.zeus.domain;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
@@ -22,6 +24,9 @@ public class PhWithdrawInfo implements Serializable {
 
     /** 用户ID **/
     private Long userId;
+
+    /** 支付宝用户ID **/
+    private String alipayUserId;
 
     /** 金额 **/
     private Double amount;
@@ -75,6 +80,15 @@ public class PhWithdrawInfo implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    @Column(name = "alipay_user_id", length = 50)
+    public String getAlipayUserId() {
+        return alipayUserId;
+    }
+
+    public void setAlipayUserId(String alipayUserId) {
+        this.alipayUserId = alipayUserId;
     }
 
     @Column(name = "amount", precision = 15, scale = 2)

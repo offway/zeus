@@ -503,7 +503,7 @@ public class UserController {
 		if(amount == 0D){
 			return  jsonResultHelper.buildSuccessJsonResult(CommonResultCode.PARAM_ERROR);
 		}
-		return jsonResultHelper.buildSuccessJsonResult(phWithdrawInfoService.withdraw(userId, amount));
+		return phWithdrawInfoService.withdraw(userId, amount);
 	}
 
 	@ApiOperation("提现记录")
