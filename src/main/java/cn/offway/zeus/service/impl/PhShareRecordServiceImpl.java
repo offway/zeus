@@ -1,7 +1,9 @@
 package cn.offway.zeus.service.impl;
 
 import java.util.Date;
+import java.util.Optional;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +48,12 @@ public class PhShareRecordServiceImpl implements PhShareRecordService {
 	}
 	
 	@Override
-	public PhShareRecord getOne(Long id){
-		return phShareRecordRepository.getOne(id);
+	public PhShareRecord findById(Long id){
+		Optional<PhShareRecord> optional = phShareRecordRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

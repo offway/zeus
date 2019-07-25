@@ -15,6 +15,7 @@ import javax.persistence.Version;
 
 import io.swagger.annotations.ApiModelProperty;
 
+
 /**
  * 用户信息
  *
@@ -22,6 +23,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @version $v: 1.0.0, $time:2019-04-01 11:26:00 Exp $
  */
 @Entity
+
 @Table(name = "ph_user_info")
 public class PhUserInfo implements Serializable {
 
@@ -82,6 +84,12 @@ public class PhUserInfo implements Serializable {
     
     @ApiModelProperty("渠道[HY-欢阅传媒]")
     private String channel;
+
+    @ApiModelProperty("支付宝用户ID")
+    private String alipayUserId;
+
+    @ApiModelProperty("支付宝用户昵称")
+    private String alipayNickName;
 
 
     @Id
@@ -259,7 +267,22 @@ public class PhUserInfo implements Serializable {
 	public void setChannel(String channel) {
 		this.channel = channel;
 	}
-    
-    
 
+    @Column(name = "alipay_user_id", length = 50)
+    public String getAlipayUserId() {
+        return alipayUserId;
+    }
+
+    public void setAlipayUserId(String alipayUserId) {
+        this.alipayUserId = alipayUserId;
+    }
+
+    @Column(name = "alipay_nick_name", length = 100)
+    public String getAlipayNickName() {
+        return alipayNickName;
+    }
+
+    public void setAlipayNickName(String alipayNickName) {
+        this.alipayNickName = alipayNickName;
+    }
 }

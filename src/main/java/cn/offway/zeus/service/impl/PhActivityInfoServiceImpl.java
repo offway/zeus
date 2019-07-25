@@ -1,11 +1,8 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -55,8 +52,12 @@ public class PhActivityInfoServiceImpl implements PhActivityInfoService {
 	}
 	
 	@Override
-	public PhActivityInfo getOne(Long id){
-		return phActivityInfoRepository.getOne(id);
+	public PhActivityInfo findById(Long id){
+		Optional<PhActivityInfo> optional = phActivityInfoRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -70,11 +71,13 @@ public class PhActivityInfoServiceImpl implements PhActivityInfoService {
 	@Override
 	public Map<String, Object> detail(Long activityId,String unionid){
 		Map<String, Object> resultMap = new HashMap<>();
-		PhActivityInfo phActivityInfo = getOne(activityId);
+		PhActivityInfo phActivityInfo = findById(activityId);
 		
 		ActivityInfo activityInfo = new ActivityInfo();
-		BeanUtils.copyProperties(phActivityInfo, activityInfo);
-		//填写地址过期时间 
+		if(null!=phActivityInfo){
+			BeanUtils.copyProperties(phActivityInfo, activityInfo);
+		}
+		//填写地址过期时间
 		activityInfo.setExpireTime(DateUtils.addDays(activityInfo.getEndTime(), 7));
 		Date now = new Date();
 		if(now.before(activityInfo.getBeginTime())){

@@ -15,7 +15,7 @@ public interface PhGoodsStockService{
 
 	PhGoodsStock save(PhGoodsStock phGoodsStock);
 	
-	PhGoodsStock getOne(Long id);
+	PhGoodsStock findById(Long id);
 
 	List<PhGoodsStock> findByGoodsId(Long goodsId);
 

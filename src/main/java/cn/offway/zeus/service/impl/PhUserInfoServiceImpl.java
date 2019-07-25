@@ -2,7 +2,12 @@ package cn.offway.zeus.service.impl;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
+import cn.offway.zeus.domain.PhMerchant;
+import cn.offway.zeus.service.*;
+import cn.offway.zeus.utils.JsonResult;
+import com.alipay.api.response.AlipayUserInfoShareResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +17,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.offway.zeus.service.PhConfigService;
-import cn.offway.zeus.service.PhInviteInfoService;
-import cn.offway.zeus.service.PhUserChannelService;
-import cn.offway.zeus.service.PhUserInfoService;
-import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.domain.PhInviteInfo;
 import cn.offway.zeus.domain.PhUserChannel;
 import cn.offway.zeus.domain.PhUserInfo;
@@ -49,6 +49,9 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	
 	@Autowired
 	private PhUserChannelService phUserChannelService;
+
+	@Autowired
+	private AlipayService alipayService;
 	
 	
 	@Override
@@ -57,8 +60,12 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	}
 	
 	@Override
-	public PhUserInfo getOne(Long id){
-		return phUserInfoRepository.getOne(id);
+	public PhUserInfo findById(Long id){
+		Optional<PhUserInfo> optional = phUserInfoRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -117,7 +124,7 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		String content = phConfigService.findContentByName("VP_REGISTER");
 				
 		if(null != inviteUserId){
-			PhUserInfo inviteUserInfo = getOne(inviteUserId);
+			PhUserInfo inviteUserInfo = findById(inviteUserId);
 			if(null!= inviteUserInfo){
 				PhInviteInfo phInviteInfo = new PhInviteInfo();
 				phInviteInfo.setUserId(inviteUserId);
@@ -147,5 +154,13 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		}*/
 		
 		return phUserInfo;
+	}
+
+	@Override
+	public AlipayUserInfoShareResponse saveAlipayUser(Long userId, String code){
+		String accessToken = alipayService.oauthToken(userId, code);
+		AlipayUserInfoShareResponse alipayUserInfoShareResponse = alipayService.userInfoShare(accessToken);
+		phUserInfoRepository.updateAlipayUserId(userId,alipayUserInfoShareResponse.getUserId(),alipayUserInfoShareResponse.getNickName());
+		return alipayUserInfoShareResponse;
 	}
 }

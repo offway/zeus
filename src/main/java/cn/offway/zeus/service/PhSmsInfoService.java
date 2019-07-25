@@ -12,7 +12,7 @@ public interface PhSmsInfoService{
 
 	PhSmsInfo save(PhSmsInfo phSmsInfo);
 	
-	PhSmsInfo getOne(Long id);
+	PhSmsInfo findById(Long id);
 
 	int countByIp(String ip);
 }

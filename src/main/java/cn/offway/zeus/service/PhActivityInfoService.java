@@ -15,7 +15,7 @@ public interface PhActivityInfoService{
 
 	PhActivityInfo save(PhActivityInfo phActivityInfo);
 	
-	PhActivityInfo getOne(Long id);
+	PhActivityInfo findById(Long id);
 
 	Map<String, List<PhActivityInfo>> list();
 

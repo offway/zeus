@@ -1,7 +1,9 @@
 package cn.offway.zeus.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +34,12 @@ public class PhConfigServiceImpl implements PhConfigService {
 	}
 	
 	@Override
-	public PhConfig getOne(Long id){
-		return phConfigRepository.getOne(id);
+	public PhConfig findById(Long id){
+		Optional<PhConfig> optional = phConfigRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

@@ -3,6 +3,7 @@ package cn.offway.zeus.domain;
 import java.io.Serializable;
 import javax.persistence.*;
 
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -17,6 +18,7 @@ import java.util.Date;
  * @version $v: 1.0.0, $time:2018-10-15 16:49:00 Exp $
  */
 @Entity
+
 @Table(name = "ph_wxuser_info")
 public class PhWxuserInfo implements Serializable {
 

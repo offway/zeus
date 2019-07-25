@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import cn.offway.zeus.service.PhLaborPrizeService;
 
 import cn.offway.zeus.domain.PhLaborPrize;
 import cn.offway.zeus.repository.PhLaborPrizeRepository;
+
+import java.util.Optional;
 
 
 /**
@@ -30,7 +33,11 @@ public class PhLaborPrizeServiceImpl implements PhLaborPrizeService {
 	}
 	
 	@Override
-	public PhLaborPrize getOne(Long id){
-		return phLaborPrizeRepository.getOne(id);
+	public PhLaborPrize findById(Long id){
+		Optional<PhLaborPrize> optional = phLaborPrizeRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 }

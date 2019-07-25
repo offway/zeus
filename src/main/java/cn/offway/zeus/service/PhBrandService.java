@@ -18,7 +18,7 @@ public interface PhBrandService{
 
 	PhBrand save(PhBrand phBrand);
 	
-	PhBrand getOne(Long id);
+	PhBrand findById(Long id);
 
 	List<PhBrand> findByIsRecommendOrderBySortAsc(String isRecommend);
 

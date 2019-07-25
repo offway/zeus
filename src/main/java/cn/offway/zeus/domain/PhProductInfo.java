@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -21,6 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @version $v: 1.0.0, $time:2018-10-15 16:49:00 Exp $
  */
 @Entity
+
 @Table(name = "ph_product_info")
 public class PhProductInfo implements Serializable {
 

@@ -3,16 +3,24 @@ package cn.offway.zeus.service;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipaySystemOauthTokenRequest;
+import com.alipay.api.request.AlipayUserInfoShareRequest;
+import com.alipay.api.response.AlipaySystemOauthTokenResponse;
+import com.alipay.api.response.AlipayUserInfoShareResponse;
 import com.aliyun.mq.http.MQClient;
 import com.aliyun.mq.http.MQProducer;
 import com.aliyun.mq.http.model.TopicMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
@@ -47,13 +55,20 @@ public class AlipayService {
 
 	@Value("${is-prd}")
 	private boolean isPrd;
-	
+
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
+
+	private static final String ALIPAY_ACCESS_TOKEN="zeus.alipay.accessToken";
+
+	private static final String ALIPAY_REFRESH_TOKEN="zeus.alipay.refreshToken";
+
 	/**
 	 * 生成 APP支付订单信息
 	 * @return
 	 */
 	public AlipayTradeAppPayResponse trade(String outtradeno,String body,String subject,Double amount){
-		
+
 		//实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
 		AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
 		//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
@@ -78,6 +93,73 @@ public class AlipayService {
 		return null;
 	}
 
+	/**
+	 *支付宝换取授权访问令牌
+	 * @param userId
+	 * @param code
+	 * @return
+	 */
+	public String oauthToken(Long userId,String code){
+		try {
+			String accessToken = stringRedisTemplate.opsForValue().get(ALIPAY_ACCESS_TOKEN+"."+userId);
+			if(StringUtils.isBlank(accessToken)){
+				String refreshToken = stringRedisTemplate.opsForValue().get(ALIPAY_REFRESH_TOKEN+"."+userId);
+
+				AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
+
+				String grantType = "authorization_code";
+				if(StringUtils.isNotBlank(refreshToken)){
+					grantType = "refresh_token";
+					request.setRefreshToken(refreshToken);
+				}else{
+					request.setCode(code);
+				}
+				request.setGrantType(grantType);
+				AlipaySystemOauthTokenResponse response = alipayClient.execute(request);
+				if(response.isSuccess()){
+					logger.info("支付宝换取授权访问令牌响应:{}",JSON.toJSONString(response));
+					accessToken = response.getAccessToken();
+					long expiresIn = Long.parseLong(response.getExpiresIn());
+					refreshToken = response.getRefreshToken();
+					long reExpiresIn = Long.parseLong(response.getReExpiresIn());
+					stringRedisTemplate.opsForValue().set(ALIPAY_ACCESS_TOKEN+"."+userId, accessToken, expiresIn, TimeUnit.SECONDS);
+					stringRedisTemplate.opsForValue().set(ALIPAY_REFRESH_TOKEN+"."+userId, refreshToken, reExpiresIn, TimeUnit.SECONDS);
+				} else {
+					logger.error("支付宝换取授权访问令牌响应:{}",JSON.toJSONString(response));
+				}
+			}
+			return accessToken;
+		} catch (AlipayApiException e) {
+			e.printStackTrace();
+			logger.error("支付宝换取授权访问令牌异常",e);
+		}
+		return null;
+	}
+
+	/**
+	 * 支付宝会员授权信息查询接口
+	 * @param accessToken
+	 * @return
+	 */
+	public AlipayUserInfoShareResponse userInfoShare(String accessToken){
+		try {
+			AlipayUserInfoShareRequest request = new AlipayUserInfoShareRequest();
+			AlipayUserInfoShareResponse response = alipayClient.execute(request,accessToken);
+			if(response.isSuccess()){
+				logger.info("支付宝会员授权信息查询接口响应:{}",JSON.toJSONString(response));
+				return response;
+			} else {
+				logger.error("支付宝会员授权信息查询接口响应:{}",JSON.toJSONString(response));
+
+			}
+		} catch (AlipayApiException e) {
+			e.printStackTrace();
+			logger.error("支付宝会员授权信息查询接口异常",e);
+		}
+		return null;
+	}
+
+
 	public void publishMessage(String message,String topicName){
 		if(isPrd){
 			try {
@@ -97,6 +179,7 @@ public class AlipayService {
 	}
 	
 	public boolean transfer(){
+
 		AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
 		request.setBizContent("{" +
 		"\"out_biz_no\":\"3142321423432\"," +//商户转账唯一订单号
@@ -143,7 +226,6 @@ public class AlipayService {
 	            }
 	            params.put(name, valueStr);
 	        }
-	        
 	        return AlipaySignature.rsaCheckV1(params, alipayProperties.getPublickey(), "UTF-8","RSA2");
 		} catch (AlipayApiException e) {
 			e.printStackTrace();

@@ -12,5 +12,5 @@ public interface PhPickService{
 
 	PhPick save(PhPick phPick);
 	
-	PhPick getOne(Long id);
+	PhPick findById(Long id);
 }

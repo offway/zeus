@@ -13,7 +13,7 @@ public interface PhLaborService{
 
 	PhLabor save(PhLabor phLabor);
 	
-	PhLabor getOne(Long id);
+	PhLabor findById(Long id);
 
 	boolean sign(Long userId);
 

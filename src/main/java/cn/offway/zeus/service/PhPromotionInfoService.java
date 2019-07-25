@@ -15,7 +15,7 @@ public interface PhPromotionInfoService{
 
     PhPromotionInfo save(PhPromotionInfo phPromotionInfo);
 	
-    PhPromotionInfo getOne(Long id);
+    PhPromotionInfo findById(Long id);
 
     void deleteById(Long id);
 

@@ -1,10 +1,6 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -89,8 +85,12 @@ public class PhRefundServiceImpl implements PhRefundService {
 	}
 	
 	@Override
-	public PhRefund getOne(Long id){
-		return phRefundRepository.getOne(id);
+	public PhRefund findById(Long id){
+		Optional<PhRefund> optional = phRefundRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -314,7 +314,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 	
 	@Override
 	public JsonResult info(Long id){
-		PhRefund phRefund = getOne(id);
+		PhRefund phRefund = findById(id);
 		String isComplete = phRefund.getIsComplete();
 		String orderNo = phRefund.getOrderNo();
 		Map<String, Object> resultMap = new HashMap<>();
@@ -334,7 +334,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 		}else{
 			List<PhRefundGoods> phRefundGoodss = phRefundGoodsService.findByRefundId(id);
 			for (PhRefundGoods phRefundGoods : phRefundGoodss) {
-				PhOrderGoods phOrderGoods = phOrderGoodsService.getOne(phRefundGoods.getOrderGoodsId());
+				PhOrderGoods phOrderGoods = phOrderGoodsService.findById(phRefundGoods.getOrderGoodsId());
 				Map<String, Object> map = new HashMap<>();
 				map.put("image", phOrderGoods.getGoodsImage());
 				map.put("name", phOrderGoods.getGoodsName());
@@ -353,9 +353,9 @@ public class PhRefundServiceImpl implements PhRefundService {
 			//退货地址
 			PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
 			Long merchantId = phOrderInfo.getMerchantId();
-			PhMerchant phMerchant = phMerchantService.getOne(merchantId);
+			PhMerchant phMerchant = phMerchantService.findById(merchantId);
 			Long retAddrId = phMerchant.getReturnAddrId();
-			resultMap.put("addr", phAddressService.getOne(retAddrId));
+			resultMap.put("addr", phAddressService.findById(retAddrId));
 		}
 
 		

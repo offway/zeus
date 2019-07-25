@@ -12,5 +12,5 @@ public interface PhActivityBlacklistService{
 
 	PhActivityBlacklist save(PhActivityBlacklist phActivityBlacklist);
 	
-	PhActivityBlacklist getOne(Long id);
+	PhActivityBlacklist findById(Long id);
 }

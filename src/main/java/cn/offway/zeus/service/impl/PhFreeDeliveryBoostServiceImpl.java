@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import cn.offway.zeus.service.PhFreeDeliveryBoostService;
 
 import cn.offway.zeus.domain.PhFreeDeliveryBoost;
 import cn.offway.zeus.repository.PhFreeDeliveryBoostRepository;
+
+import java.util.Optional;
 
 
 /**
@@ -30,8 +33,12 @@ public class PhFreeDeliveryBoostServiceImpl implements PhFreeDeliveryBoostServic
 	}
 	
 	@Override
-	public PhFreeDeliveryBoost getOne(Long id){
-		return phFreeDeliveryBoostRepository.getOne(id);
+	public PhFreeDeliveryBoost findById(Long id){
+		Optional<PhFreeDeliveryBoost> optional = phFreeDeliveryBoostRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 
 	@Override

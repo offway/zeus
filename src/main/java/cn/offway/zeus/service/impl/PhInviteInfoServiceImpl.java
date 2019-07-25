@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import cn.offway.zeus.service.PhInviteInfoService;
 
 import cn.offway.zeus.domain.PhInviteInfo;
 import cn.offway.zeus.repository.PhInviteInfoRepository;
+
+import java.util.Optional;
 
 
 /**
@@ -30,8 +33,12 @@ public class PhInviteInfoServiceImpl implements PhInviteInfoService {
 	}
 	
 	@Override
-	public PhInviteInfo getOne(Long id){
-		return phInviteInfoRepository.getOne(id);
+	public PhInviteInfo findById(Long id){
+		Optional<PhInviteInfo> optional = phInviteInfoRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

@@ -14,6 +14,6 @@ public interface PhStarsameImageService{
 
 	PhStarsameImage save(PhStarsameImage phStarsameImage);
 	
-	PhStarsameImage getOne(Long id);
+	PhStarsameImage findById(Long id);
 
 }

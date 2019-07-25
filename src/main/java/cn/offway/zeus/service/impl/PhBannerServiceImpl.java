@@ -1,7 +1,9 @@
 package cn.offway.zeus.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +35,12 @@ public class PhBannerServiceImpl implements PhBannerService {
 	}
 	
 	@Override
-	public PhBanner getOne(Long id){
-		return phBannerRepository.getOne(id);
+	public PhBanner findById(Long id){
+		Optional<PhBanner> optional = phBannerRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

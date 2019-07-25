@@ -1,7 +1,9 @@
 package cn.offway.zeus.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +41,12 @@ public class PhCapitalFlowServiceImpl implements PhCapitalFlowService {
 	}
 	
 	@Override
-	public PhCapitalFlow getOne(Long id){
-		return phCapitalFlowRepository.getOne(id);
+	public PhCapitalFlow findById(Long id){
+		Optional<PhCapitalFlow> optional = phCapitalFlowRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	

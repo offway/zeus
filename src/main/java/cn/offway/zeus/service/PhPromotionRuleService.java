@@ -15,7 +15,7 @@ public interface PhPromotionRuleService{
 
     PhPromotionRule save(PhPromotionRule phPromotionRule);
 	
-    PhPromotionRule getOne(Long id);
+    PhPromotionRule findById(Long id);
 
     void deleteById(Long id);
 

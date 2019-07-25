@@ -1,11 +1,8 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import cn.offway.zeus.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +12,6 @@ import org.springframework.stereotype.Service;
 import com.sensorsdata.analytics.javasdk.SensorsAnalytics;
 import com.sensorsdata.analytics.javasdk.exceptions.InvalidArgumentException;
 
-import cn.offway.zeus.domain.PhInviteRecord;
-import cn.offway.zeus.domain.PhLotteryTicket;
-import cn.offway.zeus.domain.PhProductInfo;
-import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.enums.TicketSourceEnum;
 import cn.offway.zeus.repository.PhLotteryTicketRepository;
 import cn.offway.zeus.service.PhInviteRecordService;
@@ -60,8 +53,12 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 	}
 	
 	@Override
-	public PhLotteryTicket getOne(Long id){
-		return phLotteryTicketRepository.getOne(id);
+	public PhLotteryTicket findById(Long id){
+		Optional<PhLotteryTicket> optional = phLotteryTicketRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -99,7 +96,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		phLotteryTickets.add(phLotteryTicket);
 		
 		
-		PhProductInfo phProductInfo = phProductInfoService.getOne(productId);
+		PhProductInfo phProductInfo = phProductInfoService.findById(productId);
 		String channel = StringUtils.isNotBlank(formId)?"小程序":"公众号";
 		saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
 
@@ -199,7 +196,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 			//更新抽奖码
 			phLotteryTicketRepository.updateCode();
 			
-			PhProductInfo phProductInfo = phProductInfoService.getOne(productId);
+			PhProductInfo phProductInfo = phProductInfoService.findById(productId);
 			
 			saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
 		}

@@ -16,7 +16,7 @@ public interface PhMerchantService{
 
 	PhMerchant save(PhMerchant phMerchant);
 	
-	PhMerchant getOne(Long id);
+	PhMerchant findById(Long id);
 
 	double calculateFare(Long id, int num, Long addrId);
 

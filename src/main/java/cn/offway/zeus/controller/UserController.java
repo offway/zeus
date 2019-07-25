@@ -1,13 +1,15 @@
 package cn.offway.zeus.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.internal.util.AlipaySignature;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -150,7 +152,9 @@ public class UserController {
 			if(StringUtils.isBlank(wxuserInfo.getMiniopenid())){
 				wxuserInfo.setMiniopenid(phWxuserInfo.getMiniopenid());
 			}
-			BeanUtils.copyProperties(wxuserInfo, phWxuserInfo);
+			if(null!=wxuserInfo){
+				BeanUtils.copyProperties(wxuserInfo, phWxuserInfo);
+			}
 			phWxuserInfo.setCreateTime(new Date());
 			phWxuserInfoService.save(phWxuserInfo);
 			return jsonResultHelper.buildSuccessJsonResult(null);
@@ -295,7 +299,7 @@ public class UserController {
 	@PostMapping("/update")
 	public JsonResult update(@RequestBody @ApiParam("用户信息")  PhUserInfo userInfo){
 		
-		PhUserInfo phUserInfo = phUserInfoService.getOne(userInfo.getId());
+		PhUserInfo phUserInfo = phUserInfoService.findById(userInfo.getId());
 		
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
@@ -319,7 +323,7 @@ public class UserController {
 			@ApiParam("微博ID") @RequestParam(required=false) String weiboid,
 			@ApiParam("QQID") @RequestParam(required=false) String qqid){
 		
-		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
 		}
@@ -334,7 +338,7 @@ public class UserController {
 	@ApiOperation("我的")
 	@GetMapping("/home")
 	public JsonResult home(@ApiParam("用户ID") @RequestParam Long userId){
-		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
 		}
@@ -373,7 +377,7 @@ public class UserController {
 	@ApiOperation("用户信息")
 	@GetMapping("/info")
 	public JsonResult info(@ApiParam("用户ID") @RequestParam Long userId){
-		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		if(null==phUserInfo){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
 		}
@@ -438,7 +442,7 @@ public class UserController {
 	@ApiOperation("成为赚钱达人")
 	@PostMapping("/mm")
 	public  JsonResult mm(@ApiParam("用户ID") @RequestParam Long userId){
-		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		phUserInfo.setIsMm("1");
 		phUserInfoService.save(phUserInfo);
 		return jsonResultHelper.buildSuccessJsonResult(null);
@@ -489,7 +493,7 @@ public class UserController {
 		phUserInfoService.register(phone, null, null, null, null, null, null,channel);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
-	
-	
-	
+
+
+
 }

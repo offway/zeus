@@ -1,11 +1,8 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +49,12 @@ public class PhActivityJoinServiceImpl implements PhActivityJoinService {
 	}
 	
 	@Override
-	public PhActivityJoin getOne(Long id){
-		return phActivityJoinRepository.getOne(id);
+	public PhActivityJoin findById(Long id){
+		Optional<PhActivityJoin> optional = phActivityJoinRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

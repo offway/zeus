@@ -1,7 +1,9 @@
 package cn.offway.zeus.service.impl;
 
 import java.util.Date;
+import java.util.Optional;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +41,17 @@ public class PhCollectServiceImpl implements PhCollectService {
 	}
 	
 	@Override
-	public PhCollect getOne(Long id){
-		return phCollectRepository.getOne(id);
+	public PhCollect findById(Long id){
+		Optional<PhCollect> optional = phCollectRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
 	public void deleteById(Long id){
-		PhCollect phCollect = getOne(id);
+		PhCollect phCollect = findById(id);
 		if(null != phCollect){
 			phUserInfoService.subCollect(phCollect.getUserId());
 		}

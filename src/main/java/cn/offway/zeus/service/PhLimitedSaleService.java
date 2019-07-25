@@ -16,7 +16,7 @@ public interface PhLimitedSaleService{
 
 	PhLimitedSale save(PhLimitedSale phLimitedSale);
 	
-	PhLimitedSale getOne(Long id);
+	PhLimitedSale findById(Long id);
 
 	Page<PhLimitedSale> findByPage(LimitedSaleDto limitedSaleDto, Pageable page);
 

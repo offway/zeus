@@ -43,7 +43,9 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 
 	@Value("${is-prd}")
 	private boolean isPrd;
-	
+
+
+
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
  
@@ -57,6 +59,7 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		http = http.csrf().disable();
 		if(isPrd){
 			http
 					.authorizeRequests()

@@ -14,7 +14,7 @@ public interface PhActivityImageService{
 
 	PhActivityImage save(PhActivityImage phActivityImage);
 	
-	PhActivityImage getOne(Long id);
+	PhActivityImage findById(Long id);
 
 	List<PhActivityImage> findByActivityId(Long activityId);
 }

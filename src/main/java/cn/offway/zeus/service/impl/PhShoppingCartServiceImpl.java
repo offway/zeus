@@ -1,11 +1,6 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import cn.offway.zeus.domain.*;
 import cn.offway.zeus.repository.PhPromotionRuleRepository;
@@ -92,8 +87,12 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	}
 	
 	@Override
-	public PhShoppingCart getOne(Long id){
-		return phShoppingCartRepository.getOne(id);
+	public PhShoppingCart findById(Long id){
+		Optional<PhShoppingCart> optional = phShoppingCartRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -135,7 +134,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			if(null != promotionId){
 				map.put("promotionId",promotionId);
 				map.put("qucoudan",false);
-				phPromotionInfo = phPromotionInfoService.getOne(promotionId);
+				phPromotionInfo = phPromotionInfoService.findById(promotionId);
 				//减价类型[0-折扣，1-满减，2-赠品]
 				String mode = phPromotionInfo.getMode();
 				List<PhPromotionRule> phPromotionRules = phPromotionRuleRepository.findByPromotionId(promotionId);
@@ -477,7 +476,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		
 		result.put("merchants", list);
 		result.put("platformVouchers", phVoucherInfoService.findUseByPlatform(userId, sumAmount));
-		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		result.put("balance", phUserInfo.getBalance());
 		//平台活动优惠金额
 		double platformPromotionAmount = 0D;
@@ -521,7 +520,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			phShoppingCart.setGoodsCount(goodsCount);
 			phShoppingCart.setUserId(userId);
 			phShoppingCart.setGoodsStockId(stockId);
-			PhGoodsStock phGoodsStock = phGoodsStockService.getOne(stockId);
+			PhGoodsStock phGoodsStock = phGoodsStockService.findById(stockId);
 			
 			phShoppingCart.setMerchantId(phGoodsStock.getMerchantId());
 			phShoppingCart.setMerchantLogo(phGoodsStock.getMerchantLogo());

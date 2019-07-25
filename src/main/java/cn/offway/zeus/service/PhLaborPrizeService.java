@@ -12,5 +12,5 @@ public interface PhLaborPrizeService{
 
 	PhLaborPrize save(PhLaborPrize phLaborPrize);
 	
-	PhLaborPrize getOne(Long id);
+	PhLaborPrize findById(Long id);
 }

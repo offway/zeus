@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import cn.offway.zeus.service.PhUserChannelService;
 
 import cn.offway.zeus.domain.PhUserChannel;
 import cn.offway.zeus.repository.PhUserChannelRepository;
+
+import java.util.Optional;
 
 
 /**
@@ -30,8 +33,12 @@ public class PhUserChannelServiceImpl implements PhUserChannelService {
 	}
 	
 	@Override
-	public PhUserChannel getOne(Long id){
-		return phUserChannelRepository.getOne(id);
+	public PhUserChannel findById(Long id){
+		Optional<PhUserChannel> optional = phUserChannelRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

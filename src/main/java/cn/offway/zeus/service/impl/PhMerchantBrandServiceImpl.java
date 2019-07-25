@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import cn.offway.zeus.service.PhMerchantBrandService;
 
 import cn.offway.zeus.domain.PhMerchantBrand;
 import cn.offway.zeus.repository.PhMerchantBrandRepository;
+
+import java.util.Optional;
 
 
 /**
@@ -30,7 +33,11 @@ public class PhMerchantBrandServiceImpl implements PhMerchantBrandService {
 	}
 	
 	@Override
-	public PhMerchantBrand getOne(Long id){
-		return phMerchantBrandRepository.getOne(id);
+	public PhMerchantBrand findById(Long id){
+		Optional<PhMerchantBrand> optional = phMerchantBrandRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 }

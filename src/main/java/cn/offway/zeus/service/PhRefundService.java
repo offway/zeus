@@ -19,7 +19,7 @@ public interface PhRefundService{
 
 	PhRefund save(PhRefund phRefund);
 	
-	PhRefund getOne(Long id);
+	PhRefund findById(Long id);
 
 	void deleteById(Long id);
 

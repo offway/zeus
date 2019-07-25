@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 import io.swagger.annotations.ApiModelProperty;
 
+
 import java.util.Date;
 
 /**
@@ -14,6 +15,7 @@ import java.util.Date;
  * @version $v: 1.0.0, $time:2019-04-01 11:26:00 Exp $
  */
 @Entity
+
 @Table(name = "ph_address")
 public class PhAddress implements Serializable {
 

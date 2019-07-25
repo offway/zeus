@@ -1,7 +1,9 @@
 package cn.offway.zeus.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +34,12 @@ public class PhPromotionRuleServiceImpl implements PhPromotionRuleService {
 	}
 	
 	@Override
-	public PhPromotionRule getOne(Long id){
-		return phPromotionRuleRepository.getOne(id);
+	public PhPromotionRule findById(Long id){
+		Optional<PhPromotionRule> optional = phPromotionRuleRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 
 	@Override

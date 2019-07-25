@@ -1,5 +1,7 @@
 package cn.offway.zeus.domain;
 
+
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -17,6 +19,7 @@ import javax.persistence.TemporalType;
  * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
  */
 @Entity
+
 @Table(name = "v_pick_goods")
 public class VPickGoods implements Serializable {
 

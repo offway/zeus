@@ -1,6 +1,7 @@
 package cn.offway.zeus.service;
 
 import cn.offway.zeus.domain.PhUserInfo;
+import com.alipay.api.response.AlipayUserInfoShareResponse;
 
 /**
  * 用户信息Service接口
@@ -12,7 +13,7 @@ public interface PhUserInfoService{
 
 	PhUserInfo save(PhUserInfo phUserInfo);
 	
-	PhUserInfo getOne(Long id);
+	PhUserInfo findById(Long id);
 
 	PhUserInfo findByPhone(String phone);
 
@@ -28,4 +29,6 @@ public interface PhUserInfoService{
 			Long inviteUserId,String channel);
 
 	int subCollect(Long id);
+
+    AlipayUserInfoShareResponse saveAlipayUser(Long userId, String code);
 }

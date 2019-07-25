@@ -1,10 +1,6 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -88,8 +84,12 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	}
 	
 	@Override
-	public PhPreorderInfo getOne(Long id){
-		return phPreorderInfoRepository.getOne(id);
+	public PhPreorderInfo findById(Long id){
+		Optional<PhPreorderInfo> optional = phPreorderInfoRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -185,7 +185,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			Double walletAmount = phPreorderInfo.getWalletAmount();
 			if(null != walletAmount){
 				Long userId = phPreorderInfo.getUserId();
-				PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
+				PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 				phUserInfo.setBalance(phUserInfo.getBalance()+walletAmount);
 				phUserInfoService.save(phUserInfo);
 			}
@@ -232,7 +232,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 			Double walletAmount = phPreorderInfo.getWalletAmount();
 			if(null != walletAmount){
 				Long userId = phPreorderInfo.getUserId();
-				PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
+				PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 				phUserInfo.setBalance(phUserInfo.getBalance()+walletAmount);
 				phUserInfoService.save(phUserInfo);
 			}

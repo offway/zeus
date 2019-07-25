@@ -12,7 +12,7 @@ public interface PhOrderExpressInfoService{
 
 	PhOrderExpressInfo save(PhOrderExpressInfo phOrderExpressInfo);
 	
-	PhOrderExpressInfo getOne(Long id);
+	PhOrderExpressInfo findById(Long id);
 
 	PhOrderExpressInfo findByOrderNoAndType(String orderno, String type);
 }

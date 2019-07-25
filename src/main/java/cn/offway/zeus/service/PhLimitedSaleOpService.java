@@ -12,5 +12,5 @@ public interface PhLimitedSaleOpService{
 
 	PhLimitedSaleOp save(PhLimitedSaleOp phLimitedSaleOp);
 	
-	PhLimitedSaleOp getOne(Long id);
+	PhLimitedSaleOp findById(Long id);
 }

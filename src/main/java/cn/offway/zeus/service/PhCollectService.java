@@ -12,7 +12,7 @@ public interface PhCollectService{
 
 	PhCollect save(PhCollect phCollect);
 	
-	PhCollect getOne(Long id);
+	PhCollect findById(Long id);
 
 	Long collect(Long userId, String type, Long matchId) throws Exception;
 

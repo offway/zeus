@@ -14,7 +14,7 @@ public interface PhRefundGoodsService{
 
 	PhRefundGoods save(PhRefundGoods phRefundGoods);
 	
-	PhRefundGoods getOne(Long id);
+	PhRefundGoods findById(Long id);
 
 	List<PhRefundGoods> save(List<PhRefundGoods> phRefundGoodss);
 	

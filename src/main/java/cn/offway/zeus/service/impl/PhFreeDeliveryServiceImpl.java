@@ -3,12 +3,14 @@ package cn.offway.zeus.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import cn.offway.zeus.domain.*;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -27,11 +29,6 @@ import cn.offway.zeus.service.PhFreeDeliveryBoostService;
 import cn.offway.zeus.service.PhFreeDeliveryService;
 import cn.offway.zeus.service.PhFreeDeliveryUserService;
 import cn.offway.zeus.service.PhUserInfoService;
-import cn.offway.zeus.domain.PhFreeDelivery;
-import cn.offway.zeus.domain.PhFreeDeliveryBoost;
-import cn.offway.zeus.domain.PhFreeDeliveryUser;
-import cn.offway.zeus.domain.PhUserInfo;
-import cn.offway.zeus.domain.VPickGoods;
 import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhFreeDeliveryRepository;
 
@@ -68,8 +65,12 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 	}
 	
 	@Override
-	public PhFreeDelivery getOne(Long id){
-		return phFreeDeliveryRepository.getOne(id);
+	public PhFreeDelivery findById(Long id){
+		Optional<PhFreeDelivery> optional = phFreeDeliveryRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -93,12 +94,12 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 	public JsonResult boost(Long freeDeliveryId, Long userId, Long boostUserId) throws Exception{
 		
 		Date now = new Date();
-		PhFreeDelivery phFreeDelivery = getOne(freeDeliveryId);
+		PhFreeDelivery phFreeDelivery = findById(freeDeliveryId);
 		if("0".equals(phFreeDelivery.getStatus())){
 			PhFreeDeliveryUser phFreeDeliveryUser = phFreeDeliveryUserService.findByFreeDeliveryIdAndUserId(freeDeliveryId, userId);
 			if(null == phFreeDeliveryUser){
 				
-				PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
+				PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 				phFreeDeliveryUser = new PhFreeDeliveryUser();
 				phFreeDeliveryUser.setBoostCount(phFreeDelivery.getBoostCount());
 				phFreeDeliveryUser.setCreateTime(now);
@@ -134,7 +135,7 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 				save(phFreeDelivery);
 			}
 
-			PhUserInfo boostUser = phUserInfoService.getOne(boostUserId);
+			PhUserInfo boostUser = phUserInfoService.findById(boostUserId);
 			
 			PhFreeDeliveryBoost phFreeDeliveryBoost = new PhFreeDeliveryBoost();
 			phFreeDeliveryBoost.setBoostHeadimgurl(boostUser.getHeadimgurl());

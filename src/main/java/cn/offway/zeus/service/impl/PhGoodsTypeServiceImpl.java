@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import cn.offway.zeus.service.PhGoodsTypeService;
 
 import cn.offway.zeus.domain.PhGoodsType;
 import cn.offway.zeus.repository.PhGoodsTypeRepository;
+
+import java.util.Optional;
 
 
 /**
@@ -30,7 +33,11 @@ public class PhGoodsTypeServiceImpl implements PhGoodsTypeService {
 	}
 	
 	@Override
-	public PhGoodsType getOne(Long id){
-		return phGoodsTypeRepository.getOne(id);
+	public PhGoodsType findById(Long id){
+		Optional<PhGoodsType> optional = phGoodsTypeRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 }

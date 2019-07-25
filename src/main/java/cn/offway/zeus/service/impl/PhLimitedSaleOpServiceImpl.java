@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import cn.offway.zeus.service.PhLimitedSaleOpService;
 
 import cn.offway.zeus.domain.PhLimitedSaleOp;
 import cn.offway.zeus.repository.PhLimitedSaleOpRepository;
+
+import java.util.Optional;
 
 
 /**
@@ -30,7 +33,11 @@ public class PhLimitedSaleOpServiceImpl implements PhLimitedSaleOpService {
 	}
 	
 	@Override
-	public PhLimitedSaleOp getOne(Long id){
-		return phLimitedSaleOpRepository.getOne(id);
+	public PhLimitedSaleOp findById(Long id){
+		Optional<PhLimitedSaleOp> optional = phLimitedSaleOpRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 }

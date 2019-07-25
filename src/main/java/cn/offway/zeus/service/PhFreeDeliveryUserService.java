@@ -14,7 +14,7 @@ public interface PhFreeDeliveryUserService{
 
 	PhFreeDeliveryUser save(PhFreeDeliveryUser phFreeDeliveryUser);
 	
-	PhFreeDeliveryUser getOne(Long id);
+	PhFreeDeliveryUser findById(Long id);
 
 	List<PhFreeDeliveryUser> findByFreeDeliveryId(Long freedeliveryId);
 

@@ -2,12 +2,14 @@ package cn.offway.zeus.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +45,12 @@ public class VCollectBrandServiceImpl implements VCollectBrandService {
 	}
 	
 	@Override
-	public VCollectBrand getOne(Long id){
-		return vCollectBrandRepository.getOne(id);
+	public VCollectBrand findById(Long id){
+		Optional<VCollectBrand> optional = vCollectBrandRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

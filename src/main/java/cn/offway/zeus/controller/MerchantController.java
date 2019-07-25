@@ -2,6 +2,7 @@ package cn.offway.zeus.controller;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -64,9 +65,11 @@ public class MerchantController {
 	@GetMapping("/info")
 	public JsonResult info(
 			@ApiParam("商户Id") @RequestParam Long id) throws Exception{
-		PhMerchant phMerchant = phMerchantService.getOne(id);
+		PhMerchant phMerchant = phMerchantService.findById(id);
 		MerchantInfoDto dto = new MerchantInfoDto();
-		BeanUtils.copyProperties(phMerchant, dto);
+		if(null!=phMerchant){
+			BeanUtils.copyProperties(phMerchant, dto);
+		}
 		List<PhBrand> brands = phBrandService.findByMerchantId(id);
 		dto.setBrands(brands);
 		return jsonResultHelper.buildSuccessJsonResult(dto);

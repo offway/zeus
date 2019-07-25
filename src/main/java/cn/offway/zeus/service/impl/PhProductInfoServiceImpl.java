@@ -1,16 +1,13 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +47,12 @@ public class PhProductInfoServiceImpl implements PhProductInfoService {
 	}
 	
 	@Override
-	public PhProductInfo getOne(Long id){
-		return phProductInfoRepository.getOne(id);
+	public PhProductInfo findById(Long id){
+		Optional<PhProductInfo> optional = phProductInfoRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -96,7 +97,9 @@ public class PhProductInfoServiceImpl implements PhProductInfoService {
 		List<ProductInfo> productInfos = new ArrayList<>();
 		for (PhProductInfo phProductInfo : infos) {
 			ProductInfo productInfo = new ProductInfo();
-			BeanUtils.copyProperties(phProductInfo, productInfo);
+			if(null!=phProductInfo){
+				BeanUtils.copyProperties(phProductInfo, productInfo);
+			}
 			for (PhProductInfo product : phProductInfos) {
 				if(product.getId().longValue() == productInfo.getId().longValue()){
 					productInfo.setIsJoin(true);

@@ -2,6 +2,7 @@ package cn.offway.zeus.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -10,6 +11,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.CriteriaBuilder.In;
 
+import cn.offway.zeus.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import cn.offway.zeus.service.VPickGoodsService;
-import cn.offway.zeus.domain.PhBrand;
-import cn.offway.zeus.domain.PhGoods;
-import cn.offway.zeus.domain.PhPickGoods;
-import cn.offway.zeus.domain.VPickGoods;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.repository.VPickGoodsRepository;
 
@@ -47,8 +45,12 @@ public class VPickGoodsServiceImpl implements VPickGoodsService {
 	}
 	
 	@Override
-	public VPickGoods getOne(Long id){
-		return vPickGoodsRepository.getOne(id);
+	public VPickGoods findById(Long id){
+		Optional<VPickGoods> optional = vPickGoodsRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

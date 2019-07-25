@@ -14,7 +14,7 @@ public interface PhInviteRecordService{
 
 	PhInviteRecord save(PhInviteRecord phInviteRecord);
 	
-	PhInviteRecord getOne(Long id);
+	PhInviteRecord findById(Long id);
 
 	List<PhInviteRecord> findByProductIdAndUnionid(Long productId, String unionid);
 

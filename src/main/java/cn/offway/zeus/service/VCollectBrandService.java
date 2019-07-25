@@ -15,7 +15,7 @@ public interface VCollectBrandService{
 
 	VCollectBrand save(VCollectBrand vCollectBrand);
 	
-	VCollectBrand getOne(Long id);
+	VCollectBrand findById(Long id);
 
 	Page<VCollectBrand> findByPage(Long userId, Pageable page);
 }

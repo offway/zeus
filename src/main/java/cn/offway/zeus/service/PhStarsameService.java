@@ -17,7 +17,7 @@ public interface PhStarsameService{
 
 	PhStarsame save(PhStarsame phStarsame);
 	
-	PhStarsame getOne(Long id);
+	PhStarsame findById(Long id);
 
 	List<PhStarsame> indexData();
 

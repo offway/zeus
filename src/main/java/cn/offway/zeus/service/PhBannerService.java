@@ -14,7 +14,7 @@ public interface PhBannerService{
 
 	PhBanner save(PhBanner phBanner);
 	
-	PhBanner getOne(Long id);
+	PhBanner findById(Long id);
 
 	List<PhBanner> banners(String position);
 

@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import cn.offway.zeus.service.PhOrderExpressInfoService;
 
 import cn.offway.zeus.domain.PhOrderExpressInfo;
 import cn.offway.zeus.repository.PhOrderExpressInfoRepository;
+
+import java.util.Optional;
 
 
 /**
@@ -30,8 +33,12 @@ public class PhOrderExpressInfoServiceImpl implements PhOrderExpressInfoService 
 	}
 	
 	@Override
-	public PhOrderExpressInfo getOne(Long id){
-		return phOrderExpressInfoRepository.getOne(id);
+	public PhOrderExpressInfo findById(Long id){
+		Optional<PhOrderExpressInfo> optional = phOrderExpressInfoRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

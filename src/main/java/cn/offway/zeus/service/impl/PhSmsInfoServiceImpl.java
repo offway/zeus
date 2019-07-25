@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import cn.offway.zeus.service.PhSmsInfoService;
 
 import cn.offway.zeus.domain.PhSmsInfo;
 import cn.offway.zeus.repository.PhSmsInfoRepository;
+
+import java.util.Optional;
 
 
 /**
@@ -30,8 +33,12 @@ public class PhSmsInfoServiceImpl implements PhSmsInfoService {
 	}
 	
 	@Override
-	public PhSmsInfo getOne(Long id){
-		return phSmsInfoRepository.getOne(id);
+	public PhSmsInfo findById(Long id){
+		Optional<PhSmsInfo> optional = phSmsInfoRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

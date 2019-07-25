@@ -174,7 +174,9 @@ public class OrderController {
 		for (PhOrderInfo phOrderInfo : phOrderInfos) {
 			OrderInfoDto dto = new OrderInfoDto();
 			List<PhOrderGoods> goods = phOrderGoodsService.findByOrderNo(phOrderInfo.getOrderNo());
-			BeanUtils.copyProperties(phOrderInfo, dto);
+			if(null!=phOrderInfo){
+				BeanUtils.copyProperties(phOrderInfo, dto);
+			}
 			dto.setGoods(goods);
 			dtos.add(dto);
 		}
@@ -193,7 +195,10 @@ public class OrderController {
 		List<VOrderRefundDto> dtos = new ArrayList<>();
 		for (VOrderRefund vOrderRefund : vOrderRefundList) {
 			VOrderRefundDto dto = new VOrderRefundDto();
-			BeanUtils.copyProperties(vOrderRefund, dto);
+			if(null!=vOrderRefund){
+				BeanUtils.copyProperties(vOrderRefund, dto);
+			}
+
 			List<Map<String,Object>> goods = new ArrayList<>();
 			if ("order".equals(vOrderRefund.getStyle())){
 				putGoods(vOrderRefund, goods);
@@ -204,7 +209,7 @@ public class OrderController {
 				}else{
 					List<PhRefundGoods> phRefundGoodss = phRefundGoodsService.findByRefundId(vOrderRefund.getRefundId());
 					for (PhRefundGoods phRefundGoods : phRefundGoodss) {
-						PhOrderGoods phOrderGoods = phOrderGoodsService.getOne(phRefundGoods.getOrderGoodsId());
+						PhOrderGoods phOrderGoods = phOrderGoodsService.findById(phRefundGoods.getOrderGoodsId());
 						Map<String, Object> map1 = new HashMap<>();
 						map1.put("image", phOrderGoods.getGoodsImage());
 						map1.put("name", phOrderGoods.getGoodsName());
@@ -251,7 +256,9 @@ public class OrderController {
 			PreorderDto preorderDto = new PreorderDto();
 			List<PhOrderInfo> orderInfos = phOrderInfoService.findByPreorderNoAndStatus(phPreorderInfo.getOrderNo(), "0");
 			List<OrderInfoDto> dtos = getOrderInfoDtos(orderInfos);
-			BeanUtils.copyProperties(phPreorderInfo, preorderDto);
+			if(null!=phPreorderInfo){
+				BeanUtils.copyProperties(phPreorderInfo, preorderDto);
+			}
 			preorderDto.setOrderInfos(dtos);
 			preorderDtos.add(preorderDto);
 			
@@ -324,7 +331,9 @@ public class OrderController {
 					List<PhRefundGoods> phRefundGoodsList = phRefundGoodsService.findByRefundId(phRefund.getId());
 					for (PhOrderGoods phOrderGoods : goods) {
 						OrderGoodsDto orderGoodsDto = new OrderGoodsDto();
-						BeanUtils.copyProperties(phOrderGoods,orderGoodsDto);
+						if(null!=phOrderGoods){
+							BeanUtils.copyProperties(phOrderGoods,orderGoodsDto);
+						}
 						for (PhRefundGoods phRefundGoods : phRefundGoodsList) {
 							if (phOrderGoods.getId().longValue() == phRefundGoods.getOrderGoodsId().longValue()){
 								orderGoodsDto.setRefundStatus(phRefund.getStatus());
@@ -335,7 +344,9 @@ public class OrderController {
 				}else{
 					for (PhOrderGoods phOrderGoods : goods) {
 						OrderGoodsDto orderGoodsDto = new OrderGoodsDto();
-						BeanUtils.copyProperties(phOrderGoods,orderGoodsDto);
+						if(null!=phOrderGoods){
+							BeanUtils.copyProperties(phOrderGoods,orderGoodsDto);
+						}
 						orderGoodsDto.setRefundStatus(phRefund.getStatus());
 						orderGoodsDtos.add(orderGoodsDto);
 					}
@@ -361,7 +372,7 @@ public class OrderController {
 		
 		//0-已下单,1-已付款,2-已发货,3-已收货,4-取消
 		if("0".equals(status) || "1".equals(status)|| "4".equals(status)){
-			PhAddress phAddress = phAddressService.getOne(addrId);
+			PhAddress phAddress = phAddressService.findById(addrId);
 			addrMap.put("city", phAddress.getCity());
 			addrMap.put("content", phAddress.getContent());
 			addrMap.put("county", phAddress.getCounty());

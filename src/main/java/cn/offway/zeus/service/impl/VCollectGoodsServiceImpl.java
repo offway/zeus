@@ -2,12 +2,14 @@ package cn.offway.zeus.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +46,12 @@ public class VCollectGoodsServiceImpl implements VCollectGoodsService {
 	}
 	
 	@Override
-	public VCollectGoods getOne(Long id){
-		return vCollectGoodsRepository.getOne(id);
+	public VCollectGoods findById(Long id){
+		Optional<VCollectGoods> optional = vCollectGoodsRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

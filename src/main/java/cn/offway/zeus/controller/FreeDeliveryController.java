@@ -64,7 +64,9 @@ public class FreeDeliveryController {
 		for (PhFreeDelivery phFreeDelivery : phFreeDeliveries) {
 			
 			PhFreeDeliveryDto dto = new PhFreeDeliveryDto();
-			BeanUtils.copyProperties(phFreeDelivery, dto);
+			if(null!=phFreeDelivery){
+				BeanUtils.copyProperties(phFreeDelivery, dto);
+			}
 			Long freedeliveryId = phFreeDelivery.getId();
 			PhFreeDeliveryUser phFreeDeliveryUser = phFreeDeliveryUserService.findByFreeDeliveryIdAndUserId(freedeliveryId, userId);
 			Long currentCount = 0L;
@@ -92,7 +94,7 @@ public class FreeDeliveryController {
 			@ApiParam("免费送ID") @RequestParam Long freeDeliveryId,
 			@ApiParam("用户ID") @RequestParam(required = false) Long userId){
 		Map<String, Object> resultMap = new HashMap<>();
-		resultMap.put("freeDelivery", phFreeDeliveryService.getOne(freeDeliveryId));
+		resultMap.put("freeDelivery", phFreeDeliveryService.findById(freeDeliveryId));
 		resultMap.put("ranking", phFreeDeliveryUserService.ranking(freeDeliveryId));
 		PhFreeDeliveryUser phFreeDeliveryUser = phFreeDeliveryUserService.findByFreeDeliveryIdAndUserId(freeDeliveryId, userId);
 		if(null!=phFreeDeliveryUser){
@@ -122,7 +124,7 @@ public class FreeDeliveryController {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOST_MY);
 
 			}
-			PhFreeDelivery phFreeDelivery = phFreeDeliveryService.getOne(freeDeliveryId);
+			PhFreeDelivery phFreeDelivery = phFreeDeliveryService.findById(freeDeliveryId);
 			if("1".equals(phFreeDelivery.getStatus())){
 				//已抢光
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_LESS);

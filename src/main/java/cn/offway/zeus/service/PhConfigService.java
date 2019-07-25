@@ -14,7 +14,7 @@ public interface PhConfigService{
 
 	PhConfig save(PhConfig phConfig);
 	
-	PhConfig getOne(Long id);
+	PhConfig findById(Long id);
 
 	String findContentByName(String name);
 

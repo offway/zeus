@@ -72,7 +72,9 @@ spring:
     timeout:  10000
     pool:
       max-wait: 1000
-
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: true
 #微信公众号配置
 wx:
   appid:  wx1afc7441418d2417

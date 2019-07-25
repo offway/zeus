@@ -12,7 +12,7 @@ public interface PhFreeDeliveryBoostService{
 
 	PhFreeDeliveryBoost save(PhFreeDeliveryBoost phFreeDeliveryBoost);
 	
-	PhFreeDeliveryBoost getOne(Long id);
+	PhFreeDeliveryBoost findById(Long id);
 
 	int countByFreeDeliveryUserIdAndAndBoostUserId(Long freedeliveryuserid,Long bootUserId);
 }

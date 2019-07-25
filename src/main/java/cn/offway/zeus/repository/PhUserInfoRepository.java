@@ -26,11 +26,16 @@ public interface PhUserInfoRepository extends JpaRepository<PhUserInfo,Long>,Jpa
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="update ph_user_info set collect_count=collect_count+1 where id=?1")
+	@Query(nativeQuery=true,value="update ph_user_info set collect_count=collect_count+1,version=version+1  where id=?1")
 	int updateCollect(Long id);
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="update ph_user_info set collect_count=collect_count-1 where id=?1 and collect_count >0")
+	@Query(nativeQuery=true,value="update ph_user_info set collect_count=collect_count-1,version=version+1  where id=?1 and collect_count >0")
 	int subCollect(Long id);
+
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_user_info set alipay_user_id=?2,alipay_nick_name=?3,version=version+1 where id=?1")
+	int updateAlipayUserId(Long id,String alipayUserId,String alipayNickName);
 }

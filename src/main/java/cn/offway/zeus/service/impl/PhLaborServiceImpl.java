@@ -4,7 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import cn.offway.zeus.domain.*;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -15,10 +17,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.offway.zeus.domain.PhLabor;
-import cn.offway.zeus.domain.PhLaborLucky;
-import cn.offway.zeus.domain.PhLaborPrize;
-import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.PhLaborLuckyRepository;
 import cn.offway.zeus.repository.PhLaborPrizeRepository;
@@ -71,8 +69,12 @@ public class PhLaborServiceImpl implements PhLaborService {
 	}
 	
 	@Override
-	public PhLabor getOne(Long id){
-		return phLaborRepository.getOne(id);
+	public PhLabor findById(Long id){
+		Optional<PhLabor> optional = phLaborRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	@Override
 	public PhLabor findByUserId(Long userId){
@@ -89,7 +91,7 @@ public class PhLaborServiceImpl implements PhLaborService {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.LOTTERYNUM_LESS);
 		}
 		
-		PhUserInfo phUserInfo = phUserInfoService.getOne(userId);
+		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		
 		
 		Date now = new Date();

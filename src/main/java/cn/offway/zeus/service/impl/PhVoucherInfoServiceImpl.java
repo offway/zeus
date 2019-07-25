@@ -3,6 +3,7 @@ package cn.offway.zeus.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -10,6 +11,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +50,12 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	}
 	
 	@Override
-	public PhVoucherInfo getOne(Long id){
-		return phVoucherInfoRepository.getOne(id);
+	public PhVoucherInfo findById(Long id){
+		Optional<PhVoucherInfo> optional = phVoucherInfoRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -128,7 +134,9 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	@Override
 	public boolean giveVoucher(Long userId,Long voucherProjectId){
 		int count = 0;
-		PhVoucherProject phVoucherProject = phVoucherProjectRepository.getOne(voucherProjectId);
+		PhVoucherProject phVoucherProject = null;
+		Optional<PhVoucherProject> optional  = phVoucherProjectRepository.findById(voucherProjectId);
+		phVoucherProject = optional.isPresent()?optional.get():null;
 		if(null==phVoucherProject.getValidNum()){
 			count = phVoucherInfoRepository.giveByTime(userId, voucherProjectId);
 		}else{

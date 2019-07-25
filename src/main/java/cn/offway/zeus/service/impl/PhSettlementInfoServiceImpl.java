@@ -19,6 +19,7 @@ import cn.offway.zeus.repository.PhSettlementInfoRepository;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -50,8 +51,12 @@ public class PhSettlementInfoServiceImpl implements PhSettlementInfoService {
 	}
 	
 	@Override
-	public PhSettlementInfo getOne(Long id){
-		return phSettlementInfoRepository.getOne(id);
+	public PhSettlementInfo findById(Long id){
+		Optional<PhSettlementInfo> optional = phSettlementInfoRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 
 	@Override
@@ -67,7 +72,7 @@ public class PhSettlementInfoServiceImpl implements PhSettlementInfoService {
 			settlementDetail.setAmount(orderInfo.getAmount());
 			settlementDetail.setCreateTime(new Date());
 			Long merchantId = orderInfo.getMerchantId();
-			PhMerchant phMerchant = phMerchantService.getOne(merchantId);
+			PhMerchant phMerchant = phMerchantService.findById(merchantId);
 			settlementDetail.setCutRate(phMerchant.getRatio());
 			settlementDetail.setCutAmount(orderInfo.getAmount() * phMerchant.getRatio() / 100);
 			settlementDetail.setMailFee(orderInfo.getMailFee());

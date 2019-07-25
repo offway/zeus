@@ -15,7 +15,7 @@ public interface PhLotteryTicketService{
 
 	PhLotteryTicket save(PhLotteryTicket phLotteryTicket);
 	
-	PhLotteryTicket getOne(Long id);
+	PhLotteryTicket findById(Long id);
 	
 	int countByProductIdAndUnionidAndSource(Long productId, String unionid, String source);
 

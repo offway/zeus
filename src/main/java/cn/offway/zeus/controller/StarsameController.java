@@ -77,7 +77,7 @@ public class StarsameController {
 			@ApiParam("明星同款ID") @RequestParam Long id){
 		
 		Map<String, Object> resultMap = new HashMap<>();
-		PhStarsame phStarsame = phStarsameService.getOne(id);
+		PhStarsame phStarsame = phStarsameService.findById(id);
 		resultMap = JSON.parseObject(JSON.toJSONString(phStarsame,SerializerFeature.WriteMapNullValue),Map.class);
 		resultMap.put("banner", phStarsameImageRepository.findImageByStarsameIdOrderBySortAsc(id));
 		

@@ -14,7 +14,7 @@ public interface VOrderRefundService{
 
 	VOrderRefund save(VOrderRefund vOrderRefund);
 	
-	VOrderRefund getOne(Long id);
+	VOrderRefund findById(Long id);
 
 	Page<VOrderRefund> findByPage(Long userId, Pageable page);
 }

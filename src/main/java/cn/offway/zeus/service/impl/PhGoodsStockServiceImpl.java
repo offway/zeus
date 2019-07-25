@@ -1,8 +1,10 @@
 package cn.offway.zeus.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +35,12 @@ public class PhGoodsStockServiceImpl implements PhGoodsStockService {
 	}
 	
 	@Override
-	public PhGoodsStock getOne(Long id){
-		return phGoodsStockRepository.getOne(id);
+	public PhGoodsStock findById(Long id){
+		Optional<PhGoodsStock> optional = phGoodsStockRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

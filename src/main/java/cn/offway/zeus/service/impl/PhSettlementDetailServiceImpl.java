@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import cn.offway.zeus.domain.PhSettlementDetail;
 import cn.offway.zeus.repository.PhSettlementDetailRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -37,7 +39,11 @@ public class PhSettlementDetailServiceImpl implements PhSettlementDetailService 
 	}
 	
 	@Override
-	public PhSettlementDetail getOne(Long id){
-		return phSettlementDetailRepository.getOne(id);
+	public PhSettlementDetail findById(Long id){
+		Optional<PhSettlementDetail> optional = phSettlementDetailRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 }

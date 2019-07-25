@@ -1,5 +1,7 @@
 package cn.offway.zeus.domain;
 
+
+
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;

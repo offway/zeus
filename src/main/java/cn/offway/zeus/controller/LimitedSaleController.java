@@ -56,9 +56,11 @@ public class LimitedSaleController {
 	public JsonResult info(
 			@ApiParam("限量发售ID") @RequestParam Long id,
 			@ApiParam("用户ID") @RequestParam(required = false) Long userId){
-		PhLimitedSale phLimitedSale = phLimitedSaleService.getOne(id);
+		PhLimitedSale phLimitedSale = phLimitedSaleService.findById(id);
 		LimitedSaleInfoDto dto = new LimitedSaleInfoDto();
-		BeanUtils.copyProperties(phLimitedSale, dto);
+		if(null!=phLimitedSale){
+			BeanUtils.copyProperties(phLimitedSale, dto);
+		}
 		boolean assisted = false;
 		if(null != userId){
 			int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id, userId, "0");

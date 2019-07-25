@@ -3,7 +3,9 @@ package cn.offway.zeus.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +46,12 @@ public class PhActivityPrizeServiceImpl implements PhActivityPrizeService {
 	}
 	
 	@Override
-	public PhActivityPrize getOne(Long id){
-		return phActivityPrizeRepository.getOne(id);
+	public PhActivityPrize findById(Long id){
+		Optional<PhActivityPrize> optional = phActivityPrizeRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override
@@ -69,7 +75,7 @@ public class PhActivityPrizeServiceImpl implements PhActivityPrizeService {
 		 * 5、保存中奖记录
 		 */
 		
-		PhActivityInfo phActivityInfo = phActivityInfoService.getOne(activityId);
+		PhActivityInfo phActivityInfo = phActivityInfoService.findById(activityId);
 		
 		//获得中奖用户
 		List<PhActivityJoin> activityJoins = phActivityJoinService.luckly(phActivityInfo.getId(),phActivityInfo.getWinNum());

@@ -14,7 +14,7 @@ public interface PhGoodsPropertyService{
 
 	PhGoodsProperty save(PhGoodsProperty phGoodsProperty);
 	
-	PhGoodsProperty getOne(Long id);
+	PhGoodsProperty findById(Long id);
 	
 	List<PhGoodsProperty> findByGoodsId(Long goodsId);
 

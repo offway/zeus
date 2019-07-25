@@ -1,5 +1,7 @@
 package cn.offway.zeus.domain;
 
+
+
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
@@ -11,6 +13,7 @@ import java.util.Date;
  * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
  */
 @Entity
+
 @Table(name = "ph_starsame")
 public class PhStarsame implements Serializable {
 

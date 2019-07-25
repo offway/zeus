@@ -2,12 +2,14 @@ package cn.offway.zeus.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import cn.offway.zeus.domain.PhMerchant;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +43,12 @@ public class PhNoticeServiceImpl implements PhNoticeService {
 	}
 	
 	@Override
-	public PhNotice getOne(Long id){
-		return phNoticeRepository.getOne(id);
+	public PhNotice findById(Long id){
+		Optional<PhNotice> optional = phNoticeRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 	
 	@Override

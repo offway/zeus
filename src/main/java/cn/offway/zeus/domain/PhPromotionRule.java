@@ -1,5 +1,7 @@
 package cn.offway.zeus.domain;
 
+
+
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
@@ -11,6 +13,7 @@ import java.util.Date;
  * @version $v: 1.0.0, $time:2019-07-17 15:41:45 Exp $
  */
 @Entity
+
 @Table(name = "ph_promotion_rule")
 public class PhPromotionRule implements Serializable {
 

@@ -12,5 +12,5 @@ public interface PhStarsameGoodsService{
 
 	PhStarsameGoods save(PhStarsameGoods phStarsameGoods);
 	
-	PhStarsameGoods getOne(Long id);
+	PhStarsameGoods findById(Long id);
 }

@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import cn.offway.zeus.domain.PhMerchant;
 import cn.offway.zeus.domain.PhPreorderInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -41,8 +43,12 @@ public class VOrderRefundServiceImpl implements VOrderRefundService {
 	}
 	
 	@Override
-	public VOrderRefund getOne(Long id){
-		return vOrderRefundRepository.getOne(id);
+	public VOrderRefund findById(Long id){
+		Optional<VOrderRefund> optional = vOrderRefundRepository.findById(id);
+			if (optional.isPresent()){
+				return optional.get();
+			}
+		return null;
 	}
 
 	@Override

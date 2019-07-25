@@ -12,5 +12,5 @@ public interface PhPickGoodsService{
 
 	PhPickGoods save(PhPickGoods phPickGoods);
 	
-	PhPickGoods getOne(Long id);
+	PhPickGoods findById(Long id);
 }

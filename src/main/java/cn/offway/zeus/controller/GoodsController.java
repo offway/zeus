@@ -119,7 +119,7 @@ public class GoodsController {
 	public JsonResult info(@ApiParam("商品ID") @RequestParam Long id) throws Exception{
 		
 		Map<String, Object> resultMap = new HashMap<>();
-		PhGoods phGoods = phGoodsService.getOne(id);
+		PhGoods phGoods = phGoodsService.findById(id);
 		List<String> banners = phGoodsImageService.findByGoodsId(id,"0");
 		List<String> contents = phGoodsImageService.findByGoodsId(id,"1");
 
@@ -212,7 +212,7 @@ public class GoodsController {
 	@ApiOperation("优选详情")
 	@GetMapping("/pick/{id}")
 	public JsonResult pickInfo(@ApiParam("优选ID") @PathVariable Long id){
-		return jsonResultHelper.buildSuccessJsonResult(phPickService.getOne(id));
+		return jsonResultHelper.buildSuccessJsonResult(phPickService.findById(id));
 	}
 	
 	@ApiOperation("优选商品列表")

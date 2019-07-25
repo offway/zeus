@@ -15,7 +15,7 @@ public interface PhVoucherInfoService{
 
 	PhVoucherInfo save(PhVoucherInfo phVoucherInfo);
 	
-	PhVoucherInfo getOne(Long id);
+	PhVoucherInfo findById(Long id);
 
 	List<PhVoucherInfo> findByUserId(Long userId);
 

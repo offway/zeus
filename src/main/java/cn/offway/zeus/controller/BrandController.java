@@ -65,7 +65,9 @@ public class BrandController {
 	
 		for (PhBrand phBrand : phBrands) {
 			BrandRecommendDto dto = new BrandRecommendDto();
-			BeanUtils.copyProperties(phBrand, dto);
+			if(null!=phBrand){
+				BeanUtils.copyProperties(phBrand, dto);
+			}
 			List<PhGoods> goods = new ArrayList<>();
 			if("0".equals(brandDto.getType())){
 				goods = phGoodsService.findBrandRecommend(phBrand.getId());
@@ -88,7 +90,7 @@ public class BrandController {
 	@ApiOperation("品牌详情")
 	@GetMapping("/info")
 	public JsonResult info(@ApiParam("品牌ID")@RequestParam Long id){
-		return jsonResultHelper.buildSuccessJsonResult(phBrandService.getOne(id));
+		return jsonResultHelper.buildSuccessJsonResult(phBrandService.findById(id));
 	}
 	
 	@ApiOperation("品牌详情")
