@@ -284,6 +284,7 @@ public class OrderController {
 		Long addrId = null;
 		Date receiptTime = null;
 		Date createTime = null;
+		Double sumPromotionAmount = 0D;
 		List<PhOrderGoods> goods = new ArrayList<>();
 		Map<String, Object> addrMap = new HashMap<>();
 
@@ -302,6 +303,7 @@ public class OrderController {
 			walletAmount = phPreorderInfo.getWalletAmount();
 			addrId = phPreorderInfo.getAddrId();
 			createTime = phPreorderInfo.getCreateTime();
+			sumPromotionAmount = phPreorderInfo.getPromotionAmount();
 			List<PhOrderInfo> orderInfos = phOrderInfoService.findByPreorderNoAndStatus(phPreorderInfo.getOrderNo(), "0");
 			for (PhOrderInfo phOrderInfo : orderInfos) {
 				goods.addAll(phOrderGoodsService.findByOrderNo(phOrderInfo.getOrderNo()));
@@ -319,6 +321,7 @@ public class OrderController {
 			walletAmount = phOrderInfo.getWalletAmount();
 			addrId = phOrderInfo.getAddrId();
 			createTime = phOrderInfo.getCreateTime();
+			sumPromotionAmount = MathUtils.add(phOrderInfo.getPromotionAmount(),phOrderInfo.getPlatformPromotionAmount());
 			goods = phOrderGoodsService.findByOrderNo(orderNo);
 
 			//查询该笔订单是否有退款申请
@@ -368,7 +371,8 @@ public class OrderController {
 		resultMap.put("walletAmount", walletAmount);
 		resultMap.put("receiptTime", receiptTime);
 		resultMap.put("createTime", createTime);
-		
+		resultMap.put("sumPromotionAmount", sumPromotionAmount);
+
 		
 		//0-已下单,1-已付款,2-已发货,3-已收货,4-取消
 		if("0".equals(status) || "1".equals(status)|| "4".equals(status)){
