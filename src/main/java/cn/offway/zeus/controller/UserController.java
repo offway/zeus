@@ -501,8 +501,8 @@ public class UserController {
 			@ApiParam("用户ID") @RequestParam Long userId,
 			@ApiParam("提现金额[单位:元]") @RequestParam double amount,
             @ApiParam("验证码") @RequestParam String code){
-		if(amount == 0D){
-			return  jsonResultHelper.buildSuccessJsonResult(CommonResultCode.PARAM_ERROR);
+		if(amount < 100D || amount > 20000D){
+			return  jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
 
         PhUserInfo phUserInfo = phUserInfoService.findById(userId);
