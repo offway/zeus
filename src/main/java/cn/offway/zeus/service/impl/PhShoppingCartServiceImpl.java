@@ -382,7 +382,6 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 				sumAmount = MathUtils.add(sumAmount, MathUtils.mul(phShoppingCart.getPrice(), phShoppingCart.getGoodsCount().intValue()));
 			}
 
-			//计算
 		}
 		
 		double sumPromotionAmount = 0d;
@@ -476,7 +475,6 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		}
 		
 		result.put("merchants", list);
-		result.put("platformVouchers", phVoucherInfoService.findUseByPlatform(userId, MathUtils.sub(sumAmount,sumPromotionAmount)));
 		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		result.put("balance", phUserInfo.getBalance());
 		//平台活动优惠金额
@@ -501,6 +499,8 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 
 		}
 		result.put("platformPromotionAmount", platformPromotionAmount);
+		result.put("platformVouchers", phVoucherInfoService.findUseByPlatform(userId, MathUtils.sub(MathUtils.sub(sumAmount,sumPromotionAmount),platformPromotionAmount)));
+
 
 		return jsonResultHelper.buildSuccessJsonResult(result);
 

@@ -233,8 +233,8 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		sumPromotionAmount = platformPromotionAmount;
 
 
-		//商户优惠总额
-        double sumMPromotionAmount = 0D;
+		//商户优惠总额-不用了
+        //double sumMPromotionAmount = 0D;
 		List<Long> stockIds = new ArrayList<>();
 		for (OrderMerchantDto orderMerchantDto : merchantDtos) {
 			
@@ -357,7 +357,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				}
 
 				sumPromotionAmount = MathUtils.add(sumPromotionAmount,promotionAmount);
-                sumMPromotionAmount = MathUtils.add(sumMPromotionAmount,promotionAmount);
+                //sumMPromotionAmount = MathUtils.add(sumMPromotionAmount,promotionAmount);
 				//s.put("reachPromotions", reachPromotions);
 			}
 			
@@ -451,7 +451,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		phOrderGoodsRepository.saveAll(orderGoodss);
 		
 		if(null !=pVoucherId){
-			int c = phVoucherInfoService.updateStatus(pVoucherId,MathUtils.sub(sumPriceByplatform,sumMPromotionAmount),userId);
+			int c = phVoucherInfoService.updateStatus(pVoucherId,MathUtils.sub(sumPriceByplatform,sumPromotionAmount),userId);
 			if(c!=1){
 				throw new Exception("锁定加息券异常");
 			}
