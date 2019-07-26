@@ -460,7 +460,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 						}
 						PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAndDiscountNum(promotionId,goodsCount);
 						if (null != phPromotionRule){
-							promotionAmount = MathUtils.add(promotionAmount,MathUtils.mul(goodsAmount,(1-phPromotionRule.getDiscountRate())));
+							promotionAmount = MathUtils.add(promotionAmount,MathUtils.mul(goodsAmount,MathUtils.sub(1D,phPromotionRule.getDiscountRate())));
 							reachPromotions.add(phPromotionInfo);
 						}
 					}else if("2".equals(mode)){
@@ -496,7 +496,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 			}
 			PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAndDiscountNum(promotionId,goodsCount);
 			if (null != phPromotionRule){
-				platformPromotionAmount = MathUtils.add(platformPromotionAmount,MathUtils.mul(goodsAmount,MathUtils.sub(1d,phPromotionRule.getDiscountRate())));
+				platformPromotionAmount = MathUtils.add(platformPromotionAmount,MathUtils.mul(goodsAmount,MathUtils.sub(1D,phPromotionRule.getDiscountRate())));
 			}
 
 		}
