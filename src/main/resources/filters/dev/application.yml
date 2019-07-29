@@ -18,7 +18,7 @@ server:
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url:  jdbc:mysql://rm-uf6bdv92a95017474oo.mysql.rds.aliyuncs.com:3306/phweb_dev?useUnicode=true&characterEncoding=utf8&useSSL=false
+    url:  jdbc:mysql://rm-uf6bdv92a95017474oo.mysql.rds.aliyuncs.com:3306/phweb_dev?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2b8
     username: puhao
     password: Puhao2018
     driverClassName:  com.mysql.cj.jdbc.Driver
