@@ -46,6 +46,11 @@ public class PhConfigServiceImpl implements PhConfigService {
 	public String findContentByName(String name){
 		return phConfigRepository.findContentByName(name);
 	}
+
+	@Override
+	public PhConfig findByName(String name){
+		return phConfigRepository.findByName(name);
+	}
 	
 	@Override
 	public List<PhConfig> findByNameIn(String... names){

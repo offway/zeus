@@ -18,6 +18,8 @@ public interface PhConfigRepository extends JpaRepository<PhConfig,Long>,JpaSpec
 
 	@Query(nativeQuery=true,value="select content from ph_config where name=?1")
 	String findContentByName(String name);
+
+	PhConfig findByName(String name);
 	
 	List<PhConfig> findByNameIn(String... names);
 }

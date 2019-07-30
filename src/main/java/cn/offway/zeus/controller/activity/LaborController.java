@@ -47,6 +47,18 @@ public class LaborController {
 	
 	@Autowired
 	private PhLaborLuckyService phLaborLuckyService;
+
+	@ApiOperation("初始化")
+	@PostMapping("/init")
+	public JsonResult init(@ApiParam("用户ID") @RequestParam Long userId){
+		return jsonResultHelper.buildSuccessJsonResult(phLaborService.init(userId));
+	}
+
+	@ApiOperation("分享增加次数")
+	@PostMapping("/addshareNum")
+	public JsonResult addshareNum(@ApiParam("用户ID") @RequestParam Long userId){
+		return jsonResultHelper.buildSuccessJsonResult(phLaborService.addshareNum(userId));
+	}
 	
 	@ApiOperation("签到搬砖")
 	@PostMapping("/sign")

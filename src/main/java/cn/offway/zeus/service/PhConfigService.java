@@ -18,5 +18,7 @@ public interface PhConfigService{
 
 	String findContentByName(String name);
 
+	PhConfig findByName(String name);
+
 	List<PhConfig> findByNameIn(String... names);
 }
