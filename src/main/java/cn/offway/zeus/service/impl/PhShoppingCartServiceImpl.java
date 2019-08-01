@@ -237,7 +237,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 
 						PhPromotionRule phPromotionRule = phPromotionRuleRepository.findByPromotionIdAndGiftLimit(promotionId,amount);
 						if(null !=phPromotionRule){
-							map.put("text"," 已满足够"+phPromotionRule.getGiftLimit()+"元送"+phPromotionRule.getGift()+"元");
+							map.put("text"," 已满足够"+phPromotionRule.getGiftLimit()+"元送"+phPromotionRule.getGift());
 							//查询是否需要展示去凑单
 							PhPromotionRule phPromotionRule1 = phPromotionRuleRepository.qucoudanGift(promotionId,phPromotionRule.getGiftLimit());
 							if(null != phPromotionRule1){
