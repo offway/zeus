@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -13,16 +16,11 @@ import com.sensorsdata.analytics.javasdk.SensorsAnalytics;
 import com.yunpian.sdk.YunpianClient;
 
 import io.netty.util.HashedWheelTimer;
-import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.schema.ModelRef;
-import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 配置
@@ -69,7 +67,19 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 					.formLogin();
 		}
 	}
-	
+
+	@Bean
+	public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+		return new DefaultHttpFirewall();
+	}
+
+
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		super.configure(web);
+		web.httpFirewall(allowUrlEncodedSlashHttpFirewall());
+	}
+
 	@Bean
 	public SensorsAnalytics sensorsAnalytics(){
 		return new SensorsAnalytics(
@@ -103,5 +113,5 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 	@Bean
 	public HashedWheelTimer hashedWheelTimer(){
 		return new HashedWheelTimer();
-	} 
+	}
 }
