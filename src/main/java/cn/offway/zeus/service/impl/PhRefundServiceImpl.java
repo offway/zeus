@@ -8,7 +8,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.CriteriaBuilder.In;
 
+import cn.offway.zeus.domain.*;
 import cn.offway.zeus.repository.PhOrderInfoRepository;
+import cn.offway.zeus.repository.PhRefundOrderGoodsRepository;
 import cn.offway.zeus.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -23,13 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import cn.offway.zeus.domain.PhMerchant;
-import cn.offway.zeus.domain.PhOrderGoods;
-import cn.offway.zeus.domain.PhOrderInfo;
-import cn.offway.zeus.domain.PhRefund;
-import cn.offway.zeus.domain.PhRefundGoods;
 import cn.offway.zeus.dto.RefundDto;
 import cn.offway.zeus.dto.RefundGoodsDto;
 import cn.offway.zeus.exception.StockException;
@@ -78,6 +76,9 @@ public class PhRefundServiceImpl implements PhRefundService {
 
 	@Autowired
 	private PhOrderInfoRepository phOrderInfoRepository;
+
+	@Autowired
+	private PhRefundOrderGoodsRepository phRefundOrderGoodsRepository;
 	
 	@Override
 	public PhRefund save(PhRefund phRefund){
@@ -260,6 +261,59 @@ public class PhRefundServiceImpl implements PhRefundService {
 		}
 		
 		return canRefund;
+	}
+
+	@Override
+	public JsonResult exchangeInit(String orderNo){
+		/**
+		 * 1、换货可同时提交多笔，已提交的不展示
+		 * 2、已经提交退款不能提交换货申请
+		 */
+		Map<String, Object> resultMap = new HashMap<>();
+
+		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
+		List<String> statuss = new ArrayList<>();
+		//1-已付款,2-已发货,3-已收货
+		statuss.add("1");
+		statuss.add("2");
+		statuss.add("3");
+		if(!statuss.contains(phOrderInfo.getStatus())){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+
+		}
+
+		//已经提交退款不能提交换货申请
+		int isRefunding = phRefundRepository.isRefunding(orderNo);
+		if(isRefunding > 0){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUNDING);
+		}
+
+		List<PhOrderGoods> resultGoods = new ArrayList<>();
+		List<PhRefundOrderGoods> phRefundOrderGoodss = phRefundOrderGoodsRepository.findByOrderNo(orderNo);
+		if(CollectionUtils.isEmpty(phRefundOrderGoodss)){
+			//没有发生过退款换货，查看订单商品
+			List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
+			for (PhOrderGoods orderGoodss : phOrderGoodss) {
+				for (int i = 0; i < orderGoodss.getGoodsCount(); i++) {
+					resultGoods.add(orderGoodss);
+				}
+			}
+		}else {
+			for (PhRefundOrderGoods phRefundOrderGoods : phRefundOrderGoodss) {
+				PhOrderGoods orderGoodss = new PhOrderGoods();
+				if (null != phRefundOrderGoods){
+					BeanUtils.copyProperties(phRefundOrderGoods,orderGoodss);
+				}
+				for (int i = 0; i < orderGoodss.getGoodsCount(); i++) {
+					resultGoods.add(orderGoodss);
+				}
+			}
+		}
+
+		resultMap.put("resultGoods",resultGoods);
+		resultMap.put("address",phAddressService.findById(phOrderInfo.getAddrId()));
+
+		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 	
 	@Override

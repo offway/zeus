@@ -1,7 +1,5 @@
 package cn.offway.zeus.domain;
 
-
-
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
@@ -10,10 +8,9 @@ import java.util.Date;
  * 退款/退货
  *
  * @author wn
- * @version $v: 1.0.0, $time:2019-04-04 15:18:00 Exp $
+ * @version $v: 1.0.0, $time:2019-08-01 14:42:53 Exp $
  */
 @Entity
-
 @Table(name = "ph_refund")
 public class PhRefund implements Serializable {
 
@@ -35,7 +32,7 @@ public class PhRefund implements Serializable {
     /** 类型[0-仅退款,1-退货退款,2-换货] **/
     private String type;
 
-    /** 状态[0-审核中,1-待退货,2-退货中,3-退款中,4-退款成功,5-退款取消,6-审核失败] **/
+    /** 状态[0-审核中,1-待退货,2-退货中,3-退款中/换货中,4-退款成功/换货成功,5-退款取消,6-审核失败] **/
     private String status;
 
     /** 退款原因 **/
@@ -67,12 +64,21 @@ public class PhRefund implements Serializable {
 
     /** 是否整单退款[0-否,1-是] **/
     private String isComplete;
-    
-    /** 退款商品数量 **/
+
+    /** 退款商品件数 **/
     private Long goodsCount;
-    
+
     /** 快递公司编码 **/
     private String expressCode;
+
+    /** 换货地址ID **/
+    private Long addrId;
+
+    /** 商家发货快递运单号 **/
+    private String shipMailNo;
+
+    /** 商家发货快递公司编码 **/
+    private String shipExpressCode;
 
 
     @Id
@@ -231,7 +237,7 @@ public class PhRefund implements Serializable {
     public void setIsComplete(String isComplete) {
         this.isComplete = isComplete;
     }
-    
+
     @Column(name = "goods_count", length = 11)
     public Long getGoodsCount() {
         return goodsCount;
@@ -242,14 +248,39 @@ public class PhRefund implements Serializable {
     }
 
     @Column(name = "express_code", length = 50)
-	public String getExpressCode() {
-		return expressCode;
-	}
+    public String getExpressCode() {
+        return expressCode;
+    }
 
-	public void setExpressCode(String expressCode) {
-		this.expressCode = expressCode;
-	}
-    
-    
+    public void setExpressCode(String expressCode) {
+        this.expressCode = expressCode;
+    }
+
+    @Column(name = "addr_id", length = 11)
+    public Long getAddrId() {
+        return addrId;
+    }
+
+    public void setAddrId(Long addrId) {
+        this.addrId = addrId;
+    }
+
+    @Column(name = "ship_mail_no", length = 50)
+    public String getShipMailNo() {
+        return shipMailNo;
+    }
+
+    public void setShipMailNo(String shipMailNo) {
+        this.shipMailNo = shipMailNo;
+    }
+
+    @Column(name = "ship_express_code", length = 50)
+    public String getShipExpressCode() {
+        return shipExpressCode;
+    }
+
+    public void setShipExpressCode(String shipExpressCode) {
+        this.shipExpressCode = shipExpressCode;
+    }
 
 }

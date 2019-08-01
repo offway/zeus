@@ -68,6 +68,13 @@ public class RefundController {
 		return phRefundService.init(orderNo);
 
 	}
+
+	@ApiOperation("换货初始化")
+	@GetMapping("/exchange/init")
+	public JsonResult exchangeInit(String orderNo){
+		return phRefundService.exchangeInit(orderNo);
+
+	}
 	
 	@ApiOperation("退款申请/修改")
 	@PostMapping("/apply")

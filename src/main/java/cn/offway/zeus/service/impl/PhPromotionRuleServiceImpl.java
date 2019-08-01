@@ -58,6 +58,11 @@ public class PhPromotionRuleServiceImpl implements PhPromotionRuleService {
 	}
 
 	@Override
+	public PhPromotionRule findByPromotionIdAndGiftLimit(Long promotionId,Double goodsAmount){
+		return phPromotionRuleRepository.findByPromotionIdAndGiftLimit(promotionId, goodsAmount);
+	}
+
+	@Override
 	public PhPromotionRule findByPromotionIdAndDiscountNum(Long promotionId, int discountNum) {
 		return phPromotionRuleRepository.findByPromotionIdAndDiscountNum(promotionId,discountNum);
 	}

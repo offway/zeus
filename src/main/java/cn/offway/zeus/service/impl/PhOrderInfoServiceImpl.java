@@ -305,6 +305,8 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 
 			PhVoucherInfo mphVoucherInfo = null;
 
+			StringBuilder gift = new StringBuilder();
+
 			if(null!=mVoucherId){
 				mphVoucherInfo =  phVoucherInfoService.findById(mVoucherId);
 				sumMVoucherAmount = MathUtils.add(sumMVoucherAmount, mphVoucherInfo.getAmount());
@@ -313,7 +315,6 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 
 				//没有商户优惠券的情况，查询是否有促销活动
 				List<PhPromotionInfo> phPromotionInfos = phPromotionInfoService.findByMerchantIdAndGoodsId(merchantId,goodsIds);
-				List<PhPromotionInfo> reachPromotions = new ArrayList<>();
 				for (PhPromotionInfo phPromotionInfo: phPromotionInfos) {
 					//查询每个活动是否满足条件
 					String mode = phPromotionInfo.getMode();//减价类型[0-折扣，1-满减，2-赠品]
@@ -332,7 +333,6 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 						PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAnAndReduceLimit(promotionId,goodsAmount);
 						if (null != phPromotionRule){
 							promotionAmount = MathUtils.add(promotionAmount,phPromotionRule.getReduceAmount());
-							reachPromotions.add(phPromotionInfo);
 						}
 					}else if("0".equals(mode)){
 						//计算满足折扣的优惠金额
@@ -349,16 +349,26 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 						PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAndDiscountNum(promotionId,goodsCount);
 						if (null != phPromotionRule){
 							promotionAmount = MathUtils.add(promotionAmount,MathUtils.mul(goodsAmount,MathUtils.sub(1D,phPromotionRule.getDiscountRate())));
-							reachPromotions.add(phPromotionInfo);
 						}
 					}else if("2".equals(mode)){
-						reachPromotions.add(phPromotionInfo);
+						//计算满足满减条件的商品总金额
+						double goodsAmount = 0D;
+						for (OrderInitStockDto stock : stocks){
+							PhGoodsStock phGoodsStock=  phGoodsStockService.findById(stock.getStockId());
+							int count = phPromotionGoodsService.countByPromotionIdAndGoodsId(promotionId,phGoodsStock.getGoodsId());
+							if(count>0){
+								goodsAmount = MathUtils.add(goodsAmount, MathUtils.mul(phGoodsStock.getPrice(), stock.getNum().intValue()));
+							}
+						}
+						PhPromotionRule phPromotionRule = phPromotionRuleService.findByPromotionIdAndGiftLimit(promotionId,goodsAmount);
+						if (null != phPromotionRule){
+							gift.append(phPromotionRule.getGift()).append(" ");
+						}
+
 					}
 				}
 
 				sumPromotionAmount = MathUtils.add(sumPromotionAmount,promotionAmount);
-                //sumMPromotionAmount = MathUtils.add(sumMPromotionAmount,promotionAmount);
-				//s.put("reachPromotions", reachPromotions);
 			}
 			
 			PhOrderInfo phOrderInfo = new PhOrderInfo();
@@ -377,8 +387,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			phOrderInfo.setPrice(sumPrice);
 			phOrderInfo.setPromotionAmount(promotionAmount);//商户促销优惠金额
 			phOrderInfo.setIsHidden("0");
-
-
+			phOrderInfo.setGift(gift.toString());
 
 
 			//需要支付金额=商品总价+运费-商户优惠券金额-商户优惠金额

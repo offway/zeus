@@ -23,7 +23,9 @@ public interface PhPromotionRuleService{
 
     PhPromotionRule findByPromotionIdAnAndReduceLimit(Long promotionId,Double goodsAmount);
 
-    PhPromotionRule findByPromotionIdAndDiscountNum(Long promotionId,int discountNum);
+    PhPromotionRule findByPromotionIdAndGiftLimit(Long promotionId, Double goodsAmount);
+
+    PhPromotionRule findByPromotionIdAndDiscountNum(Long promotionId, int discountNum);
 
     List<PhPromotionRule> findByPlatform(List<Long> goodsIds);
 }
