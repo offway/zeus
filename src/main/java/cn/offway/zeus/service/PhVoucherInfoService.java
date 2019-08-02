@@ -29,6 +29,8 @@ public interface PhVoucherInfoService{
 	
 	int countUseByPlatform(Long userId,Double amount);
 
+	boolean giveVoucherByConfig(Long userId, String config);
+
 	List<PhVoucherInfo> findAll(VoucherDto voucherDto);
 
 	int updateStatusBym(Long voucherId, Double amount, Long merchant_id, Long userId);

@@ -12,6 +12,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import cn.offway.zeus.domain.PhMerchant;
+import cn.offway.zeus.service.PhConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,10 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 	
 	@Autowired
 	private PhVoucherProjectRepository phVoucherProjectRepository;
+
+	@Autowired
+	private PhConfigService phConfigService;
+
 	
 	@Override
 	public PhVoucherInfo save(PhVoucherInfo phVoucherInfo){
@@ -143,6 +148,18 @@ public class PhVoucherInfoServiceImpl implements PhVoucherInfoService {
 			count = phVoucherInfoRepository.give(userId, phVoucherProject.getId());
 		}
 		return count==1;
+	}
+
+	@Override
+	public boolean giveVoucherByConfig(Long userId, String config){
+		try {
+			String content = phConfigService.findContentByName(config);
+			Long voucherProjectId = Long.parseLong(content);
+			return giveVoucher(userId,voucherProjectId);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	@Override

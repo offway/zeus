@@ -124,3 +124,9 @@ springfox:
     swagger:
       v2:
         host: t.offway.cn
+
+#极光推送
+jpush:
+  apns-production: false
+  app-key: 23f3d1476579eda19a0da872
+  master-secret: 90f4a69575d4a51c877f5dad

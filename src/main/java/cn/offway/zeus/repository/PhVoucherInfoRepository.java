@@ -81,5 +81,6 @@ public interface PhVoucherInfoRepository extends JpaRepository<PhVoucherInfo,Lon
 	@Query(nativeQuery=true,value="select id from ph_voucher_info where user_id=?1 and voucher_project_id=?2 and `status`='0'and NOW() BETWEEN begin_time and end_time order by id desc limit 1")
 	Long findId(Long userId,Long voucherProjectId);
 
+	List<PhVoucherInfo> findByUserIdAndVoucherProjectIdInOrderByCreateTimeDesc(Long userId,List<Long> voucherProjectIds);
 	
 }
