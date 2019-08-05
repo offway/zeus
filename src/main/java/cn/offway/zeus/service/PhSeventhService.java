@@ -4,6 +4,10 @@ import cn.offway.zeus.domain.PhSeventh;
 import cn.offway.zeus.domain.PhSeventhRecord;
 import cn.offway.zeus.repository.PhSeventhRecordRepository;
 import cn.offway.zeus.repository.PhSeventhRepository;
+import cn.offway.zeus.utils.CommonResultCode;
+import cn.offway.zeus.utils.JsonResult;
+import cn.offway.zeus.utils.JsonResultHelper;
+import com.qiniu.util.Json;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,9 @@ public class PhSeventhService {
     @Autowired
     private JPushService jPushService;
 
+    @Autowired
+    private JsonResultHelper jsonResultHelper;
+
 
 
     public void share(Long userId){
@@ -48,7 +55,12 @@ public class PhSeventhService {
         }
     }
 
-    public void receive(Long shareUserId,Long receiveUserId,String pushUrl){
+    public JsonResult receive(Long shareUserId, Long receiveUserId, String pushUrl){
+
+        if(shareUserId.longValue() == receiveUserId.longValue()){
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+        }
+
         String now = DateFormatUtils.format(new Date(),"yyyy-MM-dd");
         int count = phSeventhRecordRepository.countByShareUserIdAndCreateDateAndType(shareUserId,now,"1");
         if(count == 0){
@@ -79,7 +91,9 @@ public class PhSeventhService {
             args.put("url", pushUrl);
             jPushService.sendPushUser("通知", "TA已收到你的520祝福。恭喜！解锁一次抽大奖机会，快去领取", args, ""+shareUserId);
 
-
+            return jsonResultHelper.buildSuccessJsonResult(null);
+        }else{
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
         }
 
     }

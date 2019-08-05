@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.offway.zeus.dto.ExchangeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,15 +67,25 @@ public class RefundController {
 	@GetMapping("/init")
 	public JsonResult init(String orderNo){
 		return phRefundService.init(orderNo);
-
 	}
 
 	@ApiOperation("换货初始化")
 	@GetMapping("/exchange/init")
 	public JsonResult exchangeInit(String orderNo){
 		return phRefundService.exchangeInit(orderNo);
-
 	}
+
+	@ApiOperation("换货申请")
+	@PostMapping("/exchange/apply")
+	public JsonResult exchangeApply(@ApiParam("请求参数") @RequestBody ExchangeDto exchangeDto){
+		try {
+			return phRefundService.exchangeApply(exchangeDto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		}
+	}
+
 	
 	@ApiOperation("退款申请/修改")
 	@PostMapping("/apply")

@@ -54,7 +54,7 @@ public class PhRefundGoods implements Serializable {
     private Long toStockId;
 
     /** 换后商品库存描述 **/
-    private Long toStockDesc;
+    private String toStockDesc;
 
     /** 换后商品图片 **/
     private String toStockImage;
@@ -183,12 +183,12 @@ public class PhRefundGoods implements Serializable {
         this.toStockId = toStockId;
     }
 
-    @Column(name = "to_stock_desc", length = 11)
-    public Long getToStockDesc() {
+    @Column(name = "to_stock_desc", length = 100)
+    public String getToStockDesc() {
         return toStockDesc;
     }
 
-    public void setToStockDesc(Long toStockDesc) {
+    public void setToStockDesc(String toStockDesc) {
         this.toStockDesc = toStockDesc;
     }
 

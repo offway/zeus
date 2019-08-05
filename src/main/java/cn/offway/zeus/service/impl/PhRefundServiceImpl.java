@@ -9,6 +9,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.CriteriaBuilder.In;
 
 import cn.offway.zeus.domain.*;
+import cn.offway.zeus.dto.ExchangeDto;
+import cn.offway.zeus.dto.ExchangeGoodsDto;
 import cn.offway.zeus.repository.PhOrderInfoRepository;
 import cn.offway.zeus.repository.PhRefundOrderGoodsRepository;
 import cn.offway.zeus.service.*;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import cn.offway.zeus.dto.RefundDto;
@@ -79,6 +82,9 @@ public class PhRefundServiceImpl implements PhRefundService {
 
 	@Autowired
 	private PhRefundOrderGoodsRepository phRefundOrderGoodsRepository;
+
+	@Autowired
+	private PhGoodsStockService phGoodsStockService;
 	
 	@Override
 	public PhRefund save(PhRefund phRefund){
@@ -289,21 +295,25 @@ public class PhRefundServiceImpl implements PhRefundService {
 		}
 
 		List<PhOrderGoods> resultGoods = new ArrayList<>();
-		List<PhRefundOrderGoods> phRefundOrderGoodss = phRefundOrderGoodsRepository.findByOrderNo(orderNo);
-		if(CollectionUtils.isEmpty(phRefundOrderGoodss)){
-			//没有发生过退款换货，查看订单商品
-			List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
-			for (PhOrderGoods orderGoodss : phOrderGoodss) {
-				for (int i = 0; i < orderGoodss.getGoodsCount(); i++) {
-					resultGoods.add(orderGoodss);
-				}
-			}
-		}else {
+
+
+		int refundSuccess = phRefundRepository.refundSuccess(orderNo);
+		if(refundSuccess > 0){
+			//如果退款或还款完成过，
+			List<PhRefundOrderGoods> phRefundOrderGoodss = phRefundOrderGoodsRepository.findByOrderNo(orderNo);
 			for (PhRefundOrderGoods phRefundOrderGoods : phRefundOrderGoodss) {
 				PhOrderGoods orderGoodss = new PhOrderGoods();
 				if (null != phRefundOrderGoods){
 					BeanUtils.copyProperties(phRefundOrderGoods,orderGoodss);
 				}
+				for (int i = 0; i < orderGoodss.getGoodsCount(); i++) {
+					resultGoods.add(orderGoodss);
+				}
+			}
+		}else {
+			//没有发生过退款换货，查看订单商品
+			List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
+			for (PhOrderGoods orderGoodss : phOrderGoodss) {
 				for (int i = 0; i < orderGoodss.getGoodsCount(); i++) {
 					resultGoods.add(orderGoodss);
 				}
@@ -315,16 +325,16 @@ public class PhRefundServiceImpl implements PhRefundService {
 
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
-	
+
 	@Override
 	public JsonResult init(String orderNo){
-		
+
 		//一笔订单只能提交一次退款申请
 		int c = phRefundRepository.isCompleteOrderNo(orderNo);//查询该订单是否已整单退款-暂时不用
 		if(c>0){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_APPLIED);
 		}
-		
+
 		Map<String, Object> resultMap = new HashMap<>();
 		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
 
@@ -333,7 +343,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_TIMEOUT);
 			}
 		}
-		
+
 		List<String> statuss = new ArrayList<>();
 		//1-已付款,2-已发货,3-已收货
 		statuss.add("1");
@@ -343,11 +353,11 @@ public class PhRefundServiceImpl implements PhRefundService {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 
 		}
-		
+
 		resultMap.put("orderInfo", phOrderInfo);
 		resultMap.put("hasCoupon", phOrderInfo.getMVoucherId()!=null || phOrderInfo.getPVoucherId() != null || phOrderInfo.getWalletAmount().doubleValue()>0D);
 		List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
-		
+
 		List<PhOrderGoods> goodss = new ArrayList<>();
 		for (PhOrderGoods phOrderGoods : phOrderGoodss) {
 			Long orderGoodsId = phOrderGoods.getId();
@@ -360,12 +370,84 @@ public class PhRefundServiceImpl implements PhRefundService {
 				goodss.add(phOrderGoods);
 			}
 		}
-		
+
 		resultMap.put("orderGoods", goodss);
-		
+
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
-	
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class,StockException.class})
+	public JsonResult exchangeApply(ExchangeDto exchangeDto) throws Exception{
+
+		String orderNo = exchangeDto.getOrderNo();
+		List<ExchangeGoodsDto> detail = exchangeDto.getDetail();
+
+		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
+		if(phOrderInfo.getUserId().longValue() != exchangeDto.getUserId().longValue()){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+		}
+
+		int c = phRefundRepository.refundIng(orderNo);
+		if(c > 0){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUNDING);
+		}
+
+		List<String> statuss = new ArrayList<>();
+		//1-已付款,2-已发货,3-已收货
+		statuss.add("1");
+		statuss.add("2");
+		statuss.add("3");
+		if(!statuss.contains(phOrderInfo.getStatus())){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+
+		}
+
+		Date now = new Date();
+
+		PhRefund phRefund = new PhRefund();
+		phRefund.setContent(exchangeDto.getContent());
+		phRefund.setOrderNo(orderNo);
+		phRefund.setType("2");
+		phRefund.setUserId(exchangeDto.getUserId());
+		phRefund.setVersion(0L);
+		phRefund.setStatus("0");
+		phRefund.setCreateTime(now);
+		phRefund.setGoodsCount((long) detail.size());
+		phRefund.setAddrId(exchangeDto.getAddrId());
+		phRefund = save(phRefund);
+
+		List<PhRefundGoods> phRefundGoodsList = new ArrayList<>();
+		List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
+		for (ExchangeGoodsDto exchangeGoodsDto : detail) {
+			for (PhOrderGoods orderGoods : phOrderGoodss) {
+				if(orderGoods.getGoodsStockId().longValue() == exchangeGoodsDto.getSourceStockId().longValue()){
+					PhRefundGoods phRefundGoods = new PhRefundGoods();
+					phRefundGoods.setCreateTime(now);
+					phRefundGoods.setGoodsCount(1L);
+					phRefundGoods.setOrderGoodsId(orderGoods.getId());
+					phRefundGoods.setRefundId(phRefund.getId());
+					phRefundGoods.setVersion(0L);
+					phRefundGoods.setFromStockId(orderGoods.getGoodsStockId());
+					phRefundGoods.setFromStockImage(orderGoods.getGoodsImage());
+					phRefundGoods.setGoodsId(orderGoods.getGoodsId());
+					phRefundGoods.setGoodsName(orderGoods.getGoodsName());
+					phRefundGoods.setPrice(orderGoods.getPrice());
+					phRefundGoods.setReason(exchangeGoodsDto.getReason());
+					phRefundGoods.setRemark(orderGoods.getRemark());
+					phRefundGoods.setToStockDesc(exchangeGoodsDto.getRemark());
+					phRefundGoods.setToStockId(exchangeGoodsDto.getTargetStockId());
+					PhGoodsStock phGoodsStock = phGoodsStockService.findById(exchangeGoodsDto.getTargetStockId());
+					phRefundGoods.setToStockImage(phGoodsStock.getImage());
+					phRefundGoodsList.add(phRefundGoods);
+				}
+			}
+		}
+		phRefundGoodsService.save(phRefundGoodsList);
+
+		return jsonResultHelper.buildSuccessJsonResult(null);
+	}
+
 	@Override
 	public JsonResult info(Long id){
 		PhRefund phRefund = findById(id);

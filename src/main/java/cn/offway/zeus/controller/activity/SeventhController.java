@@ -79,8 +79,7 @@ public class SeventhController {
             @ApiParam("分享用户ID") @RequestParam Long shareUserId,
             @ApiParam("被邀请用户ID") @RequestParam Long receiveUserId,
             @ApiParam("推送URL") @RequestParam String pushUrl){
-        phSeventhService.receive(shareUserId, receiveUserId,pushUrl);
-        return jsonResultHelper.buildSuccessJsonResult(null);
+        return phSeventhService.receive(shareUserId, receiveUserId,pushUrl);
 
     }
 

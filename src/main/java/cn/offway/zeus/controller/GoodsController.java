@@ -117,6 +117,37 @@ public class GoodsController {
 		
 		return jsonResultHelper.buildSuccessJsonResult(pages);
 	}
+
+	@ApiOperation("商品sku")
+	@GetMapping("/sku")
+	public JsonResult sku(@ApiParam("商品ID") @RequestParam Long id){
+		List<Map<String, Object>> list = new ArrayList<>();
+		List<PhGoodsStock> phGoodsStocks = phGoodsStockService.findByGoodsId(id);
+		List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsId(id);
+
+		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
+			Map<String, Object> map = new HashMap<>();
+			Long stock = phGoodsStock.getStock();
+			map.put("id", phGoodsStock.getId());
+			map.put("stock", stock);
+			map.put("img", phGoodsStock.getImage());
+			map.put("price", phGoodsStock.getPrice());
+
+			List<Map<String, Object>> attributes = new ArrayList<>();
+			for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
+				if(phGoodsProperty.getGoodsStockId().longValue()==phGoodsStock.getId().longValue()){
+					Map<String, Object> attr = new HashMap<>();
+					attr.put("key", phGoodsProperty.getName());
+					attr.put("value", phGoodsProperty.getValue());
+					attributes.add(attr);
+				}
+			}
+
+			map.put("attributes",attributes );
+			list.add(map);
+		}
+		return jsonResultHelper.buildSuccessJsonResult(list);
+	}
 	
 	@ApiOperation("商品详情")
 	@PostMapping("/info")
@@ -130,7 +161,7 @@ public class GoodsController {
 		List<Map<String, Object>> list = new ArrayList<>();
 		List<PhGoodsStock> phGoodsStocks = phGoodsStockService.findByGoodsId(id);
 		List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsId(id);
-		
+
 		Long sumStock = 0L;
 		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
 			Map<String, Object> map = new HashMap<>();
@@ -139,7 +170,7 @@ public class GoodsController {
 			map.put("stock", stock);
 			map.put("img", phGoodsStock.getImage());
 			map.put("price", phGoodsStock.getPrice());
-			
+
 			List<Map<String, Object>> attributes = new ArrayList<>();
 			for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
 				if(phGoodsProperty.getGoodsStockId().longValue()==phGoodsStock.getId().longValue()){
@@ -149,7 +180,7 @@ public class GoodsController {
 					attributes.add(attr);
 				}
 			}
-			
+
 			map.put("attributes",attributes );
 			list.add(map);
 			sumStock +=stock;
