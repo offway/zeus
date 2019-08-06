@@ -89,7 +89,7 @@ public class PhSeventhService {
             args.put("type", "0");
             args.put("id", "");
             args.put("url", pushUrl);
-            jPushService.sendPushUser("通知", "TA已收到你的520祝福。恭喜！解锁一次抽大奖机会，快去领取", args, ""+shareUserId);
+            jPushService.sendPushUser("通知", "TA已收到你的七夕祝福。恭喜！解锁一次抽大奖机会，快去领取", args, ""+shareUserId);
 
             return jsonResultHelper.buildSuccessJsonResult(null);
         }else{
