@@ -61,6 +61,8 @@ public class MiniController {
 		params.put("page", page);
 		params.put("scene", scene);
 		params.put("width", width);
+		////设置https协议访问
+		//System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2,SSLv3");
         byte[] result = HttpClientUtil.postByteArray("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token="+access_token,params.toJSONString());
         String resultStr = new String(result, "UTF-8");
         if(resultStr.indexOf("errcode")>=0){

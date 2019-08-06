@@ -320,7 +320,7 @@ public class UserController {
 		}
 		phUserInfo.setWeiboid(weiboid);
 		phUserInfo.setQqid(qqid);
-		phUserInfo.setUnionid(unionid);
+		phUserInfo.setUnionid("".equals(unionid)?null:unionid);
 		phUserInfo = phUserInfoService.save(phUserInfo);
 		return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
 

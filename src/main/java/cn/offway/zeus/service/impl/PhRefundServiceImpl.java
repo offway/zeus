@@ -445,7 +445,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 		}
 		phRefundGoodsService.save(phRefundGoodsList);
 
-		return jsonResultHelper.buildSuccessJsonResult(null);
+		return jsonResultHelper.buildSuccessJsonResult(phRefund.getId());
 	}
 
 	@Override
@@ -477,6 +477,9 @@ public class PhRefundServiceImpl implements PhRefundService {
 				map.put("count", phRefundGoods.getGoodsCount());
 				map.put("price", MathUtils.mul(MathUtils.div(phOrderGoods.getPrice(), phOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));
 				map.put("property", phOrderGoods.getRemark());
+				map.put("changeReason", phRefundGoods.getReason());
+				map.put("changeRemark", phRefundGoods.getToStockDesc());
+
 				goods.add(map);
 			}
 		}
