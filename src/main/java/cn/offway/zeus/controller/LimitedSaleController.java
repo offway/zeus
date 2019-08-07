@@ -68,6 +68,15 @@ public class LimitedSaleController {
 			list.add(map);
 		}
 
+		if(list.isEmpty()){
+			PhLimitedSale phLimitedSale = phLimitedSaleService.findHeadForEnd();
+			Map<String,Object> map = new HashMap<>();
+			map.put("id",phLimitedSale.getId());
+			map.put("date",sdf.format(phLimitedSale.getBeginTime()));
+			map.put("text","已结束");
+			list.add(map);
+		}
+
 		return jsonResultHelper.buildSuccessJsonResult(list);
 	}
 	

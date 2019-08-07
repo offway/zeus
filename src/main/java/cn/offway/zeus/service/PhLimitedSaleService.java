@@ -22,6 +22,8 @@ public interface PhLimitedSaleService{
 
     List<PhLimitedSale> findHead();
 
+    PhLimitedSale findHeadForEnd();
+
     Page<PhLimitedSale> findByPage(LimitedSaleDto limitedSaleDto, Pageable page);
 
 	PhLimitedSale findByGoodsId(Long goodsId);

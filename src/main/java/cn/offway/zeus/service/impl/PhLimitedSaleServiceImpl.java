@@ -64,6 +64,11 @@ public class PhLimitedSaleServiceImpl implements PhLimitedSaleService {
 	public List<PhLimitedSale> findHead(){
 		return phLimitedSaleRepository.findHead();
 	}
+
+	@Override
+	public PhLimitedSale findHeadForEnd(){
+		return phLimitedSaleRepository.findHeadForEnd();
+	}
 	
 	@Override
 	public Page<PhLimitedSale> findByPage(final LimitedSaleDto limitedSaleDto,Pageable page){

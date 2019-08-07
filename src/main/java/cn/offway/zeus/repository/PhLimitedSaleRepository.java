@@ -21,4 +21,7 @@ public interface PhLimitedSaleRepository extends JpaRepository<PhLimitedSale,Lon
 
 	@Query(nativeQuery=true,value="select * from ph_limited_sale where status ='1' and end_time > now() order by begin_time ")
 	List<PhLimitedSale> findHead();
+
+	@Query(nativeQuery=true,value="select * from ph_limited_sale where status ='1' order by end_time desc limit 1")
+	PhLimitedSale findHeadForEnd();
 }
