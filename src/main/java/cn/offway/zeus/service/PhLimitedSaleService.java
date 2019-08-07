@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import cn.offway.zeus.domain.PhLimitedSale;
 import cn.offway.zeus.dto.LimitedSaleDto;
 
+import java.util.List;
+
 /**
  * 限量发售Service接口
  *
@@ -18,7 +20,9 @@ public interface PhLimitedSaleService{
 	
 	PhLimitedSale findById(Long id);
 
-	Page<PhLimitedSale> findByPage(LimitedSaleDto limitedSaleDto, Pageable page);
+    List<PhLimitedSale> findHead();
+
+    Page<PhLimitedSale> findByPage(LimitedSaleDto limitedSaleDto, Pageable page);
 
 	PhLimitedSale findByGoodsId(Long goodsId);
 }

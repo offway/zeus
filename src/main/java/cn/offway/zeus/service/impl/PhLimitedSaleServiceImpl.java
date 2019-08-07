@@ -59,6 +59,11 @@ public class PhLimitedSaleServiceImpl implements PhLimitedSaleService {
 	public PhLimitedSale findByGoodsId(Long goodsId){
 		return phLimitedSaleRepository.findByGoodsId(goodsId);
 	}
+
+	@Override
+	public List<PhLimitedSale> findHead(){
+		return phLimitedSaleRepository.findHead();
+	}
 	
 	@Override
 	public Page<PhLimitedSale> findByPage(final LimitedSaleDto limitedSaleDto,Pageable page){
@@ -77,10 +82,13 @@ public class PhLimitedSaleServiceImpl implements PhLimitedSaleService {
 						params.add(criteriaBuilder.lessThanOrEqualTo(root.get("beginTime"), now));
 						params.add(criteriaBuilder.greaterThan(root.get("endTime"), now));
 //						order = criteriaBuilder.asc(root.get("endTime"));
-					}else{
+					}else if("1".equals(limitedSaleDto.getType())){
 						//即将发售
 						params.add(criteriaBuilder.greaterThan(root.get("beginTime"), now));
 //						order = criteriaBuilder.asc(root.get("beginTime"));
+
+					}else{
+						params.add(criteriaBuilder.lessThanOrEqualTo(root.get("endTime"), now));
 
 					}
 				}

@@ -14,4 +14,7 @@ import cn.offway.zeus.domain.PhLimitedSaleOp;
 public interface PhLimitedSaleOpRepository extends JpaRepository<PhLimitedSaleOp,Long>,JpaSpecificationExecutor<PhLimitedSaleOp> {
 
 	int countByLimitedSaleIdAndUserIdAndType(Long limitedSaleId,Long userId,String type);
+
+	int countByLimitedSaleIdAndUserIdAndTypeAndBoostUserId(Long limitedSaleId,Long userId,String type,Long boostUserId);
+
 }

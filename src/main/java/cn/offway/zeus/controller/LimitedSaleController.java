@@ -1,7 +1,9 @@
 package cn.offway.zeus.controller;
 
-import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+import cn.offway.zeus.utils.CommonResultCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -50,6 +52,24 @@ public class LimitedSaleController {
 		Page<PhLimitedSale> pages = phLimitedSaleService.findByPage(limitedSaleDto, PageRequest.of(limitedSaleDto.getPage(), limitedSaleDto.getSize()));
 		return jsonResultHelper.buildSuccessJsonResult(pages);
 	}
+
+	@ApiOperation("限量发售那个头")
+	@GetMapping("/head")
+	public JsonResult head(){
+		Date now = new Date();
+		List<Map<String,Object>> list = new ArrayList<>();
+		List<PhLimitedSale> sales = phLimitedSaleService.findHead();
+		SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
+		for (PhLimitedSale sale : sales) {
+			Map<String,Object> map = new HashMap<>();
+			map.put("id",sale.getId());
+			map.put("date",sdf.format(sale.getBeginTime()));
+			map.put("text",now.before(sale.getBeginTime())?"即将发售":"进行中");
+			list.add(map);
+		}
+
+		return jsonResultHelper.buildSuccessJsonResult(list);
+	}
 	
 	@ApiOperation("限量发售详情")
 	@GetMapping("/info")
@@ -61,14 +81,14 @@ public class LimitedSaleController {
 		if(null!=phLimitedSale){
 			BeanUtils.copyProperties(phLimitedSale, dto);
 		}
-		boolean assisted = false;
+		int currentCount = 0;
 		if(null != userId){
-			int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id, userId, "0");
-			assisted = c>0;
+			int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id,userId,"0");
+			currentCount = c;
 		}
-		dto.setAssisted(assisted);
+		dto.setCurrentCount((long)currentCount);
 		dto.setNow(new Date());
-		
+
 		return jsonResultHelper.buildSuccessJsonResult(dto);
 	}
 	
@@ -76,17 +96,21 @@ public class LimitedSaleController {
 	@PostMapping("/op")
 	public JsonResult op(
 			@ApiParam("限量发售ID") @RequestParam Long id,
-			@ApiParam("用户ID") @RequestParam(required = false) Long userId,
-			@ApiParam("类型[0-好友助力,1-订阅]") @RequestParam String type){
-		int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id, userId, type);
+			@ApiParam("分享用户ID") @RequestParam Long userId,
+			@ApiParam("助力用户ID") @RequestParam Long boostUserId){
+
+		int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndTypeAndBoostUserId(id, userId, "0",boostUserId);
 		if(c == 0){
 			PhLimitedSaleOp op = new PhLimitedSaleOp();
 			op.setCreateTime(new Date());
 			op.setLimitedSaleId(id);
-			op.setType(type);
+			op.setType("0");
 			op.setUserId(userId);
+			op.setBoostUserId(boostUserId);
 			phLimitedSaleOpRepository.save(op);
+			return jsonResultHelper.buildSuccessJsonResult(null);
+		}else{
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOSTED);
 		}
-		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 }

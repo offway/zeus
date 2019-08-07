@@ -337,7 +337,7 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 				}
 				
 				int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(phLimitedSale.getId(), userId, "0");
-				if(c == 0){
+				if(c < phLimitedSale.getBoostCount().intValue()){
 					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 				}
 			}

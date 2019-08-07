@@ -356,10 +356,10 @@ public class PhRefundServiceImpl implements PhRefundService {
 
 		resultMap.put("orderInfo", phOrderInfo);
 		resultMap.put("hasCoupon", phOrderInfo.getMVoucherId()!=null || phOrderInfo.getPVoucherId() != null || phOrderInfo.getWalletAmount().doubleValue()>0D);
-		List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
+//		List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
 
 		List<PhOrderGoods> goodss = new ArrayList<>();
-		for (PhOrderGoods phOrderGoods : phOrderGoodss) {
+		/*for (PhOrderGoods phOrderGoods : phOrderGoodss) {
 			Long orderGoodsId = phOrderGoods.getId();
 			Long orderGoodsCount = phOrderGoods.getGoodsCount();
 			Long count = phRefundGoodsService.refundGoodsCount(orderGoodsId);
@@ -368,6 +368,25 @@ public class PhRefundServiceImpl implements PhRefundService {
 			if(surplus>0){
 				phOrderGoods.setGoodsCount(surplus);
 				goodss.add(phOrderGoods);
+			}
+		}*/
+
+		int refundSuccess = phRefundRepository.refundSuccess(orderNo);
+		if(refundSuccess > 0){
+			//如果退款或还款完成过，
+			List<PhRefundOrderGoods> phRefundOrderGoodss = phRefundOrderGoodsRepository.findByOrderNo(orderNo);
+			for (PhRefundOrderGoods phRefundOrderGoods : phRefundOrderGoodss) {
+				PhOrderGoods orderGoodss = new PhOrderGoods();
+				if (null != phRefundOrderGoods){
+					BeanUtils.copyProperties(phRefundOrderGoods,orderGoodss);
+				}
+				goodss.add(orderGoodss);
+			}
+		}else {
+			//没有发生过退款换货，查看订单商品
+			List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
+			for (PhOrderGoods orderGoodss : phOrderGoodss) {
+				goodss.add(orderGoodss);
 			}
 		}
 

@@ -50,6 +50,17 @@ public class PhLimitedSale implements Serializable {
     /** 备注 **/
     private String remark;
 
+    /** 市场价 **/
+    private String originalPrice;
+
+    /** 数量 **/
+    private String saleCount;
+
+    /** 目标助力次数 **/
+    private Long boostCount;
+
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -153,6 +164,33 @@ public class PhLimitedSale implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Column(name = "original_price", length = 50)
+    public String getOriginalPrice() {
+        return originalPrice;
+    }
+
+    public void setOriginalPrice(String originalPrice) {
+        this.originalPrice = originalPrice;
+    }
+
+    @Column(name = "sale_count", length = 50)
+    public String getSaleCount() {
+        return saleCount;
+    }
+
+    public void setSaleCount(String saleCount) {
+        this.saleCount = saleCount;
+    }
+
+    @Column(name = "boost_count", length = 11)
+    public Long getBoostCount() {
+        return boostCount;
+    }
+
+    public void setBoostCount(Long boostCount) {
+        this.boostCount = boostCount;
     }
 
 }

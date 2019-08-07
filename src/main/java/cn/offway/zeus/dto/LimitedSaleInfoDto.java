@@ -43,9 +43,18 @@ public class LimitedSaleInfoDto implements Serializable {
 
     /** 备注 **/
     private String remark;
-    
-    /** 是否助力 **/
-    private boolean assisted;
+
+	/** 目标助力次数 **/
+	private Long boostCount;
+
+	/** 当前助力次数 **/
+	private Long currentCount;
+
+	/** 市场价 **/
+	private String originalPrice;
+
+	/** 数量 **/
+	private String saleCount;
     
     /** 服务器当前时间 **/
     private Date now;
@@ -138,13 +147,6 @@ public class LimitedSaleInfoDto implements Serializable {
 		this.remark = remark;
 	}
 
-	public boolean isAssisted() {
-		return assisted;
-	}
-
-	public void setAssisted(boolean assisted) {
-		this.assisted = assisted;
-	}
 
 	public Date getNow() {
 		return now;
@@ -153,5 +155,36 @@ public class LimitedSaleInfoDto implements Serializable {
 	public void setNow(Date now) {
 		this.now = now;
 	}
-	
+
+	public String getOriginalPrice() {
+		return originalPrice;
+	}
+
+	public void setOriginalPrice(String originalPrice) {
+		this.originalPrice = originalPrice;
+	}
+
+	public String getSaleCount() {
+		return saleCount;
+	}
+
+	public void setSaleCount(String saleCount) {
+		this.saleCount = saleCount;
+	}
+
+	public Long getBoostCount() {
+		return boostCount;
+	}
+
+	public void setBoostCount(Long boostCount) {
+		this.boostCount = boostCount;
+	}
+
+	public Long getCurrentCount() {
+		return currentCount;
+	}
+
+	public void setCurrentCount(Long currentCount) {
+		this.currentCount = currentCount;
+	}
 }

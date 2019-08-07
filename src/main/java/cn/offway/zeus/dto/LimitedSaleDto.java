@@ -13,7 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class LimitedSaleDto implements Serializable {
 
 
-    @ApiModelProperty(value ="类型[0-最新发售，1-即将发售]")
+    @ApiModelProperty(value ="类型[0-最新发售，1-即将发售，2-往期发售]")
     private String type;
 
     @ApiModelProperty(required = true,value ="页码,从0开始")

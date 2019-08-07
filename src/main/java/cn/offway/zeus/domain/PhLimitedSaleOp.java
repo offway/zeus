@@ -35,6 +35,9 @@ public class PhLimitedSaleOp implements Serializable {
     /** 备注 **/
     private String remark;
 
+    /** 助力用户ID **/
+    private Long boostUserId;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -93,4 +96,12 @@ public class PhLimitedSaleOp implements Serializable {
         this.remark = remark;
     }
 
+    @Column(name = "boost_user_id", length = 11)
+    public Long getBoostUserId() {
+        return boostUserId;
+    }
+
+    public void setBoostUserId(Long boostUserId) {
+        this.boostUserId = boostUserId;
+    }
 }

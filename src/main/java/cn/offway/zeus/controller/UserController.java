@@ -155,6 +155,25 @@ public class UserController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
 	}
+
+	@ApiOperation("发送短信验证码-活动")
+	@PostMapping("/sms-act")
+	public JsonResult smsAct(@ApiParam("手机号") @RequestParam String phone,HttpServletRequest request){
+		/**
+		 * 虚拟运营商号段：
+		 * 电信：1700、1701、1702
+		 * 移动：1703、1705、1706
+		 * 联通：1704、1707、1708、1709、171
+		 */
+		boolean check = phone.startsWith("1700")||phone.startsWith("1701")||phone.startsWith("1702")
+				||phone.startsWith("1703")||phone.startsWith("1705")||phone.startsWith("1706")
+				||phone.startsWith("1704")||phone.startsWith("1707")||phone.startsWith("1708")
+				||phone.startsWith("1709")||phone.startsWith("171");
+		if(check){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_FAIL);
+		}
+		return sms(phone,request);
+	}
 	
 	@ApiOperation("发送短信验证码")
 	@PostMapping("/sms")
