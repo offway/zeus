@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.offway.zeus.domain.*;
 import cn.offway.zeus.dto.ExchangeDto;
+import cn.offway.zeus.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 
-import cn.offway.zeus.domain.PhOrderExpressInfo;
-import cn.offway.zeus.domain.PhOrderGoods;
-import cn.offway.zeus.domain.PhOrderInfo;
-import cn.offway.zeus.domain.PhRefund;
-import cn.offway.zeus.domain.PhRefundGoods;
 import cn.offway.zeus.dto.RefundDto;
-import cn.offway.zeus.service.PhOrderGoodsService;
-import cn.offway.zeus.service.PhRefundGoodsService;
-import cn.offway.zeus.service.PhRefundService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.HttpClientUtil;
 import cn.offway.zeus.utils.JsonResult;
@@ -58,6 +52,12 @@ public class RefundController {
 	
 	@Autowired
 	private PhRefundGoodsService phRefundGoodsService;
+
+	@Autowired
+	private PhAddressService phAddressService;
+
+	@Autowired
+	private Kuaidi100Service kuaidi100Service;
 	
 	@Value("${is-prd}")
 	private boolean isPrd;
@@ -85,6 +85,48 @@ public class RefundController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
 	}
+
+	@ApiOperation("换货确认收货")
+	@PostMapping("/exchange/receipt")
+	public JsonResult exchangeReceipt(@ApiParam("换货ID") @RequestParam Long id){
+		try {
+			PhRefund phRefund = phRefundService.findById(id);
+			if("7".equals(phRefund.getStatus()) && "2".equals(phRefund.getType())){
+				phRefund.setStatus("4");
+				phRefundService.save(phRefund);
+				return jsonResultHelper.buildSuccessJsonResult(null);
+
+			}else{
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		}
+	}
+
+	@ApiOperation("换货查看物流")
+	@GetMapping("/exchange/express")
+	public JsonResult exchangeExpress(@ApiParam("换货ID") @RequestParam Long id){
+		try {
+			PhRefund phRefund = phRefundService.findById(id);
+			String shipExpressCode = phRefund.getShipExpressCode();
+			String shipMailNo = phRefund.getShipMailNo();
+			Long addrId = phRefund.getAddrId();
+			PhAddress phAddress = phAddressService.findById(addrId);
+			String phone = phAddress.getPhone();
+//			String result = kuaidi100Service.query("yuantong", "805283162742333582", "18621866390");
+			String result = kuaidi100Service.query(shipExpressCode, shipMailNo, phone);
+			return jsonResultHelper.buildSuccessJsonResult(JSON.parseObject(result));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+		}
+	}
+
+
 
 	
 	@ApiOperation("退款申请/修改")
