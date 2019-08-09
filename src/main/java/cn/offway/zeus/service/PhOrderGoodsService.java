@@ -16,5 +16,7 @@ public interface PhOrderGoodsService{
 	
 	PhOrderGoods findById(Long id);
 
-	List<PhOrderGoods> findByOrderNo(String orderNo);
+    int sumGoodsCountByOrderNo(String orderNo);
+
+    List<PhOrderGoods> findByOrderNo(String orderNo);
 }

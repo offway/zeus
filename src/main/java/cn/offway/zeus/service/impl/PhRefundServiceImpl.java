@@ -133,6 +133,12 @@ public class PhRefundServiceImpl implements PhRefundService {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 
 		}
+
+
+		String canRefund = canRefund(orderNo);
+		if("0".equals(canRefund)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_ALL);
+		}
 		
 		String isComplete = "0";
 		if(null != phOrderInfo.getPVoucherId() || null != phOrderInfo.getMVoucherId()|| 
@@ -149,7 +155,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 		}
 		
 		//一笔订单只能提交一次退款申请
-		int c = phRefundRepository.isCompleteOrderNo(orderNo);//查询该订单是否已整单退款-暂时不用
+		int c = phRefundRepository.refunded(orderNo);
 		if(c>0){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_APPLIED);
 		}
@@ -185,6 +191,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 					Long orderGoodsId = phOrderGoods.getId();
 					if(orderGoodsId.longValue() == refundGoodsDto.getOrderGoodsId().longValue()){
 						PhRefundGoods phRefundGoods = new PhRefundGoods();
+						phRefundGoods.setFromStockId(phOrderGoods.getGoodsStockId());
 						phRefundGoods.setCreateTime(now);
 						Long orderGoodsCount = phOrderGoods.getGoodsCount();
 						Long count = phRefundGoodsService.refundGoodsCount(orderGoodsId);
@@ -251,21 +258,17 @@ public class PhRefundServiceImpl implements PhRefundService {
 	
 	@Override
 	public String canRefund(String orderNo){
-		String canRefund = "";
-		//一笔订单只能提交一次退款申请
-		int c = phRefundRepository.isCompleteOrderNo(orderNo);//查询该订单是否已整单退款-暂时不用
-		if(c>0){
-			canRefund = CommonResultCode.REFUND_APPLIED.getStatusCode();
-		}
-		
-		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
 
-		if(null != phOrderInfo.getReceiptTime()){
-			if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).before(new Date())){
-				canRefund = CommonResultCode.REFUND_TIMEOUT.getStatusCode();
-			}
+		//查询订单商品是否全部退货/退款
+		String canRefund = "0";//0否1是
+		//查询退款中及退款成功的商品数量
+		int refundGoodsCount = phRefundRepository.sumGoodsCountByOrderNo(orderNo);
+		//查询订单商品数量
+		int orderGoodsCount = phOrderGoodsService.sumGoodsCountByOrderNo(orderNo);
+
+		if(refundGoodsCount < orderGoodsCount){
+			canRefund = "";
 		}
-		
 		return canRefund;
 	}
 
@@ -330,10 +333,11 @@ public class PhRefundServiceImpl implements PhRefundService {
 	public JsonResult init(String orderNo){
 
 		//一笔订单只能提交一次退款申请
-		int c = phRefundRepository.isCompleteOrderNo(orderNo);//查询该订单是否已整单退款-暂时不用
+		int c = phRefundRepository.refunded(orderNo);
 		if(c>0){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_APPLIED);
 		}
+
 
 		Map<String, Object> resultMap = new HashMap<>();
 		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
@@ -407,6 +411,12 @@ public class PhRefundServiceImpl implements PhRefundService {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
 
+
+		String canRefund = canRefund(orderNo);
+		if("0".equals(canRefund)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_ALL);
+		}
+
 		int c = phRefundRepository.refundIng(orderNo);
 		if(c > 0){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUNDING);
@@ -432,6 +442,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 		phRefund.setVersion(0L);
 		phRefund.setStatus("0");
 		phRefund.setCreateTime(now);
+		phRefund.setIsComplete("0");
 		phRefund.setGoodsCount((long) detail.size());
 		phRefund.setAddrId(exchangeDto.getAddrId());
 		phRefund = save(phRefund);

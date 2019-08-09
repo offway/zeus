@@ -93,6 +93,9 @@ public enum CommonResultCode implements ResultCode {
 
     /** 退款审核中不能提交换货申请  */
     REFUNDING("1029", "REFUNDING"),
+
+    /** 该笔订单已全额退款，无法申请售后  */
+    REFUND_ALL("1030", "REFUND_ALL"),
     ;
 	
 	

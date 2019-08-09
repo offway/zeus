@@ -41,6 +41,12 @@ public class PhOrderGoodsServiceImpl implements PhOrderGoodsService {
 			}
 		return null;
 	}
+
+	@Override
+	public int sumGoodsCountByOrderNo(String orderNo){
+		return phOrderGoodsRepository.sumGoodsCountByOrderNo(orderNo);
+	}
+
 	
 	@Override
 	public List<PhOrderGoods> findByOrderNo(String orderNo){

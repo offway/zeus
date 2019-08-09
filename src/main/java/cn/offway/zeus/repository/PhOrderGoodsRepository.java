@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhOrderGoods;
+import org.springframework.data.jpa.repository.Query;
+
 import java.lang.String;
 import java.util.List;
 
@@ -18,4 +20,7 @@ public interface PhOrderGoodsRepository extends JpaRepository<PhOrderGoods,Long>
 	List<PhOrderGoods> findByPreorderNo(String preorderno);
 	
 	List<PhOrderGoods> findByOrderNo(String orderNo);
+
+	@Query(nativeQuery = true,value = "select SUM(goods_count) from ph_order_goods where order_no=?1")
+	int sumGoodsCountByOrderNo(String orderNo);
 }

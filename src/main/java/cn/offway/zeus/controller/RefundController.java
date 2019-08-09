@@ -1,13 +1,12 @@
 package cn.offway.zeus.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import cn.offway.zeus.domain.*;
 import cn.offway.zeus.dto.ExchangeDto;
+import cn.offway.zeus.repository.PhRefundRepository;
 import cn.offway.zeus.service.*;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,10 +57,59 @@ public class RefundController {
 
 	@Autowired
 	private Kuaidi100Service kuaidi100Service;
+
+	@Autowired
+	private PhOrderInfoService phOrderInfoService;
+
+	@Autowired
+	private PhRefundRepository phRefundRepository;
 	
 	@Value("${is-prd}")
 	private boolean isPrd;
-	
+
+
+	@ApiOperation("校验")
+	@GetMapping("/check")
+	public JsonResult check(
+			@ApiParam("订单号") @RequestParam String orderNo,
+			@ApiParam("类型[0-仅退款,1-退货退款,2-换货]") @RequestParam String type){
+
+		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
+		List<String> statuss = new ArrayList<>();
+		//1-已付款,2-已发货,3-已收货
+		statuss.add("1");
+		statuss.add("2");
+		statuss.add("3");
+		if(!statuss.contains(phOrderInfo.getStatus())){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+
+		}
+
+		String canRefund = phRefundService.canRefund(orderNo);
+		if("0".equals(canRefund)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_ALL);
+		}
+
+		if("2".equals(type)){
+			//已经提交退款不能提交换货申请
+			int isRefunding = phRefundRepository.isRefunding(orderNo);
+			if(isRefunding > 0){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUNDING);
+			}
+		}else{
+			//一笔订单只能提交一次退款申请
+			int c = phRefundRepository.refunded(orderNo);
+			if(c>0){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_APPLIED);
+			}
+			if(null != phOrderInfo.getReceiptTime()){
+				if(DateUtils.addDays(phOrderInfo.getReceiptTime(), 7).before(new Date())){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_TIMEOUT);
+				}
+			}
+		}
+		return jsonResultHelper.buildSuccessJsonResult(null);
+	}
 	
 	@ApiOperation("退款申请初始化")
 	@GetMapping("/init")
