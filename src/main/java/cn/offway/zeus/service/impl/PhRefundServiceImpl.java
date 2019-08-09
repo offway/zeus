@@ -192,32 +192,63 @@ public class PhRefundServiceImpl implements PhRefundService {
 			Long refundId = phRefund.getId();
 			
 			List<PhRefundGoods> phRefundGoodss = new ArrayList<>();
-			
-			for (RefundGoodsDto refundGoodsDto : goodsDtos) {
-				for (PhOrderGoods phOrderGoods : phOrderGoodss) {
-					Long orderGoodsId = phOrderGoods.getId();
-					if(orderGoodsId.longValue() == refundGoodsDto.getOrderGoodsId().longValue()){
-						PhRefundGoods phRefundGoods = new PhRefundGoods();
-						phRefundGoods.setFromStockId(phOrderGoods.getGoodsStockId());
-						phRefundGoods.setCreateTime(now);
-						Long orderGoodsCount = phOrderGoods.getGoodsCount();
-						Long count = phRefundGoodsService.refundGoodsCount(orderGoodsId);
-						phRefundGoods.setOrderGoodsId(orderGoodsId);
-						phRefundGoods.setRefundId(refundId);
-						phRefundGoods.setVersion(0L);
-						//购买数量 -已经退款的数量<要退款数量
-						if(orderGoodsCount.longValue()-count.longValue()<refundGoodsDto.getGoodsCount().longValue()){
-							throw new Exception("可退款商品数不足");
+
+
+			List<PhRefundOrderGoods> phRefundOrderGoodss = phRefundOrderGoodsRepository.findByOrderNo(orderNo);
+			if(!CollectionUtils.isEmpty(phRefundOrderGoodss)){
+				for (RefundGoodsDto refundGoodsDto : goodsDtos) {
+					for (PhRefundOrderGoods phOrderGoods : phRefundOrderGoodss) {
+						Long orderGoodsId = phOrderGoods.getId();
+						if(orderGoodsId.longValue() == refundGoodsDto.getOrderGoodsId().longValue()){
+							PhRefundGoods phRefundGoods = new PhRefundGoods();
+							phRefundGoods.setFromStockId(phOrderGoods.getGoodsStockId());
+							phRefundGoods.setCreateTime(now);
+							Long orderGoodsCount = phOrderGoods.getGoodsCount();
+							Long count = phRefundGoodsService.refundGoodsCount(orderGoodsId);
+							phRefundGoods.setOrderGoodsId(orderGoodsId);
+							phRefundGoods.setRefundId(refundId);
+							phRefundGoods.setVersion(0L);
+							//购买数量 -已经退款的数量<要退款数量
+							if(orderGoodsCount.longValue()-count.longValue()<refundGoodsDto.getGoodsCount().longValue()){
+								throw new Exception("可退款商品数不足");
+							}
+							phRefundGoods.setGoodsCount(refundGoodsDto.getGoodsCount());
+							//退款金额使用优惠后实付金额
+							double price = null == phOrderGoods.getAmount()?phOrderGoods.getPrice():phOrderGoods.getAmount();
+							amount = MathUtils.add(amount, MathUtils.div(price, orderGoodsCount,2)*phRefundGoods.getGoodsCount());
+							phRefundGoodss.add(phRefundGoods);
+							goodsNum+=phRefundGoods.getGoodsCount();
 						}
-						phRefundGoods.setGoodsCount(refundGoodsDto.getGoodsCount());
-						//退款金额使用优惠后实付金额
-						double price = null == phOrderGoods.getAmount()?phOrderGoods.getPrice():phOrderGoods.getAmount();
-						amount = MathUtils.add(amount, MathUtils.div(price, orderGoodsCount,2)*phRefundGoods.getGoodsCount());
-						phRefundGoodss.add(phRefundGoods);
-						goodsNum+=phRefundGoods.getGoodsCount();
+					}
+				}
+			}else{
+				for (RefundGoodsDto refundGoodsDto : goodsDtos) {
+					for (PhOrderGoods phOrderGoods : phOrderGoodss) {
+						Long orderGoodsId = phOrderGoods.getId();
+						if(orderGoodsId.longValue() == refundGoodsDto.getOrderGoodsId().longValue()){
+							PhRefundGoods phRefundGoods = new PhRefundGoods();
+							phRefundGoods.setFromStockId(phOrderGoods.getGoodsStockId());
+							phRefundGoods.setCreateTime(now);
+							Long orderGoodsCount = phOrderGoods.getGoodsCount();
+							Long count = phRefundGoodsService.refundGoodsCount(orderGoodsId);
+							phRefundGoods.setOrderGoodsId(orderGoodsId);
+							phRefundGoods.setRefundId(refundId);
+							phRefundGoods.setVersion(0L);
+							//购买数量 -已经退款的数量<要退款数量
+							if(orderGoodsCount.longValue()-count.longValue()<refundGoodsDto.getGoodsCount().longValue()){
+								throw new Exception("可退款商品数不足");
+							}
+							phRefundGoods.setGoodsCount(refundGoodsDto.getGoodsCount());
+							//退款金额使用优惠后实付金额
+							double price = null == phOrderGoods.getAmount()?phOrderGoods.getPrice():phOrderGoods.getAmount();
+							amount = MathUtils.add(amount, MathUtils.div(price, orderGoodsCount,2)*phRefundGoods.getGoodsCount());
+							phRefundGoodss.add(phRefundGoods);
+							goodsNum+=phRefundGoods.getGoodsCount();
+						}
 					}
 				}
 			}
+
 			
 			if(MathUtils.add(amount, null == phOrderInfo.getMailFee()?0D:phOrderInfo.getMailFee())==phOrderInfo.getAmount().doubleValue()){
 				phRefund.setAmount(phOrderInfo.getAmount());
@@ -461,31 +492,63 @@ public class PhRefundServiceImpl implements PhRefundService {
 		phRefund = save(phRefund);
 
 		List<PhRefundGoods> phRefundGoodsList = new ArrayList<>();
-		List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
-		for (ExchangeGoodsDto exchangeGoodsDto : detail) {
-			for (PhOrderGoods orderGoods : phOrderGoodss) {
-				if(orderGoods.getGoodsStockId().longValue() == exchangeGoodsDto.getSourceStockId().longValue()){
-					PhRefundGoods phRefundGoods = new PhRefundGoods();
-					phRefundGoods.setCreateTime(now);
-					phRefundGoods.setGoodsCount(1L);
-					phRefundGoods.setOrderGoodsId(orderGoods.getId());
-					phRefundGoods.setRefundId(phRefund.getId());
-					phRefundGoods.setVersion(0L);
-					phRefundGoods.setFromStockId(orderGoods.getGoodsStockId());
-					phRefundGoods.setFromStockImage(orderGoods.getGoodsImage());
-					phRefundGoods.setGoodsId(orderGoods.getGoodsId());
-					phRefundGoods.setGoodsName(orderGoods.getGoodsName());
-					phRefundGoods.setPrice(orderGoods.getPrice());
-					phRefundGoods.setReason(exchangeGoodsDto.getReason());
-					phRefundGoods.setRemark(orderGoods.getRemark());
-					phRefundGoods.setToStockDesc(exchangeGoodsDto.getRemark());
-					phRefundGoods.setToStockId(exchangeGoodsDto.getTargetStockId());
-					PhGoodsStock phGoodsStock = phGoodsStockService.findById(exchangeGoodsDto.getTargetStockId());
-					phRefundGoods.setToStockImage(phGoodsStock.getImage());
-					phRefundGoodsList.add(phRefundGoods);
+
+		List<PhRefundOrderGoods> phRefundOrderGoodss = phRefundOrderGoodsRepository.findByOrderNo(orderNo);
+		if(!CollectionUtils.isEmpty(phRefundOrderGoodss)){
+			List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
+			for (ExchangeGoodsDto exchangeGoodsDto : detail) {
+				for (PhRefundOrderGoods orderGoods : phRefundOrderGoodss) {
+					if(orderGoods.getGoodsStockId().longValue() == exchangeGoodsDto.getSourceStockId().longValue()){
+						PhRefundGoods phRefundGoods = new PhRefundGoods();
+						phRefundGoods.setCreateTime(now);
+						phRefundGoods.setGoodsCount(1L);
+						phRefundGoods.setOrderGoodsId(orderGoods.getId());
+						phRefundGoods.setRefundId(phRefund.getId());
+						phRefundGoods.setVersion(0L);
+						phRefundGoods.setFromStockId(orderGoods.getGoodsStockId());
+						phRefundGoods.setFromStockImage(orderGoods.getGoodsImage());
+						phRefundGoods.setGoodsId(orderGoods.getGoodsId());
+						phRefundGoods.setGoodsName(orderGoods.getGoodsName());
+						phRefundGoods.setPrice(orderGoods.getPrice());
+						phRefundGoods.setReason(exchangeGoodsDto.getReason());
+						phRefundGoods.setRemark(orderGoods.getRemark());
+						phRefundGoods.setToStockDesc(exchangeGoodsDto.getRemark());
+						phRefundGoods.setToStockId(exchangeGoodsDto.getTargetStockId());
+						PhGoodsStock phGoodsStock = phGoodsStockService.findById(exchangeGoodsDto.getTargetStockId());
+						phRefundGoods.setToStockImage(phGoodsStock.getImage());
+						phRefundGoodsList.add(phRefundGoods);
+					}
+				}
+			}
+		}else{
+			List<PhOrderGoods> phOrderGoodss = phOrderGoodsService.findByOrderNo(orderNo);
+			for (ExchangeGoodsDto exchangeGoodsDto : detail) {
+				for (PhOrderGoods orderGoods : phOrderGoodss) {
+					if(orderGoods.getGoodsStockId().longValue() == exchangeGoodsDto.getSourceStockId().longValue()){
+						PhRefundGoods phRefundGoods = new PhRefundGoods();
+						phRefundGoods.setCreateTime(now);
+						phRefundGoods.setGoodsCount(1L);
+						phRefundGoods.setOrderGoodsId(orderGoods.getId());
+						phRefundGoods.setRefundId(phRefund.getId());
+						phRefundGoods.setVersion(0L);
+						phRefundGoods.setFromStockId(orderGoods.getGoodsStockId());
+						phRefundGoods.setFromStockImage(orderGoods.getGoodsImage());
+						phRefundGoods.setGoodsId(orderGoods.getGoodsId());
+						phRefundGoods.setGoodsName(orderGoods.getGoodsName());
+						phRefundGoods.setPrice(orderGoods.getPrice());
+						phRefundGoods.setReason(exchangeGoodsDto.getReason());
+						phRefundGoods.setRemark(orderGoods.getRemark());
+						phRefundGoods.setToStockDesc(exchangeGoodsDto.getRemark());
+						phRefundGoods.setToStockId(exchangeGoodsDto.getTargetStockId());
+						PhGoodsStock phGoodsStock = phGoodsStockService.findById(exchangeGoodsDto.getTargetStockId());
+						phRefundGoods.setToStockImage(phGoodsStock.getImage());
+						phRefundGoodsList.add(phRefundGoods);
+					}
 				}
 			}
 		}
+
+
 		phRefundGoodsService.save(phRefundGoodsList);
 
 		return jsonResultHelper.buildSuccessJsonResult(phRefund.getId());
@@ -515,14 +578,25 @@ public class PhRefundServiceImpl implements PhRefundService {
 			for (PhRefundGoods phRefundGoods : phRefundGoodss) {
 				PhOrderGoods phOrderGoods = phOrderGoodsService.findById(phRefundGoods.getOrderGoodsId());
 				Map<String, Object> map = new HashMap<>();
-				map.put("image", phOrderGoods.getGoodsImage());
-				map.put("name", phOrderGoods.getGoodsName());
-				map.put("count", phRefundGoods.getGoodsCount());
-				map.put("price", MathUtils.mul(MathUtils.div(phOrderGoods.getPrice(), phOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));
-				map.put("property", phOrderGoods.getRemark());
-				map.put("changeReason", phRefundGoods.getReason());
-				map.put("changeRemark", phRefundGoods.getToStockDesc());
-
+				if(null == phOrderGoods){
+					Optional<PhRefundOrderGoods> optional =  phRefundOrderGoodsRepository.findById(phRefundGoods.getOrderGoodsId());
+					PhRefundOrderGoods phRefundOrderGoods = optional.isPresent()?optional.get():null;
+					map.put("image", phRefundOrderGoods.getGoodsImage());
+					map.put("name", phRefundOrderGoods.getGoodsName());
+					map.put("count", phRefundGoods.getGoodsCount());
+					map.put("price", MathUtils.mul(MathUtils.div(phRefundOrderGoods.getPrice(), phRefundOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));
+					map.put("property", phRefundOrderGoods.getRemark());
+					map.put("changeReason", phRefundGoods.getReason());
+					map.put("changeRemark", phRefundGoods.getToStockDesc());
+				}else{
+					map.put("image", phOrderGoods.getGoodsImage());
+					map.put("name", phOrderGoods.getGoodsName());
+					map.put("count", phRefundGoods.getGoodsCount());
+					map.put("price", MathUtils.mul(MathUtils.div(phOrderGoods.getPrice(), phOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));
+					map.put("property", phOrderGoods.getRemark());
+					map.put("changeReason", phRefundGoods.getReason());
+					map.put("changeRemark", phRefundGoods.getToStockDesc());
+				}
 				goods.add(map);
 			}
 		}

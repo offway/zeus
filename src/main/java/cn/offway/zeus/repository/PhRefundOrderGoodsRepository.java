@@ -47,4 +47,7 @@ public interface PhRefundOrderGoodsRepository extends JpaRepository<PhRefundOrde
     @Query(nativeQuery = true,value="DELETE from ph_refund_order_goods where order_no=?1 and goods_count <=0")
     int deleteByNoMore(String orderNo);
 
+    @Query(nativeQuery = true,value="select * from ph_refund_order_goods where order_no=?1 and goods_stock_id =?2 order by id desc limit 1")
+    PhRefundOrderGoods findByOrderNoAndGoodsStockId(String orderNo,Long goodsStockId);
+
 }

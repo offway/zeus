@@ -303,7 +303,7 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 				List<Object> phones = phOrderInfoRepository.findMerchantPhone(preorderNo);
 				for (Object p : phones) {
 					Object[] obj = (Object[]) p;
-					smsService.sendMsg(obj[0].toString(), "【很潮】您有一笔新订单，订单编号："+obj[1].toString()+"，商品件数："+obj[2].toString()+"件，请及时登录后台进行发货哦~");
+					smsService.sendMsgBatch(obj[0].toString(), "【很潮】您有一笔新订单，订单编号："+obj[1].toString()+"，商品件数："+obj[2].toString()+"件，请及时登录后台进行发货哦~");
 				}
 				smsService.sendMsg("15001775461", "【很潮】提醒您：亲，您有一笔新订单来啦！请尽快发货！");
 			} catch (Exception e) {
