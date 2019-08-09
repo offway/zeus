@@ -122,6 +122,11 @@ public class PhRefundServiceImpl implements PhRefundService {
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_TIMEOUT);
 			}
 		}
+
+		int c1 = phRefundRepository.isRefunding(orderNo);
+		if(c1 > 0){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUNDING);
+		}
 		
 		
 		List<String> statuss = new ArrayList<>();
@@ -159,6 +164,8 @@ public class PhRefundServiceImpl implements PhRefundService {
 		if(c>0){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_APPLIED);
 		}
+
+
 		
 		Date now = new Date();
 		
@@ -338,6 +345,12 @@ public class PhRefundServiceImpl implements PhRefundService {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_APPLIED);
 		}
 
+		//已经提交退款不能提交换货申请
+		int isRefunding = phRefundRepository.isRefunding(orderNo);
+		if(isRefunding > 0){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUNDING);
+		}
+
 
 		Map<String, Object> resultMap = new HashMap<>();
 		PhOrderInfo phOrderInfo = phOrderInfoService.findByOrderNo(orderNo);
@@ -417,7 +430,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_ALL);
 		}
 
-		int c = phRefundRepository.refundIng(orderNo);
+		int c = phRefundRepository.isRefunding(orderNo);
 		if(c > 0){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUNDING);
 		}

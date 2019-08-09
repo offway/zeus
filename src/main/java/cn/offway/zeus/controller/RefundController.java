@@ -90,13 +90,12 @@ public class RefundController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUND_ALL);
 		}
 
-		if("2".equals(type)){
-			//已经提交退款不能提交换货申请
-			int isRefunding = phRefundRepository.isRefunding(orderNo);
-			if(isRefunding > 0){
-				return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUNDING);
-			}
-		}else{
+		int isRefunding = phRefundRepository.isRefunding(orderNo);
+		if(isRefunding > 0){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.REFUNDING);
+		}
+
+		if(!"2".equals(type)){
 			//一笔订单只能提交一次退款申请
 			int c = phRefundRepository.refunded(orderNo);
 			if(c>0){
@@ -195,12 +194,12 @@ public class RefundController {
 	@PostMapping("/cancel")
 	public JsonResult refundCancel(@ApiParam("退款申请ID") @RequestParam Long id){
 		PhRefund phRefund = phRefundService.findById(id);
-//		if("0".equals(phRefund.getStatus())){
+		if("0".equals(phRefund.getStatus())){
 			phRefund.setStatus("5");
 			phRefundService.save(phRefund);
 			return jsonResultHelper.buildSuccessJsonResult(null);
-//		}
-//		return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+		}
+		return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 
 	}
 	
