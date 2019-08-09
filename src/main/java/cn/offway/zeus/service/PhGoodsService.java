@@ -35,4 +35,6 @@ public interface PhGoodsService{
 	int updateSort();
 
 	List<String> searchCategory(String brandName);
+
+    int countByIdsAndStatus(List<Long> ids, String status);
 }

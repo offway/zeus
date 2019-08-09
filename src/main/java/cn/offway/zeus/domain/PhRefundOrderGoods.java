@@ -68,6 +68,12 @@ public class PhRefundOrderGoods implements Serializable {
     /** 优惠后的金额 **/
     private Double amount;
 
+    /** 当前数量 **/
+    private Long num;
+
+    /** 退款ID **/
+    private Long refundId;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -232,5 +238,23 @@ public class PhRefundOrderGoods implements Serializable {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    @Column(name = "num", length = 11)
+    public Long getNum() {
+        return num;
+    }
+
+    public void setNum(Long num) {
+        this.num = num;
+    }
+
+    @Column(name = "refund_id", length = 11)
+    public Long getRefundId() {
+        return refundId;
+    }
+
+    public void setRefundId(Long refundId) {
+        this.refundId = refundId;
     }
 }

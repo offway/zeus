@@ -1,13 +1,10 @@
 package cn.offway.zeus.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import cn.offway.zeus.domain.*;
 import cn.offway.zeus.dto.*;
+import cn.offway.zeus.repository.PhRefundOrderGoodsRepository;
 import cn.offway.zeus.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -77,6 +74,9 @@ public class OrderController {
 
 	@Autowired
 	private PhRefundGoodsService phRefundGoodsService;
+
+	@Autowired
+	private PhRefundOrderGoodsRepository phRefundOrderGoodsRepository;
 
 
 	@ApiOperation("下订单")
@@ -211,11 +211,22 @@ public class OrderController {
 					for (PhRefundGoods phRefundGoods : phRefundGoodss) {
 						PhOrderGoods phOrderGoods = phOrderGoodsService.findById(phRefundGoods.getOrderGoodsId());
 						Map<String, Object> map1 = new HashMap<>();
-						map1.put("image", phOrderGoods.getGoodsImage());
-						map1.put("name", phOrderGoods.getGoodsName());
-						map1.put("count", phRefundGoods.getGoodsCount());
-						map1.put("price", MathUtils.mul(MathUtils.div(phOrderGoods.getPrice(), phOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));
-						map1.put("property", phOrderGoods.getRemark());
+						if(null == phOrderGoods){
+							Optional<PhRefundOrderGoods> optional =  phRefundOrderGoodsRepository.findById(phRefundGoods.getOrderGoodsId());
+							PhRefundOrderGoods phRefundOrderGoods = optional.isPresent()?optional.get():null;
+							map1.put("image", phRefundGoods.getFromStockImage());
+							map1.put("name", phRefundOrderGoods.getGoodsName());
+							map1.put("count", phRefundGoods.getGoodsCount());
+							map1.put("price", MathUtils.mul(MathUtils.div(phRefundOrderGoods.getPrice(), phRefundOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));
+							map1.put("property", phRefundOrderGoods.getRemark());
+						}else {
+							map1.put("image", phOrderGoods.getGoodsImage());
+							map1.put("name", phOrderGoods.getGoodsName());
+							map1.put("count", phRefundGoods.getGoodsCount());
+							map1.put("price", MathUtils.mul(MathUtils.div(phOrderGoods.getPrice(), phOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));
+							map1.put("property", phOrderGoods.getRemark());
+						}
+
 						goods.add(map1);
 					}
 				}

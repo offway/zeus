@@ -96,6 +96,10 @@ public enum CommonResultCode implements ResultCode {
 
     /** 该笔订单已全额退款，无法申请售后  */
     REFUND_ALL("1030", "REFUND_ALL"),
+
+    /** 订单中包含已下架的商品,请确认后操作  */
+    GOODS_OFF("1031", "GOODS_OFF"),
+
     ;
 	
 	

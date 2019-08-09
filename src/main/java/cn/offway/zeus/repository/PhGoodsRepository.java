@@ -49,6 +49,8 @@ public interface PhGoodsRepository extends JpaRepository<PhGoods,Long>,JpaSpecif
 	@Query(nativeQuery=true,value="select CONCAT(brand_name,' ',category) from ph_goods where `brand_name` =?1 group by category")
 	List<String> searchCategory(String brandName);
 
+	int countByIdInAndStatus(List<Long> ids,String status);
+
 	
 	
 }

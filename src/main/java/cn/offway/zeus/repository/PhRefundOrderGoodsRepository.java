@@ -18,6 +18,7 @@ import java.util.List;
  */
 public interface PhRefundOrderGoodsRepository extends JpaRepository<PhRefundOrderGoods,Long>,JpaSpecificationExecutor<PhRefundOrderGoods> {
 
+    @Query(nativeQuery = true,value="select * from ph_refund_order_goods where order_no =?1 and num>0")
     List<PhRefundOrderGoods> findByOrderNo(String orderNo);
 
     int countByOrderNo(String orderNo);

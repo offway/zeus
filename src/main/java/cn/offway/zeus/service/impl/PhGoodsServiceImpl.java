@@ -193,4 +193,9 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 			}
 		}, page);
 	}
+
+	@Override
+	public int countByIdsAndStatus(List<Long> ids,String status){
+		return phGoodsRepository.countByIdInAndStatus(ids,status);
+	}
 }

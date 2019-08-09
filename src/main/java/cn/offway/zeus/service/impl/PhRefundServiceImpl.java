@@ -202,6 +202,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 						if(orderGoodsId.longValue() == refundGoodsDto.getOrderGoodsId().longValue()){
 							PhRefundGoods phRefundGoods = new PhRefundGoods();
 							phRefundGoods.setFromStockId(phOrderGoods.getGoodsStockId());
+							phRefundGoods.setFromStockImage(phOrderGoods.getGoodsImage());
 							phRefundGoods.setCreateTime(now);
 							Long orderGoodsCount = phOrderGoods.getGoodsCount();
 							Long count = phRefundGoodsService.refundGoodsCount(orderGoodsId);
@@ -347,7 +348,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 				if (null != phRefundOrderGoods){
 					BeanUtils.copyProperties(phRefundOrderGoods,orderGoodss);
 				}
-				for (int i = 0; i < orderGoodss.getGoodsCount(); i++) {
+				for (int i = 0; i < phRefundOrderGoods.getNum(); i++) {
 					resultGoods.add(orderGoodss);
 				}
 			}
@@ -427,6 +428,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 				PhOrderGoods orderGoodss = new PhOrderGoods();
 				if (null != phRefundOrderGoods){
 					BeanUtils.copyProperties(phRefundOrderGoods,orderGoodss);
+					orderGoodss.setGoodsCount(phRefundOrderGoods.getNum());
 				}
 				goodss.add(orderGoodss);
 			}
@@ -581,7 +583,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 				if(null == phOrderGoods){
 					Optional<PhRefundOrderGoods> optional =  phRefundOrderGoodsRepository.findById(phRefundGoods.getOrderGoodsId());
 					PhRefundOrderGoods phRefundOrderGoods = optional.isPresent()?optional.get():null;
-					map.put("image", phRefundOrderGoods.getGoodsImage());
+					map.put("image", phRefundGoods.getFromStockImage());
 					map.put("name", phRefundOrderGoods.getGoodsName());
 					map.put("count", phRefundGoods.getGoodsCount());
 					map.put("price", MathUtils.mul(MathUtils.div(phRefundOrderGoods.getPrice(), phRefundOrderGoods.getGoodsCount(), 2), phRefundGoods.getGoodsCount()));

@@ -13,6 +13,7 @@ import javax.persistence.criteria.Root;
 import cn.offway.zeus.domain.*;
 import cn.offway.zeus.repository.PhPromotionRuleRepository;
 import cn.offway.zeus.service.*;
+import cn.offway.zeus.utils.CommonResultCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 
 	@Autowired
 	private PhPromotionRuleRepository phPromotionRuleRepository;
+
+	@Autowired
+	private PhGoodsService phGoodsService;
 	
 	
 	@Override
@@ -203,6 +207,11 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				PhGoodsStock phGoodsStock=  phGoodsStockService.findById(stockId);
 				goodsIdAll.add(phGoodsStock.getGoodsId());
 			}
+		}
+		//检查是否有未上架的商品
+		int off = phGoodsService.countByIdsAndStatus(goodsIdAll,"0");
+		if(off > 0){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.GOODS_OFF);
 		}
 
 		List<Long> discountStockIds = new ArrayList<>();

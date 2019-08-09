@@ -108,6 +108,10 @@ public class LimitedSaleController {
 			@ApiParam("分享用户ID") @RequestParam Long userId,
 			@ApiParam("助力用户ID") @RequestParam Long boostUserId){
 
+		if(userId.longValue()==boostUserId.longValue()){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOST_MY);
+
+		}
 		int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndTypeAndBoostUserId(id, userId, "0",boostUserId);
 		if(c == 0){
 			PhLimitedSaleOp op = new PhLimitedSaleOp();
