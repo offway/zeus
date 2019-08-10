@@ -21,7 +21,7 @@ public interface PhShoppingCartRepository extends JpaRepository<PhShoppingCart,L
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="update ph_shopping_cart set goods_count=goods_count+?3,price=price+(price*?3) where user_id=?1 and goods_stock_id=?2")
+	@Query(nativeQuery=true,value="update ph_shopping_cart set goods_count=goods_count+?3 where user_id=?1 and goods_stock_id=?2")
 	int updateShoppingCar(Long userId,Long goodsStockId,Long goodsCount);
 
 	PhShoppingCart findByUserIdAndGoodsStockId(Long userId,Long goodsStockId);
