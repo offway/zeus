@@ -1,10 +1,11 @@
 package cn.offway.zeus.controller.activity;
 
+import cn.offway.zeus.service.PhGoodsStockService;
+import com.qiniu.util.Json;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.*;
 
 import cn.offway.zeus.domain.PhLaborPrize;
 import cn.offway.zeus.repository.PhLaborPrizeRepository;
@@ -15,6 +16,11 @@ import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Api(tags={"活动"})
 @RestController
@@ -29,6 +35,12 @@ public class ActivityController {
 	
 	@Autowired
 	private PhVoucherInfoService phVoucherInfoService;
+
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
+
+	@Autowired
+	private PhGoodsStockService phGoodsStockService;
 	
 	@ApiOperation(value = "奖品兑换")
 	@PostMapping("/exchange")
@@ -75,5 +87,24 @@ public class ActivityController {
 		}
 		
 		return jsonResultHelper.buildSuccessJsonResult(name);
+	}
+
+	@ApiOperation(value = "chillhigh分享")
+	@PostMapping("/chillhigh")
+	public JsonResult chillhigh(@ApiParam("用户ID") @RequestParam Long userId){
+		stringRedisTemplate.opsForValue().set("zeus.chillhigh.share."+userId,"0",10, TimeUnit.DAYS);
+		return jsonResultHelper.buildSuccessJsonResult(null);
+	}
+
+	@ApiOperation(value = "chillhigh初始化")
+	@GetMapping("/chillhigh/init")
+	public JsonResult chillhighinit(@ApiParam("用户ID") @RequestParam Long userId){
+		Map<String,Object> map = new HashMap<>();
+		String isShare = stringRedisTemplate.opsForValue().get("zeus.chillhigh.share."+userId);
+		map.put("isShare", StringUtils.isNotBlank(isShare));
+		map.put("now", new Date());
+		int stock = phGoodsStockService.sumStock(4465L);
+		map.put("isSellOut", stock <= 0);
+		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 }

@@ -21,7 +21,7 @@ public class LimitedSaleInfoDto implements Serializable {
     private String image;
 
     /** 售价 **/
-    private Double price;
+    private String price;
 
     /** 商品ID **/
     private Long goodsId;
@@ -83,11 +83,11 @@ public class LimitedSaleInfoDto implements Serializable {
 		this.image = image;
 	}
 
-	public Double getPrice() {
+	public String getPrice() {
 		return price;
 	}
 
-	public void setPrice(Double price) {
+	public void setPrice(String price) {
 		this.price = price;
 	}
 

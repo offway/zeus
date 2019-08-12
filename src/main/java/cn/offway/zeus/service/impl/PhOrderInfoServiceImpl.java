@@ -15,12 +15,15 @@ import cn.offway.zeus.repository.PhPromotionRuleRepository;
 import cn.offway.zeus.service.*;
 import cn.offway.zeus.utils.CommonResultCode;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -103,6 +106,9 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 
 	@Autowired
 	private PhGoodsService phGoodsService;
+
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
 	
 	
 	@Override
@@ -206,6 +212,13 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				Long stockId = stock.getStockId();
 				PhGoodsStock phGoodsStock=  phGoodsStockService.findById(stockId);
 				goodsIdAll.add(phGoodsStock.getGoodsId());
+				//TODO chillhigh活动
+				if(4465L == phGoodsStock.getGoodsId().longValue()){
+					if(StringUtils.isBlank(stringRedisTemplate.opsForValue().get("zeus.chillhigh.share."+userId)) ||
+							now.before(DateUtils.parseDate("2019-08-14 21:00:00","yyyy-MM-dd HH:mm:ss"))){
+						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+					}
+				}
 			}
 		}
 		//检查是否有未上架的商品

@@ -180,7 +180,11 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				
 				
 				params.add(criteriaBuilder.equal(root.get("status"),  "1"));
-				
+
+				//TODO chillhigh活动
+				params.add(criteriaBuilder.notEqual(root.get("id"),  4465L));
+
+
 				Subquery<PhLimitedSale> subquery = criteriaQuery.subquery(PhLimitedSale.class);
 				Root<PhLimitedSale> subRoot = subquery.from(PhLimitedSale.class);
 				subquery.select(subRoot);

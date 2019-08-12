@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.offway.zeus.domain.*;
 import cn.offway.zeus.service.*;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -32,11 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
-import cn.offway.zeus.domain.PhOrderInfo;
-import cn.offway.zeus.domain.PhShoppingCart;
-import cn.offway.zeus.domain.PhUserChannel;
-import cn.offway.zeus.domain.PhUserInfo;
-import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.dto.WxuserInfo;
 import cn.offway.zeus.repository.PhInviteInfoRepository;
 import cn.offway.zeus.repository.PhRefundRepository;
@@ -121,9 +117,10 @@ public class UserController {
 
 	@Autowired
 	private PhWithdrawInfoService phWithdrawInfoService;
-	
-	
-	
+
+	@Autowired
+	private PhLimitedSaleService phLimitedSaleService;
+
 	
 	@ApiOperation("微信用户信息保存")
 	@PostMapping("/wx")
@@ -402,6 +399,13 @@ public class UserController {
 			@ApiParam("类型[0-商品，1-品牌，2-资讯]") @RequestParam String type,
 			@ApiParam("类型相应的ID,如商品ID,品牌ID等") @RequestParam Long matchId){
 		try {
+			if("0".equals(type)){
+				PhLimitedSale phLimitedSale = phLimitedSaleService.findByGoodsId(matchId);
+				if(null != phLimitedSale){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_NOT_COLLECT);
+				}
+			}
+
 			Long id = phCollectService.collect(userId, type, matchId);
 			return jsonResultHelper.buildSuccessJsonResult(id);
 		}catch (DataIntegrityViolationException e) {

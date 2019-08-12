@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import cn.offway.zeus.dto.OrderInitDto;
@@ -304,6 +305,18 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 		return jsonResultHelper.buildSuccessJsonResult(list);
 
 	}
+
+	@Override
+	public JsonResult orderInitCheck(OrderInitDto orderInitDto){
+		for (OrderInitStockDto  stock : orderInitDto.getStocks()) {
+			int count = phGoodsStockService.countByIdAndStockIsLessThan(stock.getStockId(), stock.getNum());
+			if(count >0){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.INIT_STOCK_LESS);
+			}
+		}
+		return jsonResultHelper.buildSuccessJsonResult(null);
+
+	}
 	
 	@Override
 	public JsonResult orderInit(OrderInitDto orderInitDto){
@@ -507,45 +520,83 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	}
 	
 	@Override
-	public JsonResult shopingCar(Long userId,Long stockId,Long goodsCount){
-		
-		int count = phShoppingCartRepository.updateShoppingCar(userId,stockId,goodsCount);
-		if(count==0){
-			
-			int cc = phShoppingCartRepository.countByUserId(userId);
-			if(cc>=120){
-				return jsonResultHelper.buildFailJsonResult(CommonResultCode.SHOPPING_CAR_LIMIT);
+	public JsonResult shopingCar(Long userId, Long stockId, Long goodsCount, String type){
+
+		Long num = 0L;
+		if("1".equals(type)){
+			//减购物车数量
+			int c = phShoppingCartRepository.subShoppingCar(userId, stockId, goodsCount);
+			if(c == 0){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 			}
-			PhShoppingCart phShoppingCart = new PhShoppingCart();
-			phShoppingCart.setCreateTime(new Date());
-			phShoppingCart.setGoodsCount(goodsCount);
-			phShoppingCart.setUserId(userId);
-			phShoppingCart.setGoodsStockId(stockId);
-			PhGoodsStock phGoodsStock = phGoodsStockService.findById(stockId);
-			
-			phShoppingCart.setMerchantId(phGoodsStock.getMerchantId());
-			phShoppingCart.setMerchantLogo(phGoodsStock.getMerchantLogo());
-			phShoppingCart.setMerchantName(phGoodsStock.getMerchantName());
-			phShoppingCart.setBrandId(phGoodsStock.getBrandId());
-			phShoppingCart.setBrandLogo(phGoodsStock.getBrandLogo());
-			phShoppingCart.setBrandName(phGoodsStock.getBrandName());
-			phShoppingCart.setGoodsId(phGoodsStock.getGoodsId());
-			phShoppingCart.setGoodsImage(phGoodsStock.getImage());
-			phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
-			phShoppingCart.setPrice(phGoodsStock.getPrice());
-			
-			List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsStockIdOrderBySortAsc(stockId);
-			StringBuilder sb = new StringBuilder();
-			for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
-				sb.append(phGoodsProperty.getName()+":"+phGoodsProperty.getValue());
-				sb.append(" ");
+			PhShoppingCart sc = phShoppingCartRepository.findByUserIdAndGoodsStockId(userId,stockId);
+			num = sc.getGoodsCount();
+		}else if("2".equals(type)){
+			//添加购物车只能添加至上线，当在多次添加购物车时，需提示：商品加构件数（含已加购件数）已超过库存
+
+			PhGoodsStock phGoodsStock =  phGoodsStockService.findById(stockId);
+			Long stock = phGoodsStock.getStock();
+			if(goodsCount > stock.longValue()){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ADD_SHOPCART_STOCK_LESS);
 			}
-			phShoppingCart.setProperty(sb.toString());
-			
-			save(phShoppingCart);
+
+			int count = phShoppingCartRepository.editShoppingCar(userId,stockId,goodsCount);
+			if(count == 0){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+			}
+			num = goodsCount;
+
+		}else{
+			//添加购物车只能添加至上线，当在多次添加购物车时，需提示：商品加构件数（含已加购件数）已超过库存
+			PhShoppingCart shoppingCart = phShoppingCartRepository.findByUserIdAndGoodsStockId(userId,stockId);
+			if(null != shoppingCart){
+				Long gc = shoppingCart.getGoodsCount();
+				PhGoodsStock phGoodsStock =  phGoodsStockService.findById(stockId);
+				Long stock = phGoodsStock.getStock();
+				if(gc.longValue()+goodsCount.longValue() > stock.longValue()){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.ADD_SHOPCART_STOCK_LESS);
+				}
+				num = gc.longValue()+goodsCount.longValue();
+			}
+			int count = phShoppingCartRepository.updateShoppingCar(userId,stockId,goodsCount);
+			if(count==0){
+
+				int cc = phShoppingCartRepository.countByUserId(userId);
+				if(cc>=120){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.SHOPPING_CAR_LIMIT);
+				}
+				PhShoppingCart phShoppingCart = new PhShoppingCart();
+				phShoppingCart.setCreateTime(new Date());
+				phShoppingCart.setGoodsCount(goodsCount);
+				phShoppingCart.setUserId(userId);
+				phShoppingCart.setGoodsStockId(stockId);
+				PhGoodsStock phGoodsStock = phGoodsStockService.findById(stockId);
+
+				phShoppingCart.setMerchantId(phGoodsStock.getMerchantId());
+				phShoppingCart.setMerchantLogo(phGoodsStock.getMerchantLogo());
+				phShoppingCart.setMerchantName(phGoodsStock.getMerchantName());
+				phShoppingCart.setBrandId(phGoodsStock.getBrandId());
+				phShoppingCart.setBrandLogo(phGoodsStock.getBrandLogo());
+				phShoppingCart.setBrandName(phGoodsStock.getBrandName());
+				phShoppingCart.setGoodsId(phGoodsStock.getGoodsId());
+				phShoppingCart.setGoodsImage(phGoodsStock.getImage());
+				phShoppingCart.setGoodsName(phGoodsStock.getGoodsName());
+				phShoppingCart.setPrice(phGoodsStock.getPrice());
+
+				List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsStockIdOrderBySortAsc(stockId);
+				StringBuilder sb = new StringBuilder();
+				for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
+					sb.append(phGoodsProperty.getName()+":"+phGoodsProperty.getValue());
+					sb.append(" ");
+				}
+				phShoppingCart.setProperty(sb.toString());
+
+				save(phShoppingCart);
+				num = goodsCount;
+			}
 		}
-		
-		return jsonResultHelper.buildSuccessJsonResult(null);
+
+		return jsonResultHelper.buildSuccessJsonResult(num);
 		
 		
 	}

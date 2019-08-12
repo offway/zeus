@@ -19,15 +19,17 @@ public interface PhShoppingCartService{
 	
 	PhShoppingCart findById(Long id);
 
-	JsonResult shopingCar(Long userId, Long stockId, Long goodsCount);
-
     JsonResult shopingCarListV2(Long userId,List<Long> scIds);
 
     JsonResult shopingCarList(Long userId);
 
 	void delete(List<Long> ids);
 
+	JsonResult orderInitCheck(OrderInitDto orderInitDto);
+
 	JsonResult orderInit(OrderInitDto orderInitDto);
 
 	int deleteByStockIds(List<Long> ids);
+
+	JsonResult shopingCar(Long userId, Long stockId, Long goodsCount, String type);
 }

@@ -33,6 +33,11 @@ public class PhGoodsStockServiceImpl implements PhGoodsStockService {
 	public PhGoodsStock save(PhGoodsStock phGoodsStock){
 		return phGoodsStockRepository.save(phGoodsStock);
 	}
+
+	@Override
+	public int countByIdAndStockIsLessThan(Long id,Long num){
+		return phGoodsStockRepository.countByIdAndStockIsLessThan(id, num);
+	}
 	
 	@Override
 	public PhGoodsStock findById(Long id){

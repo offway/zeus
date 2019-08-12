@@ -208,14 +208,15 @@ public class GoodsController {
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 	
-	@ApiOperation("加入购物车")
+	@ApiOperation("加/减购物车商品")
 	@PostMapping("/shopingCar")
 	public JsonResult shopingCar(
 			@ApiParam("用户ID") @RequestParam Long userId,
 			@ApiParam("商品库存ID") @RequestParam Long stockId,
-			@ApiParam("加入数量") @RequestParam Long goodsCount){
-		
-		return phShoppingCartService.shopingCar(userId, stockId, goodsCount);
+			@ApiParam("数量") @RequestParam Long goodsCount,
+			@ApiParam("类型[0-加,1-减,2-修改]") @RequestParam(required = false) String type){
+		type = StringUtils.isBlank(type)?"0":type;//默认：加
+		return phShoppingCartService.shopingCar(userId, stockId, goodsCount,type);
 	}
 	
 	@ApiOperation("查看购物车")
@@ -244,6 +245,13 @@ public class GoodsController {
 	@PostMapping("/orderInit")
 	public JsonResult orderInit(@RequestBody @ApiParam("请求参数") OrderInitDto orderInitDto){
 		return phShoppingCartService.orderInit(orderInitDto);
+
+	}
+
+	@ApiOperation("确认订单初始化校验")
+	@PostMapping("/orderInitCheck")
+	public JsonResult orderInitCheck(@RequestBody @ApiParam("请求参数") OrderInitDto orderInitDto){
+		return phShoppingCartService.orderInitCheck(orderInitDto);
 
 	}
 	

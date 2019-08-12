@@ -14,8 +14,10 @@ import cn.offway.zeus.domain.PhGoodsStock;
 public interface PhGoodsStockService{
 
 	PhGoodsStock save(PhGoodsStock phGoodsStock);
-	
-	PhGoodsStock findById(Long id);
+
+    int countByIdAndStockIsLessThan(Long id, Long num);
+
+    PhGoodsStock findById(Long id);
 
 	List<PhGoodsStock> findByGoodsId(Long goodsId);
 

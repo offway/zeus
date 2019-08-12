@@ -100,6 +100,15 @@ public enum CommonResultCode implements ResultCode {
     /** 订单中包含已下架的商品,请确认后操作  */
     GOODS_OFF("1031", "GOODS_OFF"),
 
+    /** 商品加构件数（含已加购件数）已超过库存  */
+    ADD_SHOPCART_STOCK_LESS("1032", "ADD_SHOPCART_STOCK_LESS"),
+
+    /** 购物车含有库存不足的商品，请重新选择数量~  */
+    INIT_STOCK_LESS("1033", "INIT_STOCK_LESS"),
+
+    /** 限量商品无法收藏 */
+    LIMITEDSALE_NOT_COLLECT("1034", "LIMITEDSALE_NOT_COLLECT"),
+
     ;
 	
 	

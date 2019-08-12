@@ -18,11 +18,21 @@ import java.util.List;
  */
 public interface PhShoppingCartRepository extends JpaRepository<PhShoppingCart,Long>,JpaSpecificationExecutor<PhShoppingCart> {
 
-	
+
 	@Transactional
 	@Modifying
 	@Query(nativeQuery=true,value="update ph_shopping_cart set goods_count=goods_count+?3 where user_id=?1 and goods_stock_id=?2")
 	int updateShoppingCar(Long userId,Long goodsStockId,Long goodsCount);
+
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_shopping_cart set goods_count=goods_count-?3 where user_id=?1 and goods_stock_id=?2 and goods_count>=?3")
+	int subShoppingCar(Long userId,Long goodsStockId,Long goodsCount);
+
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_shopping_cart set goods_count=?3 where user_id=?1 and goods_stock_id=?2")
+	int editShoppingCar(Long userId,Long goodsStockId,Long goodsCount);
 
 	PhShoppingCart findByUserIdAndGoodsStockId(Long userId,Long goodsStockId);
 	

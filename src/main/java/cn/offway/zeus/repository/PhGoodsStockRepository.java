@@ -35,4 +35,6 @@ public interface PhGoodsStockRepository extends JpaRepository<PhGoodsStock,Long>
 	
 	@Query(nativeQuery=true,value="select ifnull(sum(s.stock),0) from  ph_goods_stock s  where  s.goods_id=?1 ")
 	int sumStock(Long goodsId);
+
+	int countByIdAndStockIsLessThan(Long id,Long num);
 }
