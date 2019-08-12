@@ -233,7 +233,12 @@ public class PhRefundServiceImpl implements PhRefundService {
 						if(orderGoodsId.longValue() == refundGoodsDto.getOrderGoodsId().longValue()){
 							PhRefundGoods phRefundGoods = new PhRefundGoods();
 							phRefundGoods.setFromStockId(phOrderGoods.getGoodsStockId());
+							phRefundGoods.setFromStockImage(phOrderGoods.getGoodsImage());
 							phRefundGoods.setCreateTime(now);
+							phRefundGoods.setGoodsId(phOrderGoods.getGoodsId());
+							phRefundGoods.setGoodsName(phOrderGoods.getGoodsName());
+							phRefundGoods.setPrice(phOrderGoods.getPrice());
+							phRefundGoods.setRemark(phOrderGoods.getRemark());
 							Long orderGoodsCount = phOrderGoods.getGoodsCount();
 							Long count = phRefundGoodsService.refundGoodsCount(orderGoodsId);
 							phRefundGoods.setOrderGoodsId(orderGoodsId);
