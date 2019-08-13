@@ -295,9 +295,6 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 				phGoodsRepository.updateSaleCount(goods.getGoodsId(), goods.getGoodsCount());
 			}
 
-			//推送成功消息
-			alipayService.publishMessage(preorderNo,"ORDER_PAY_SUCCESS");
-			
 			try {
 				//短信通知商户
 				List<Object> phones = phOrderInfoRepository.findMerchantPhone(preorderNo);

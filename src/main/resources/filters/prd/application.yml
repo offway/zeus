@@ -123,7 +123,7 @@ wxpay:
   appid: wx6d864009d94d2cd7
   mch-id: 1531089441
   paterner-key: 441bf662209846edb9e633ec0b7c5c0f
-
+  mini-appid: wxa524a03865079836
 #极光推送
 jpush:
   apns-production: true

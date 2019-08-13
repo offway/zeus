@@ -7,6 +7,9 @@ public class WxpayProperties {
 
 	/** APPID即创建应用后生成	 **/
 	private String appid;
+
+	/** 小程序ID **/
+	private String miniAppid;
 	
 	/** 商户号 **/
 	private String mchId;
@@ -38,5 +41,12 @@ public class WxpayProperties {
 	public void setPaternerKey(String paternerKey) {
 		this.paternerKey = paternerKey;
 	}
-	
+
+	public String getMiniAppid() {
+		return miniAppid;
+	}
+
+	public void setMiniAppid(String miniAppid) {
+		this.miniAppid = miniAppid;
+	}
 }

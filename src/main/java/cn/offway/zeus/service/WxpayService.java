@@ -36,8 +36,18 @@ public class WxpayService {
 	
 	@Autowired
 	private JsonResultHelper jsonResultHelper;
-	
-	public JsonResult trade(String outtradeno,String ip,String body,double amount){
+
+	/**
+	 *
+	 * @param outtradeno
+	 * @param ip
+	 * @param body
+	 * @param amount
+	 * @param type 0-APP,1-MINI
+	 * @param openid
+	 * @return
+	 */
+	public JsonResult trade(String outtradeno,String ip,String body,double amount,String type,String openid){
 		
 		try {
 
@@ -51,8 +61,7 @@ public class WxpayService {
 			
 			// 创建hashmap(用户获得签名)
 			SortedMap<String, String> paraMap = new TreeMap<String, String>();
-			// 设置请求参数(小程序ID)
-			paraMap.put("appid", wxpayProperties.getAppid());
+
 			// 设置请求参数(商户号)
 			paraMap.put("mch_id", mchId);
 			
@@ -72,34 +81,56 @@ public class WxpayService {
 			// 设置请求参数(通知地址)
 			paraMap.put("notify_url", systemUrl+"/notify/wxpay");
 			// 设置请求参数(交易类型)
-			paraMap.put("trade_type", String.valueOf(WxPayApi.TradeType.APP));
+			if("1".equals(type)){
+				paraMap.put("openid", openid);
+				// 设置请求参数(小程序ID)
+				paraMap.put("appid", wxpayProperties.getMiniAppid());
+				paraMap.put("trade_type", String.valueOf(WxPayApi.TradeType.JSAPI));
+
+			}else{
+				// 设置请求参数(小程序ID)
+				paraMap.put("appid", wxpayProperties.getAppid());
+				paraMap.put("trade_type", String.valueOf(WxPayApi.TradeType.APP));
+			}
+
 			// MD5运算生成签名，这里是第一次签名，用于调用统一下单接口
 			String sign = PaymentKit.createSign(paraMap, wxpayProperties.getPaternerKey());
 			paraMap.put("sign", sign);
 			// 统一下单,向微信api发送数据
-			logger.info("微信小程序统一下单发送的数据: " + paraMap.toString());
+			logger.info("微信支付统一下单发送的数据: " + paraMap.toString());
 			String xmlResult = WxPayApi.pushOrder(false, paraMap);
-			logger.info("微信小程序统一下单接受返回的结果: " + xmlResult);
+			logger.info("微信支付统一下单接受返回的结果: " + xmlResult);
 			// 转成xml
 			Map<String, String> map = PaymentKit.xmlToMap(xmlResult);
 			// 返回状态码
-			String return_code = (String) map.get("return_code");
+			String return_code =  map.get("return_code");
 			// 返回给小程序端需要的参数
 			Map<String, String> returnMap = new HashMap<String, String>();
 			if ("SUCCESS".equals(return_code)) {
 				// 返回的预付单信息
-				returnMap.put("appid", wxpayProperties.getAppid());
-				returnMap.put("noncestr", nonceStr);
-				returnMap.put("package", "Sign=WXPay");
-				returnMap.put("prepayid", map.get("prepay_id"));
-				// 这边要将返回的时间戳转化成字符串，不然小程序端调用wx.requestPayment方法会报签名错误
-				returnMap.put("timestamp", timeStamp);
-				returnMap.put("partnerid", mchId);
-				// 拼接签名需要的参数
-				// 再次签名，这个签名用于小程序端调用wx.requesetPayment方法
-				String paySign = PaymentKit.createSign(returnMap, wxpayProperties.getPaternerKey()).toUpperCase();
-				returnMap.put("sign", paySign);
-				
+
+				String prepay_id =  map.get("prepay_id");
+				if("1".equals(type)){
+					returnMap.put("appId", wxpayProperties.getMiniAppid());
+					returnMap.put("nonceStr", nonceStr);
+					returnMap.put("package", "prepay_id=" + prepay_id);
+					returnMap.put("signType", "MD5");
+					returnMap.put("timeStamp", timeStamp);
+					String paySign = PaymentKit.createSign(returnMap, wxpayProperties.getPaternerKey()).toUpperCase();
+					returnMap.put("paySign", paySign);
+				}else{
+					returnMap.put("appid", wxpayProperties.getAppid());
+					returnMap.put("noncestr", nonceStr);
+					returnMap.put("package", "Sign=WXPay");
+					returnMap.put("prepayid", prepay_id);
+					returnMap.put("partnerid", mchId);
+					// 这边要将返回的时间戳转化成字符串，不然小程序端调用wx.requestPayment方法会报签名错误
+					returnMap.put("timestamp", timeStamp);
+					// 拼接签名需要的参数
+					// 再次签名，这个签名用于小程序端调用wx.requesetPayment方法
+					String paySign = PaymentKit.createSign(returnMap, wxpayProperties.getPaternerKey()).toUpperCase();
+					returnMap.put("sign", paySign);
+				}
 				return jsonResultHelper.buildSuccessJsonResult(returnMap);
 			} else {
 				logger.error("微信支付下单失败，返回:{}",xmlResult);

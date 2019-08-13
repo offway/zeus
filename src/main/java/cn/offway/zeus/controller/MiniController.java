@@ -98,7 +98,11 @@ public class MiniController {
 		
 		try {
 			String result = AesCbcUtil.decrypt(encryptedData, sessionKey, iv, "UTF-8");
-			logger.info("小程序登录用户信息:"+result);
+			logger.info("解密小程序信息:"+result);
+
+			if(result.contains("phoneNumber")){
+				return  jsonResultHelper.buildSuccessJsonResult(JSON.parseObject(result));
+			}
 			MiniUserInfo miniUserInfo = JSON.parseObject(result,MiniUserInfo.class);
 			
 			String unionid =  miniUserInfo.getUnionId();

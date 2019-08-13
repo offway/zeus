@@ -81,6 +81,11 @@ public class NotifyController {
 				String out_trade_no = alipayNotify.getOut_trade_no();
 				
 				phPreorderInfoService.alipay(trade_status, out_trade_no);
+
+				if("TRADE_SUCCESS".equals(trade_status)){
+					//推送成功消息
+					alipayService.publishMessage(out_trade_no,"ORDER_PAY_SUCCESS");
+				}
 				return "success";
 			}
 			
@@ -110,7 +115,10 @@ public class NotifyController {
 				String out_trade_no = params.get("out_trade_no"); //商户订单号
 				
 				phPreorderInfoService.wxpay(result_code, out_trade_no);
-				
+				if("SUCCESS".equals(result_code)){
+					//推送成功消息
+					alipayService.publishMessage(out_trade_no,"ORDER_PAY_SUCCESS");
+				}
 				 return "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
 			}
 		} catch (Exception e) {
