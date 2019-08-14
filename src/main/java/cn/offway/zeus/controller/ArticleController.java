@@ -157,7 +157,11 @@ public class ArticleController {
 		html = html.replaceAll("###VIEWCOUNT###", phArticle.getViewCount()+"");
 		Date date = phArticle.getApproval();
 		html = html.replaceAll("###CREATETIME###", DateFormatUtils.format(null==date?phArticle.getCreateTime():date, "yyyy-MM-dd"));
-		html = html.replaceAll("###CONTENT###", Matcher.quoteReplacement(phArticle.getContent()));
+		String content = phArticle.getContent();
+		content = content.replaceAll("\\$", "###RDS_CHAR_DOLLAR###");// encode $;
+		html = html.replaceAll("###CONTENT###", content);
+		html = html.replaceAll("###RDS_CHAR_DOLLAR###", "\\$");// decode $
+
 		html = html.replaceAll("###IMAGE###", phArticle.getImage());
 		html = html.replaceAll("###NAME###", phArticle.getName());
 		
