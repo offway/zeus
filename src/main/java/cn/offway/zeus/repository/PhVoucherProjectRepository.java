@@ -17,6 +17,7 @@ import java.util.List;
  */
 public interface PhVoucherProjectRepository extends JpaRepository<PhVoucherProject,Long>,JpaSpecificationExecutor<PhVoucherProject> {
 
+
 	@Query(nativeQuery = true,value = "select * from ph_voucher_project where id in(?1)")
 	List<PhVoucherProject> findByIdIn(List<String> ids);
 	
