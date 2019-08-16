@@ -1,8 +1,10 @@
 package cn.offway.zeus.config;
 
+import cn.offway.zeus.utils.JsonResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,8 +18,11 @@ import com.sensorsdata.analytics.javasdk.SensorsAnalytics;
 import com.yunpian.sdk.YunpianClient;
 
 import io.netty.util.HashedWheelTimer;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
@@ -62,7 +67,7 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 			http
 					.authorizeRequests()
 					// swagger页面需要添加登录校验
-					.antMatchers("/swagger-ui.html").authenticated()
+					.antMatchers("/swagger-ui.html","/doc.html").authenticated()
 					.and()
 					.formLogin();
 		}
@@ -91,7 +96,7 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 	public YunpianClient yunpianClient(){
 		return new YunpianClient(APIKEY).init();
 	}
-	
+
 	@Bean
     public Docket api(){
 		/*ParameterBuilder ticketPar = new ParameterBuilder();
@@ -103,11 +108,24 @@ public class WebConfig  extends WebSecurityConfigurerAdapter implements WebMvcCo
 
 
 		return new Docket(DocumentationType.SWAGGER_2)
+				.apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("cn.offway"))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+				//.genericModelSubstitutes(JsonResult.class) //4
+				;
 //				.globalOperationParameters(pars);
+	}
+
+	/**
+	 * 项目信息
+	 */
+	private ApiInfo apiInfo() {
+		return new ApiInfoBuilder()
+				.title("很潮APP接口文档")
+				.version("1.0")
+				.build();
 	}
 	
 	@Bean

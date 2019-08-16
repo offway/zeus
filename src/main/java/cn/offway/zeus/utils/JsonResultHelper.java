@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class JsonResultHelper {
+public class JsonResultHelper<T> {
     /** 信息帮助类 */
     @Autowired
     private MessageHelper  messageHelper;
@@ -18,11 +18,11 @@ public class JsonResultHelper {
      * @return Json结果对象
      * @throws org.springframework.context.NoSuchMessageException 文案配置不存在抛出
      */
-    public JsonResult buildFailJsonResult(ResultCode resultCode) {
+    public <T>JsonResult<T> buildFailJsonResult(ResultCode resultCode) {
         return buildFailJsonResult(resultCode.getStatusCode(), resultCode.getErrorCode());
     }
     
-    public JsonResult buildFailJsonResult(ResultCode resultCode,Object data) {
+    public <T>JsonResult<T> buildFailJsonResult(ResultCode resultCode,T data) {
         return buildFailJsonResult(resultCode.getStatusCode(), resultCode.getErrorCode(),data);
     }
 
@@ -35,22 +35,15 @@ public class JsonResultHelper {
      * @return Json结果对象
      * @throws org.springframework.context.NoSuchMessageException 文案配置不存在抛出
      */
-    public JsonResult buildFailJsonResult(String statusCode, String errorCode) {
+    public <T>JsonResult<T> buildFailJsonResult(String statusCode, String errorCode) {
         String message = messageHelper.getMessage(errorCode);
-        JsonResult jsonResult = new JsonResult();
-        jsonResult.setCode(statusCode);
-        jsonResult.setMsg(message);
-        return jsonResult;
+        return JsonResult.failWithCodeAndMsg(statusCode,message);
     }
     
     
-    public JsonResult buildFailJsonResult(String statusCode, String errorCode,Object data) {
+    public <T>JsonResult<T> buildFailJsonResult(String statusCode, String errorCode,T data) {
         String message = messageHelper.getMessage(errorCode);
-        JsonResult jsonResult = new JsonResult();
-        jsonResult.setCode(statusCode);
-        jsonResult.setMsg(message);
-        jsonResult.setData(data);
-        return jsonResult;
+        return JsonResult.failWithCodeAndMsg(statusCode,message,data);
     }
 
     /**
@@ -59,10 +52,8 @@ public class JsonResultHelper {
      * @param data 结果数据，可以为<code>NULL</code>
      * @return Json结果对象
      */
-    public JsonResult buildSuccessJsonResult(Object data) {
-        JsonResult jsonResult = new JsonResult();
-        jsonResult.setData(data);
-        return jsonResult;
+    public <T>JsonResult<T> buildSuccessJsonResult(T data) {
+        return JsonResult.successWithData(data);
     }
 
     /**
@@ -71,10 +62,7 @@ public class JsonResultHelper {
      * @param data 结果数据，可以为<code>NULL</code>
      * @return Json结果对象
      */
-    public JsonResult buildSuccessJsonResult(Object data,String message) {
-        JsonResult jsonResult = new JsonResult();
-        jsonResult.setData(data);
-        jsonResult.setMsg(message);
-        return jsonResult;
+    public <T>JsonResult<T> buildSuccessJsonResult(T data,String message) {
+        return JsonResult.successWithData(message,data);
     }
 }

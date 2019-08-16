@@ -2,6 +2,8 @@ package cn.offway.zeus.domain;
 
 
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
@@ -17,61 +19,61 @@ import java.util.Date;
 @Table(name = "ph_brand")
 public class PhBrand implements Serializable {
 
-    /** ID **/
+    @ApiModelProperty("ID")
     private Long id;
 
-    /** 品牌编码 **/
+    @ApiModelProperty("品牌编码")
     private String code;
 
-    /** 品牌名称 **/
+    @ApiModelProperty("品牌名称")
     private String name;
 
-    /** 品牌LOGO **/
+    @ApiModelProperty("品牌LOGO")
     private String logo;
 
-    /** 品牌LOGO(大) **/
+    @ApiModelProperty("品牌LOGO(大)")
     private String logoBig;
 
-    /** 品牌banner **/
+    @ApiModelProperty("品牌banner")
     private String banner;
 
-    /** 类型[0-国内品牌，1-国际品牌] **/
+    @ApiModelProperty("类型[0-国内品牌，1-国际品牌]")
     private String type;
 
-    /** 简介 **/
+    @ApiModelProperty("简介")
     private String info;
 
-    /** 背景图 **/
+    @ApiModelProperty("背景图")
     private String background;
 
-    /** 是否推荐[0-否，1-是] **/
+    @ApiModelProperty("是否推荐[0-否，1-是]")
     private String isRecommend;
 
-    /** 商户ID **/
+    @ApiModelProperty("商户ID")
     private Long merchantId;
 
-    /** 商户名称 **/
+    @ApiModelProperty("商户名称")
     private String merchantName;
 
-    /** 商户LOGO **/
+    @ApiModelProperty("商户LOGO")
     private String merchantLogo;
 
-    /** 排序 **/
+    @ApiModelProperty("排序")
     private Long sort;
 
-    /** 创建时间 **/
+    @ApiModelProperty("创建时间")
     private Date createTime;
 
-    /** 备注 **/
+    @ApiModelProperty("备注")
     private String remark;
 
-    /** 品牌LOGO(推荐到首页) **/
+    @ApiModelProperty("品牌LOGO(推荐到首页)")
     private String logoIndex;
 
-    /** 品牌banner(高街潮流推荐) **/
+    @ApiModelProperty("品牌banner(高街潮流推荐)")
     private String bannerBig;
 
-    /** 状态[0-未上架,1-已上架] **/
+    @ApiModelProperty("状态[0-未上架,1-已上架]")
     private String status;
 
 
