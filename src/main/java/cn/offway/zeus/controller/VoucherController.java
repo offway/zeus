@@ -1,7 +1,9 @@
 package cn.offway.zeus.controller;
 
 import java.util.Arrays;
+import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +69,17 @@ public class VoucherController {
 			@ApiParam("用户ID") @RequestParam Long userId,
 			@ApiParam("配置") @RequestParam String config){
 		String content = phConfigService.findContentByName(config);
+		String [] ids = content.split(",");
+		if(ids.length > 1){
+
+			List<String> voucherProjectIds = Arrays.asList(ids);
+			int count = phVoucherInfoService.countByUserIdAndVoucherProjectIdInAndStatus(userId,voucherProjectIds,"0");
+			if(count > 0 ){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
+			}
+			phVoucherInfoService.giveVoucher(userId, voucherProjectIds);
+			return jsonResultHelper.buildSuccessJsonResult(null);
+		}
 		Long voucherProjectId = Long.parseLong(content);
 		return giveVoucher(userId, voucherProjectId);
 

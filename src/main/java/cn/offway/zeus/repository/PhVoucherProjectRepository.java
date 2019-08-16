@@ -17,6 +17,7 @@ import java.util.List;
  */
 public interface PhVoucherProjectRepository extends JpaRepository<PhVoucherProject,Long>,JpaSpecificationExecutor<PhVoucherProject> {
 
+	@Query(nativeQuery = true,value = "select * from ph_voucher_project where id in(?1)")
 	List<PhVoucherProject> findByIdIn(List<String> ids);
 	
 	@Query(nativeQuery=true,value="select * from ph_voucher_project where type='1' and merchant_id=?1 and (NOW() BETWEEN begin_time and end_time or valid_num is not null)")

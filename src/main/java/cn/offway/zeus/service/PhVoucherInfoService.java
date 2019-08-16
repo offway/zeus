@@ -47,6 +47,8 @@ public interface PhVoucherInfoService{
 
 	int countByUserIdAndVoucherProjectIdAndStatus(Long userId, Long voucherProjectId, String status);
 
+	int countByUserIdAndVoucherProjectIdInAndStatus(Long userId, List<String> voucherProjectIds, String status);
+
 	Long findId(Long userId, Long voucherProjectId);
 
 }
