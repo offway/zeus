@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import cn.offway.zeus.domain.*;
 import cn.offway.zeus.service.*;
+import cn.offway.zeus.utils.*;
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -39,10 +41,6 @@ import cn.offway.zeus.repository.PhRefundRepository;
 import cn.offway.zeus.repository.PhShoppingCartRepository;
 import cn.offway.zeus.repository.PhVoucherInfoRepository;
 import cn.offway.zeus.service.impl.PhVoucherInfoServiceImpl;
-import cn.offway.zeus.utils.CommonResultCode;
-import cn.offway.zeus.utils.IpUtil;
-import cn.offway.zeus.utils.JsonResult;
-import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -245,6 +243,47 @@ public class UserController {
 		return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, weiboid, qqid, nickName, headimgurl, inviteUserId,null));
 
 	}
+
+	@ApiOperation("小程序注册/登录")
+	@PostMapping("/register/mini")
+	public JsonResult register(
+	        @ApiParam("微信用户ID") @RequestParam String unionid,
+            @ApiParam("微信用户昵称") @RequestParam String nickName,
+            @ApiParam("微信用户头像") @RequestParam String headimgurl,
+            @ApiParam("session_key") @RequestParam String sessionKey,
+            @ApiParam("encryptedData,获取手机号得到") @RequestParam String encryptedData,
+            @ApiParam("iv,获取手机号得到") @RequestParam String iv){
+
+        try {
+
+            PhUserInfo phUserInfo = null;
+            if(StringUtils.isNotBlank(unionid)){
+                phUserInfo = phUserInfoService.findByUnionid(unionid);
+                if(null!=phUserInfo){
+                    return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
+                }
+            }
+
+            String result = AesCbcUtil.decrypt(encryptedData, sessionKey, iv, "UTF-8");
+            logger.info("解密小程序获取手机号信息:"+result);
+            JSONObject jsonObject = JSON.parseObject(result);
+            String purePhoneNumber = jsonObject.getString("purePhoneNumber");
+            String countryCode = jsonObject.getString("countryCode");
+            StringBuilder sb = new StringBuilder();
+            sb.append("+").append(countryCode).append(purePhoneNumber);
+            String phone = sb.toString();
+
+            phUserInfo = phUserInfoService.findByPhone(phone);
+            if(null!=phUserInfo){
+                return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
+            }
+            return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, null, null, nickName, headimgurl, null,null));
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("小程序注册异常",e);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+        }
+    }
 
 	
 	@ApiOperation("登录")
