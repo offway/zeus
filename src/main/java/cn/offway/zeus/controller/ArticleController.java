@@ -165,13 +165,14 @@ public class ArticleController {
 
 		html = html.replaceAll("###IMAGE###", phArticle.getImage());
 		html = html.replaceAll("###NAME###", phArticle.getName());
-		
+
+		String re = "";
 		if("info".equals(type)){
 			html = html.replaceAll("<\\s*?script[^>]*?>[\\s\\S]*?<\\s*?/\\s*?script\\s*?>", ""); 
 			html = html.replaceAll("foot-btn", "undis"); 
 			html = html.replaceAll("foot-none", "undis"); 
 		}else{
-			String re = "";
+
 			String goodsIds = phArticle.getGoodsIds();
 			if(StringUtils.isNotBlank(goodsIds)){
 				String[] ids = goodsIds.split(",");
@@ -189,10 +190,8 @@ public class ArticleController {
 					}
 				}
 			}
-
-
-			html = html.replaceAll("###RECOMMEND_GOODS###", re);
 		}
+		html = html.replaceAll("###RECOMMEND_GOODS###", re);
 		return html;
 	}
 	

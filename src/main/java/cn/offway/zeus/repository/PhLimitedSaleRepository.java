@@ -19,9 +19,9 @@ public interface PhLimitedSaleRepository extends JpaRepository<PhLimitedSale,Lon
 	@Query(nativeQuery=true,value="select * from ph_limited_sale where goods_id =?1 limit 1")
 	PhLimitedSale findByGoodsId(Long goodsId);
 
-	@Query(nativeQuery=true,value="select * from ph_limited_sale where status ='1' and end_time > now() order by begin_time ")
-	List<PhLimitedSale> findHead();
+	@Query(nativeQuery=true,value="select * from ph_limited_sale where status ='1' and bitand(channel, ?1)=?1 and end_time > now() order by begin_time ")
+	List<PhLimitedSale> findHead(int channel);
 
-	@Query(nativeQuery=true,value="select * from ph_limited_sale where status ='1' order by end_time desc limit 1")
-	PhLimitedSale findHeadForEnd();
+	@Query(nativeQuery=true,value="select * from ph_limited_sale where status ='1' and bitand(channel, ?1)=?1 order by end_time desc limit 1")
+	PhLimitedSale findHeadForEnd(int channel);
 }

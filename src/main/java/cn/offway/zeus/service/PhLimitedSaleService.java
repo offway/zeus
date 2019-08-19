@@ -20,9 +20,9 @@ public interface PhLimitedSaleService{
 	
 	PhLimitedSale findById(Long id);
 
-    List<PhLimitedSale> findHead();
+    List<PhLimitedSale> findHead(int channel);
 
-    PhLimitedSale findHeadForEnd();
+    PhLimitedSale findHeadForEnd(int channel);
 
     Page<PhLimitedSale> findByPage(LimitedSaleDto limitedSaleDto, Pageable page);
 

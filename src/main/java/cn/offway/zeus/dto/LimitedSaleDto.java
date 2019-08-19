@@ -3,6 +3,8 @@ package cn.offway.zeus.dto;
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 限量发售
@@ -21,6 +23,18 @@ public class LimitedSaleDto implements Serializable {
     
     @ApiModelProperty(required = true,value ="页大小")
     private int size;
+
+	@ApiModelProperty(value ="渠道,该字段为二进制位运算标识,0否1是,从右到左第一位表示H5,第二位表示小程序,第三位表示APP。如要查询APP则传参为0100,查询H5和小程序则传参0011以此类推")
+	private String channel = "0100";
+
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
 
 	public String getType() {
 		return type;

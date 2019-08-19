@@ -59,6 +59,8 @@ public class PhLimitedSale implements Serializable {
     /** 目标助力次数 **/
     private Long boostCount;
 
+    /** 平台 **/
+    private Long channel;
 
 
 
@@ -191,6 +193,15 @@ public class PhLimitedSale implements Serializable {
 
     public void setBoostCount(Long boostCount) {
         this.boostCount = boostCount;
+    }
+
+    @Column(name = "channel", length = 8)
+    public Long getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Long channel) {
+        this.channel = channel;
     }
 
 }

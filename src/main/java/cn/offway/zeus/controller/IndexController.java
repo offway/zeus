@@ -105,7 +105,6 @@ public class IndexController {
 
 	/**
 	 * 微信授权
-	 * @param url
 	 * @param code
 	 * @return
 	 */
@@ -230,6 +229,34 @@ public class IndexController {
 			}
 		}
 		
+		return jsonResultHelper.buildSuccessJsonResult(map);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@ApiOperation(value = "首页数据-小程序")
+	@GetMapping("/data/mini")
+	@ResponseBody
+	public JsonResult datavMini(){
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("banners", phBannerService.banners("4"));
+
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI","INDEX_BRAND_GOODS_MINI","INDEX_CATEGORY_MINI");
+		for (PhConfig phConfig : configs) {
+			String name = phConfig.getName().toLowerCase();
+			String content = phConfig.getContent();
+			if("index_brand_goods_mini".equals(name)){
+				List<Map> brands  = JSON.parseArray(content,Map.class);
+				for (Map<String,Object> brand : brands) {
+					Long brandId = Long.parseLong(brand.get("id").toString());
+					brand.put("goods", phGoodsService.findBrandRecommend(brandId));
+				}
+				map.put(name,brands);
+			}else{
+				map.put(name,JSON.parse(content));
+			}
+		}
+
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 	

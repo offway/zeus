@@ -11,8 +11,10 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import cn.offway.zeus.config.BitPredicate;
 import cn.offway.zeus.domain.PhMerchant;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,13 +63,13 @@ public class PhLimitedSaleServiceImpl implements PhLimitedSaleService {
 	}
 
 	@Override
-	public List<PhLimitedSale> findHead(){
-		return phLimitedSaleRepository.findHead();
+	public List<PhLimitedSale> findHead(int channel){
+		return phLimitedSaleRepository.findHead(channel);
 	}
 
 	@Override
-	public PhLimitedSale findHeadForEnd(){
-		return phLimitedSaleRepository.findHeadForEnd();
+	public PhLimitedSale findHeadForEnd(int channel){
+		return phLimitedSaleRepository.findHeadForEnd(channel);
 	}
 	
 	@Override
@@ -80,24 +82,26 @@ public class PhLimitedSaleServiceImpl implements PhLimitedSaleService {
 				
 				Date now = new Date();
 				
-//				Order order = criteriaBuilder.desc(root.get("id"));
 				if(StringUtils.isNotBlank(limitedSaleDto.getType())){
 					if("0".equals(limitedSaleDto.getType())){
 						//最新发售
 						params.add(criteriaBuilder.lessThanOrEqualTo(root.get("beginTime"), now));
 						params.add(criteriaBuilder.greaterThan(root.get("endTime"), now));
-//						order = criteriaBuilder.asc(root.get("endTime"));
 					}else if("1".equals(limitedSaleDto.getType())){
 						//即将发售
 						params.add(criteriaBuilder.greaterThan(root.get("beginTime"), now));
-//						order = criteriaBuilder.asc(root.get("beginTime"));
-
 					}else{
 						params.add(criteriaBuilder.lessThanOrEqualTo(root.get("endTime"), now));
 
 					}
 				}
-				
+
+				String channel = limitedSaleDto.getChannel();
+				if(StringUtils.isNotBlank(channel)){
+					params.add(new BitPredicate((CriteriaBuilderImpl)criteriaBuilder,root.get("channel"), Integer.parseInt(channel,2))) ;
+				}
+
+
 				params.add(criteriaBuilder.equal(root.get("status"), "1"));
 
 				

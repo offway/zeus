@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import cn.offway.zeus.utils.CommonResultCode;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -55,10 +56,12 @@ public class LimitedSaleController {
 
 	@ApiOperation("限量发售那个头")
 	@GetMapping("/head")
-	public JsonResult head(){
+	public JsonResult head(@ApiParam("渠道,该字段为二进制位运算标识,0否1是,从右到左第一位表示H5,第二位表示小程序,第三位表示APP。如要查询APP则传参为0100,查询H5和小程序则传参0011以此类推") @RequestParam(defaultValue = "0100") String channel){
+
+		int channelInt = Integer.parseInt(channel,2);
 		Date now = new Date();
 		List<Map<String,Object>> list = new ArrayList<>();
-		List<PhLimitedSale> sales = phLimitedSaleService.findHead();
+		List<PhLimitedSale> sales = phLimitedSaleService.findHead(channelInt);
 		SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
 		for (PhLimitedSale sale : sales) {
 			Map<String,Object> map = new HashMap<>();
@@ -69,7 +72,7 @@ public class LimitedSaleController {
 		}
 
 		if(list.isEmpty()){
-			PhLimitedSale phLimitedSale = phLimitedSaleService.findHeadForEnd();
+			PhLimitedSale phLimitedSale = phLimitedSaleService.findHeadForEnd(channelInt);
 			Map<String,Object> map = new HashMap<>();
 			map.put("id",phLimitedSale.getId());
 			map.put("date",sdf.format(phLimitedSale.getBeginTime()));
