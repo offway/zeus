@@ -95,6 +95,9 @@ public class PhGoods implements Serializable {
     /** 排序 **/
     private Double sort;
 
+    /** 商品标识[0-普通商品,1-限量商品]**/
+    private String label;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -333,7 +336,13 @@ public class PhGoods implements Serializable {
     public void setSort(Double sort) {
         this.sort = sort;
     }
-	
-    
 
+    @Column(name = "label",length = 2)
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
 }

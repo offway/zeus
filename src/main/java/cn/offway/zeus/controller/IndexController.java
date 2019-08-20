@@ -233,6 +233,47 @@ public class IndexController {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@ApiOperation(value = "首页乱七八糟的数据")
+	@GetMapping("/data/v3")
+	@ResponseBody
+	public JsonResult datav3(){
+		Map<String, Object> map = new HashMap<>();
+
+		List<PhBanner> phBanners = phBannerService.banners();
+
+		List<PhBanner> banners = new ArrayList<>();
+		List<PhBanner> promoteSales = new ArrayList<>();
+		for (PhBanner phBanner : phBanners) {
+			if("0".equals(phBanner.getPosition())){
+				banners.add(phBanner);
+			}else if("1".equals(phBanner.getPosition())){
+				promoteSales.add(phBanner);
+			}
+		}
+
+		map.put("banners", banners);
+		map.put("promoteSales", promoteSales);
+
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES_2","INDEX_BRAND_LOGO","INDEX_BRAND_GOODS","INDEX_CATEGORY","INDEX_STYLE");
+		for (PhConfig phConfig : configs) {
+			String name = phConfig.getName().toLowerCase();
+			String content = phConfig.getContent();
+			if("index_brand_goods".equals(name)){
+				List<Map> brands  = JSON.parseArray(content,Map.class);
+				for (Map<String,Object> brand : brands) {
+					Long brandId = Long.parseLong(brand.get("id").toString());
+					brand.put("goods", phGoodsService.findBrandRecommend(brandId));
+				}
+				map.put(name,brands);
+			}else{
+				map.put(name,JSON.parse(content));
+			}
+		}
+
+		return jsonResultHelper.buildSuccessJsonResult(map);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@ApiOperation(value = "首页数据-小程序")
 	@GetMapping("/data/mini")
 	@ResponseBody

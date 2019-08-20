@@ -19,13 +19,13 @@ import java.lang.Long;
  */
 public interface PhGoodsRepository extends JpaRepository<PhGoods,Long>,JpaSpecificationExecutor<PhGoods> {
 
-	@Query(nativeQuery=true,value="select g.* from ph_goods g ,ph_brand b where g.brand_id = b.id and b.type='0' and g.`status`='1'and b.`status`='1' order by g.sale_count desc,g.up_time desc limit 10")
+	@Query(nativeQuery=true,value="select g.* from ph_goods g ,ph_brand b where g.brand_id = b.id and b.type='0' and g.`label`='0' and g.`status`='1'and b.`status`='1' order by g.sale_count desc,g.up_time desc limit 10")
 	List<PhGoods> indexData();
 	
-	@Query(nativeQuery=true,value="select g.* from ph_goods g ,ph_brand b where g.brand_id = b.id and b.id=?1 and g.`status`='1' and b.`status`='1' order by g.sale_count desc,g.up_time desc limit 10")
+	@Query(nativeQuery=true,value="select g.* from ph_goods g ,ph_brand b where g.brand_id = b.id and b.id=?1 and and g.`label`='0' g.`status`='1' and b.`status`='1' order by g.sale_count desc,g.up_time desc limit 10")
 	List<PhGoods> findBrandRecommend(Long brandId);
 	
-	@Query(nativeQuery=true,value="select* from ph_goods g where g.`status`='1' and g.id not in (4465,?1) and EXISTS(select 1 from ph_goods pg where pg.type = g.type and pg.category=g.category  and pg.brand_id= g.brand_id  and pg.id=?1) ORDER BY g.create_time desc limit 3")
+	@Query(nativeQuery=true,value="select* from ph_goods g where g.`status`='1' and g.`label`='0' and g.id not in (4465,?1) and EXISTS(select 1 from ph_goods pg where pg.type = g.type and pg.category=g.category  and pg.brand_id= g.brand_id  and pg.id=?1) ORDER BY g.create_time desc limit 3")
 	List<PhGoods> findRecommend(Long id);
 	
 	@Transactional
@@ -46,7 +46,7 @@ public interface PhGoodsRepository extends JpaRepository<PhGoods,Long>,JpaSpecif
 	@Query(nativeQuery=true,value="update ph_goods set sort = RAND() where status='1'")
 	int updateSort();
 	
-	@Query(nativeQuery=true,value="select CONCAT(brand_name,' ',category) from ph_goods where `brand_name` =?1 group by category")
+	@Query(nativeQuery=true,value="select CONCAT(brand_name,' ',category) from ph_goods where `brand_name` =?1 and `label`='0' group by category")
 	List<String> searchCategory(String brandName);
 
 	int countByIdInAndStatus(List<Long> ids,String status);

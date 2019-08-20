@@ -11,8 +11,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import cn.offway.zeus.config.BitPredicate;
+import cn.offway.zeus.config.DiscountPredicate;
 import cn.offway.zeus.domain.*;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,6 +180,10 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 					);
 					params.add(criteriaBuilder.exists(subquery));
 				}
+
+				if(null != goodsDto.getDiscount()){
+					params.add(new DiscountPredicate((CriteriaBuilderImpl)criteriaBuilder,root.get("originalPrice"),root.get("price"),goodsDto.getDiscount())) ;
+				}
 				
 				
 				params.add(criteriaBuilder.equal(root.get("status"),  "1"));
@@ -184,12 +191,13 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				//TODO chillhigh活动
 				params.add(criteriaBuilder.notEqual(root.get("id"),  4465L));
 
+				params.add(criteriaBuilder.equal(root.get("label"),  "0"));
 
-				Subquery<PhLimitedSale> subquery = criteriaQuery.subquery(PhLimitedSale.class);
+				/*Subquery<PhLimitedSale> subquery = criteriaQuery.subquery(PhLimitedSale.class);
 				Root<PhLimitedSale> subRoot = subquery.from(PhLimitedSale.class);
 				subquery.select(subRoot);
 				subquery.where(criteriaBuilder.equal(root.get("id"), subRoot.get("goodsId")));
-				params.add(criteriaBuilder.not(criteriaBuilder.exists(subquery)));
+				params.add(criteriaBuilder.not(criteriaBuilder.exists(subquery)));*/
 				
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));

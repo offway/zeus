@@ -56,6 +56,9 @@ public class GoodsDto implements Serializable {
     @ApiModelProperty(value ="风格")
     private String style;
 
+    @ApiModelProperty(value ="优惠折扣")
+    private Double discount;
+
     public String getName() {
         return name;
     }
@@ -169,5 +172,12 @@ public class GoodsDto implements Serializable {
 	public void setStyle(String style) {
 		this.style = style;
 	}
-    
+
+    public Double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+    }
 }
