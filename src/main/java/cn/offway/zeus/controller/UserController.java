@@ -285,6 +285,51 @@ public class UserController {
         }
     }
 
+	@ApiOperation("一键登录")
+	@PostMapping("/login/oneKey")
+	public JsonResult loginOneKey(@ApiParam("LoginToken") @RequestParam String loginToken){
+
+		try {
+			String result = HttpClientUtil.post(
+							"https://api.verification.jpush.cn/v1/web/loginTokenVerify",
+							"{\"loginToken\":\""+loginToken+"\",\"exID\":\"\"}",
+							"Authorization",
+							"Basic MjNmM2QxNDc2NTc5ZWRhMTlhMGRhODcyOjkwZjRhNjk1NzVkNGE1MWM4NzdmNWRhZA==");
+			JSONObject jsonObject = JSON.parseObject(result);
+			String phoneEncrypted = jsonObject.getString("phone");
+
+			String prikey = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBANjS5OIM2guSO1hc" +
+					"0dXCXXjhEFSaNvnxVAV8P6zOpki7ZpN7JV4WXhUYzuB1ju0/9LMDQSzYPBqvKXp0" +
+					"kZ9L8LEoedZayYzYmR45OwZcSOiTEnJYC6Sg2jxtI2b/hhqoOAfzfrEelpdeNgV1" +
+					"C4EhEqKVSBHACDBU3A2/1+tCxqPLAgMBAAECgYA5Hq3fg0U6AScTKzi4WIDpZFk6" +
+					"AHp1NAdPfqEDtFkIFh56wdlhRQE6C5QMe8vQYqXjNvtHhhunZ/fEY8stLQNWHE0r" +
+					"oFQz/lDhzCoIA0nyXwSOZF0bKuuKM3twM+Ns9ync+fTFhljKMTjF4pomZlKwK4EJ" +
+					"JBZBsowbpCYHDhBi4QJBAO/n/JqYTs7NecL2FtpiYSi6HL1iGfx+hS3DKTlu8ygp" +
+					"078gGRkvX4SQCcrre2C4iPYZ51YtTE73EOBe/loYIzECQQDnXoDdvxgSWlenZVxx" +
+					"ElmNzJPOtwMWQQn8WGbyB8e4Lkn5axnsuaq8JExs5qtAQRfiVPXNlIWPCeQfKYUo" +
+					"gh+7AkAZZbvOOfWN2x7azuaYc/XJM/q66dnKazJ6J8EDfYVsaRErmKBPlD5OcFk5" +
+					"DDjhgmetdgyRiPYdHfbBag0PSKLhAkAb1j3w8AXoZ2A2braRkCCgM+XwsAo6Cjc2" +
+					"WjiAlDkOSttxm9YxqiEFo+RiEdq2z14dSBWO13i+PfVpXmh7+DPzAkB+1Yk6rogc" +
+					"kQ+n41U62tOJC5HMOtpQpmnxZDorIs71oz0Zmr+A4VqsCV4pgFOKIqQGVuzZYRAa" +
+					"vG+O1j7VseUr";
+			String phone = RSADecrypt.decrypt(phoneEncrypted,prikey);
+			if(StringUtils.isNotBlank(phone)){
+				phone = "+86"+phone;
+				PhUserInfo phUserInfo = phUserInfoService.findByPhone(phone);
+				if(null == phUserInfo){
+					phUserInfo = phUserInfoService.register(phone, null, null, null, null, null, null,null);
+				}
+				Map<String, Object> map = userData(phUserInfo);
+				return jsonResultHelper.buildSuccessJsonResult(map);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("一键登录异常",e);
+		}
+
+		return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+	}
+
 	
 	@ApiOperation("登录")
 	@PostMapping("/login")

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -15,6 +16,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -39,7 +41,7 @@ public class HttpClientUtil {
 		logger.info("HTTP POST请求URL{};请求参数：{}",url,param);
 		String result = "";
 		CloseableHttpClient httpClient =  HttpClients.createDefault();
-		HttpPost httppost = new HttpPost(url); 
+		HttpPost httppost = new HttpPost(url);
 		StringEntity entity = new StringEntity(param, "UTF-8");
 		httppost.setEntity(entity);
 		try {
@@ -66,6 +68,51 @@ public class HttpClientUtil {
                 e.printStackTrace();  
             }  
         } 
+		return result;
+	}
+
+	/**
+	 * post请求 （StringEntity）
+	 * @param url
+	 * @param param
+	 * @return
+	 */
+	public static String post(String url,String param,String headName,String headValue){
+		logger.info("HTTP POST请求URL{};请求参数：{}",url,param);
+		String result = "";
+		CloseableHttpClient httpClient =  HttpClients.createDefault();
+		HttpPost httppost = new HttpPost(url);
+		httppost.setHeader(headName,headValue);
+		Header[] headers = new Header[2];
+		headers[0] =new BasicHeader(headName, headValue);
+		headers[1] =new BasicHeader("Content-Type", "application/json");
+		httppost.setHeaders(headers);
+		StringEntity entity = new StringEntity(param, "UTF-8");
+		httppost.setEntity(entity);
+		try {
+			CloseableHttpResponse response = httpClient.execute(httppost);
+			try {
+				int statusCode = response.getStatusLine().getStatusCode();
+				logger.info("HTTP POST请求状态:{}",statusCode);
+				HttpEntity responseEntity = response.getEntity();
+				if (responseEntity != null) {
+					result = EntityUtils.toString(responseEntity, "UTF-8");
+					logger.info("HTTP POST请求结果:{}",result);
+				}
+			} finally {
+				response.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("http请求错误",e);
+		}finally {
+			// 关闭连接,释放资源
+			try {
+				httpClient.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		return result;
 	}
 	
