@@ -1,12 +1,12 @@
 package cn.offway.zeus.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import cn.offway.zeus.domain.PhFreeProduct;
+import cn.offway.zeus.domain.PhUserInfo;
+import cn.offway.zeus.repository.PhFreeProductRepository;
+import cn.offway.zeus.service.PhUserInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +53,17 @@ public class FreeDeliveryController {
 	
 	@Autowired
 	private PhFreeDeliveryBoostRepository phFreeDeliveryBoostRepository;
+
+	@Autowired
+	private PhFreeProductRepository phFreeProductRepository;
+
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
+
+	private static final String SMS_CODE_KEY="zeus.sms.code";
+
+	@Autowired
+	private PhUserInfoService phUserInfoService;
 	
 	@ApiOperation("列表")
 	@GetMapping("/list")
@@ -59,9 +71,8 @@ public class FreeDeliveryController {
 			@ApiParam("用户ID") @RequestParam(required = false) Long userId,
 			@ApiParam("页码,从0开始") @RequestParam int page,
 			@ApiParam("页大小") @RequestParam int size,
-			@ApiParam("活动批次") @RequestParam(required = false) String batch){
-		batch = StringUtils.isBlank(batch)?"0":batch;
-		Page<PhFreeDelivery> pages = phFreeDeliveryService.findByPage(batch, PageRequest.of(page, size));
+			@ApiParam("免费送产品ID") @RequestParam Long productId){
+		Page<PhFreeDelivery> pages = phFreeDeliveryService.findByPage(productId, PageRequest.of(page, size));
 		List<PhFreeDelivery> phFreeDeliveries = pages.getContent();
 		List<PhFreeDeliveryDto> dtos = new ArrayList<>();
 		for (PhFreeDelivery phFreeDelivery : phFreeDeliveries) {
@@ -106,36 +117,81 @@ public class FreeDeliveryController {
 
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
+
+	@ApiOperation("免费送产品详情")
+	@GetMapping("/product")
+	public JsonResult product(@ApiParam("免费送产品ID") @RequestParam Long productId){
+		Optional<PhFreeProduct> optional = phFreeProductRepository.findById(productId);
+		return jsonResultHelper.buildSuccessJsonResult(optional.isPresent()?optional.get():null);
+	}
 	
 	@ApiOperation("助力")
 	@PostMapping("/boost")
 	public JsonResult boost(
 			@ApiParam("免费送ID") @RequestParam Long freeDeliveryId,
-			@ApiParam("分享用户ID") @RequestParam(required = false) Long userId,
-			@ApiParam("助力用户ID") @RequestParam(required = false) Long boostUserId){
+			@ApiParam("分享用户ID") @RequestParam Long userId,
+			@ApiParam("助力用户手机号") @RequestParam String phone,
+			@ApiParam("助力用户验证码") @RequestParam String code){
 		
 		try {
-			
-			/*Date now = new Date();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			if(now.before(sdf.parse("2019-06-18 00:00:00")) || now.after(sdf.parse("2019-06-20 23:59:59"))){
-				//不在活动时间范围
-				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
-			}*/
 
-			if(userId.longValue()==boostUserId.longValue()){
-				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOST_MY);
-
+			if(StringUtils.isBlank(phone)){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_MISS);
 			}
+
+			phone = phone.contains("+")?phone:"+86"+phone;
+
+			String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
+			if(StringUtils.isBlank(smsCode)){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);
+			}
+
+			if(!code.equals(smsCode)){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_ERROR);
+			}
+
 			PhFreeDelivery phFreeDelivery = phFreeDeliveryService.findById(freeDeliveryId);
 			if("1".equals(phFreeDelivery.getStatus())){
 				//已抢光
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_LESS);
 			}
+
+			PhUserInfo phUserInfo = phUserInfoService.findByPhone(phone);
+
+			//用户类型[0-新用户,1-老用户]
+			String userType = phFreeDelivery.getUserType();
+			if("0".equals(userType)){
+				if(null!=phUserInfo){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
+				}
+			}
+
+			if(null==phUserInfo){
+				phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null);
+			}
+
+			Long boostUserId = phUserInfo.getId();
+
+			if(userId.longValue()==boostUserId.longValue()){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOST_MY);
+
+			}
+
+			Optional<PhFreeProduct> optional = phFreeProductRepository.findById(phFreeDelivery.getProductId());
+			PhFreeProduct phFreeProduct =  optional.isPresent()?optional.get():null;
+			Date beginTime = phFreeProduct.getBeginTime();
+			Date endTime = phFreeProduct.getEndTime();
+			Date now = new Date();
+			if(now.before(beginTime) || now.after(endTime)){
+				//不在活动时间范围
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
+			}
+
+
 			return phFreeDeliveryService.boost(freeDeliveryId,userId,boostUserId);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("免费送活动助理失败freeDeliveryId={},userId={},boostUserId={}",freeDeliveryId,userId,boostUserId,e);
+			logger.error("免费送活动助理失败freeDeliveryId={},userId={},phone={}",freeDeliveryId,userId,phone,e);
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
 	}

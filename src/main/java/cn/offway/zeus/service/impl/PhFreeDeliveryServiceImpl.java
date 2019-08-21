@@ -74,13 +74,13 @@ public class PhFreeDeliveryServiceImpl implements PhFreeDeliveryService {
 	}
 	
 	@Override
-	public Page<PhFreeDelivery> findByPage(String batch,Pageable page){
+	public Page<PhFreeDelivery> findByPage(Long productId,Pageable page){
 		return phFreeDeliveryRepository.findAll(new Specification<PhFreeDelivery>() {
 			
 			@Override
 			public Predicate toPredicate(Root<PhFreeDelivery> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 				List<Predicate> params = new ArrayList<Predicate>();
-				params.add(criteriaBuilder.equal(root.get("batch"),batch));
+				params.add(criteriaBuilder.equal(root.get("productId"),productId));
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
                 criteriaQuery.orderBy(criteriaBuilder.asc(root.get("status")),criteriaBuilder.asc(root.get("sort")));
