@@ -62,6 +62,9 @@ public class PhLimitedSale implements Serializable {
     /** 平台 **/
     private Long channel;
 
+    /** 用户类型[0-新用户,1-新老用户] **/
+    private String userType;
+
 
 
     @Id
@@ -202,6 +205,15 @@ public class PhLimitedSale implements Serializable {
 
     public void setChannel(Long channel) {
         this.channel = channel;
+    }
+
+    @Column(name = "user_type", length = 2)
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 
 }

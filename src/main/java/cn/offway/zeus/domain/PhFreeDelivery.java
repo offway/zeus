@@ -65,7 +65,7 @@ public class PhFreeDelivery implements Serializable {
     /** 免费送产品表ID **/
     private Long productId;
 
-    /** 用户类型[0-新用户,1-老用户] **/
+    /** 用户类型[0-新用户,1-新老用户] **/
     private String userType;
 
     /** 商品尺码 **/

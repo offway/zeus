@@ -3,6 +3,8 @@ package cn.offway.zeus.controller;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import cn.offway.zeus.domain.PhUserInfo;
+import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +49,14 @@ public class LimitedSaleController {
 	
 	@Autowired
 	private PhLimitedSaleOpRepository phLimitedSaleOpRepository;
+
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
+
+	private static final String SMS_CODE_KEY="zeus.sms.code";
+
+	@Autowired
+	private PhUserInfoService phUserInfoService;
 	
 	@ApiOperation("限量发售列表")
 	@PostMapping("/list")
@@ -109,7 +120,49 @@ public class LimitedSaleController {
 	public JsonResult op(
 			@ApiParam("限量发售ID") @RequestParam Long id,
 			@ApiParam("分享用户ID") @RequestParam Long userId,
-			@ApiParam("助力用户ID") @RequestParam Long boostUserId){
+			@ApiParam("助力用户手机号") @RequestParam String phone,
+			@ApiParam("助力用户验证码") @RequestParam String code){
+
+
+		PhLimitedSale phLimitedSale = phLimitedSaleService.findById(id);
+
+		if(null == phLimitedSale){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+		}
+
+		if(StringUtils.isBlank(phone)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_MISS);
+		}
+
+		phone = phone.contains("+")?phone:"+86"+phone;
+
+		String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
+		if(StringUtils.isBlank(smsCode)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);
+		}
+
+		if(!code.equals(smsCode)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_ERROR);
+		}
+
+
+		PhUserInfo phUserInfo = phUserInfoService.findByPhone(phone);
+
+		//用户类型[0-新用户,1-老用户]
+		String userType = phLimitedSale.getUserType();
+		if("0".equals(userType)){
+			if(null!=phUserInfo){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
+			}
+		}
+
+		if(null==phUserInfo){
+			phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null);
+		}
+
+		Long boostUserId = phUserInfo.getId();
+
+
 
 		if(userId.longValue()==boostUserId.longValue()){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOST_MY);

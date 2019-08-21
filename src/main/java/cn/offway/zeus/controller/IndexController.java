@@ -213,7 +213,7 @@ public class IndexController {
 		map.put("banners", banners);
 		map.put("promoteSales", promoteSales);
 
-		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES","INDEX_BRAND_LOGO","INDEX_BRAND_GOODS","INDEX_CATEGORY","INDEX_STYLE");
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES","INDEX_BRAND_LOGO","INDEX_BRAND_GOODS","INDEX_CATEGORY","INDEX_STYLE","INDEX_DISCOUNT");
 		for (PhConfig phConfig : configs) {
 			String name = phConfig.getName().toLowerCase();
 			String content = phConfig.getContent();
@@ -231,7 +231,7 @@ public class IndexController {
 		
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
-
+/*
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@ApiOperation(value = "首页乱七八糟的数据")
 	@GetMapping("/data/v3")
@@ -271,7 +271,7 @@ public class IndexController {
 		}
 
 		return jsonResultHelper.buildSuccessJsonResult(map);
-	}
+	}*/
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@ApiOperation(value = "首页数据-小程序")
