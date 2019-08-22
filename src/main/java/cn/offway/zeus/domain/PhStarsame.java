@@ -47,6 +47,9 @@ public class PhStarsame implements Serializable {
     /** 排序 **/
     private Long sort;
 
+    /** 排序 **/
+    private Long sortMini;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -140,7 +143,13 @@ public class PhStarsame implements Serializable {
 	public void setCallCount(Long callCount) {
 		this.callCount = callCount;
 	}
-    
-    
 
+    @Column(name = "sort_mini", length = 11)
+    public Long getSortMini() {
+        return sortMini;
+    }
+
+    public void setSortMini(Long sortMini) {
+        this.sortMini = sortMini;
+    }
 }
