@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.offway.zeus.repository.PhPromotionInfoRepository;
+import cn.offway.zeus.utils.CommonResultCode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -43,6 +44,8 @@ import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+
+import javax.smartcardio.CommandAPDU;
 
 @Api(tags={"商品"})
 @RestController
@@ -155,6 +158,10 @@ public class GoodsController {
 		
 		Map<String, Object> resultMap = new HashMap<>();
 		PhGoods phGoods = phGoodsService.findById(id);
+		if("1".equals(phGoods.getLabel())){
+			//限量商品不能查看详情
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_NOT_INFO);
+		}
 		List<String> banners = phGoodsImageService.findByGoodsId(id,"0");
 		List<String> contents = phGoodsImageService.findByGoodsId(id,"1");
 
@@ -216,6 +223,14 @@ public class GoodsController {
 			@ApiParam("数量") @RequestParam Long goodsCount,
 			@ApiParam("类型[0-加,1-减,2-修改]") @RequestParam(required = false) String type){
 		type = StringUtils.isBlank(type)?"0":type;//默认：加
+
+		//限量商品不能添加购物车
+		PhGoodsStock phGoodsStock = phGoodsStockService.findById(stockId);
+		Long goodsId = phGoodsStock.getGoodsId();
+		PhGoods phGoods = phGoodsService.findById(goodsId);
+		if("1".equals(phGoods.getLabel())){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_NOT_CAR);
+		}
 		return phShoppingCartService.shopingCar(userId, stockId, goodsCount,type);
 	}
 	

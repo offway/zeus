@@ -1,5 +1,6 @@
 package cn.offway.zeus.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,5 +52,10 @@ public class PhOrderGoodsServiceImpl implements PhOrderGoodsService {
 	@Override
 	public List<PhOrderGoods> findByOrderNo(String orderNo){
 		return phOrderGoodsRepository.findByOrderNo(orderNo);
+	}
+
+	@Override
+	public int sumGoodsCountByLimitSale(Long goodsId, Long userId, Date beginTime, Date endTime) {
+		return phOrderGoodsRepository.sumGoodsCountByLimitSale(goodsId, userId, beginTime, endTime);
 	}
 }

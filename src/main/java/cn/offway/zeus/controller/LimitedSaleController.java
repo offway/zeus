@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import cn.offway.zeus.domain.PhUserInfo;
+import cn.offway.zeus.service.PhOrderGoodsService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +58,9 @@ public class LimitedSaleController {
 
 	@Autowired
 	private PhUserInfoService phUserInfoService;
+
+	@Autowired
+    private PhOrderGoodsService phOrderGoodsService;
 	
 	@ApiOperation("限量发售列表")
 	@PostMapping("/list")
@@ -96,7 +100,7 @@ public class LimitedSaleController {
 	
 	@ApiOperation("限量发售详情")
 	@GetMapping("/info")
-	public JsonResult info(
+	public JsonResult<LimitedSaleInfoDto> info(
 			@ApiParam("限量发售ID") @RequestParam Long id,
 			@ApiParam("用户ID") @RequestParam(required = false) Long userId){
 		PhLimitedSale phLimitedSale = phLimitedSaleService.findById(id);
@@ -104,12 +108,18 @@ public class LimitedSaleController {
 		if(null!=phLimitedSale){
 			BeanUtils.copyProperties(phLimitedSale, dto);
 		}
-		int currentCount = 0;
+		int currentCount = 0;//当前助力次数
 		if(null != userId){
 			int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(id,userId,"0");
 			currentCount = c;
 		}
 		dto.setCurrentCount((long)currentCount);
+		//查询该商品已购买数量
+        int buyCount = 0;
+        if(null != userId){
+			buyCount = phOrderGoodsService.sumGoodsCountByLimitSale(phLimitedSale.getGoodsId(),userId,phLimitedSale.getBeginTime(),phLimitedSale.getEndTime());
+        }
+        dto.setBuyCount((long)buyCount);
 		dto.setNow(new Date());
 
 		return jsonResultHelper.buildSuccessJsonResult(dto);

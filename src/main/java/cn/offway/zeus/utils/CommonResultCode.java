@@ -109,6 +109,14 @@ public enum CommonResultCode implements ResultCode {
     /** 限量商品无法收藏 */
     LIMITEDSALE_NOT_COLLECT("1034", "LIMITEDSALE_NOT_COLLECT"),
 
+    /** 限量商品不能查看详情 */
+    LIMITEDSALE_NOT_INFO("1035", "LIMITEDSALE_NOT_INFO"),
+
+    /** 限量商品不能加入购物车 */
+    LIMITEDSALE_NOT_CAR("1036", "LIMITEDSALE_NOT_CAR"),
+
+
+
     ;
 	
 	

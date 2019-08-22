@@ -1,5 +1,6 @@
 package cn.offway.zeus.service;
 
+import java.util.Date;
 import java.util.List;
 
 import cn.offway.zeus.domain.PhOrderGoods;
@@ -19,4 +20,6 @@ public interface PhOrderGoodsService{
     int sumGoodsCountByOrderNo(String orderNo);
 
     List<PhOrderGoods> findByOrderNo(String orderNo);
+
+    int sumGoodsCountByLimitSale(Long goodsId, Long userId, Date beginTime, Date endTime);
 }

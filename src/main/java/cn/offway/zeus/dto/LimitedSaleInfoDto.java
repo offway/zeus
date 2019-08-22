@@ -1,5 +1,7 @@
 package cn.offway.zeus.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,53 +13,59 @@ import java.util.Date;
  */
 public class LimitedSaleInfoDto implements Serializable {
 
-    /** ID **/
+    @ApiModelProperty(value ="ID")
     private Long id;
 
-    /** 名称 **/
+    @ApiModelProperty(value ="名称")
     private String name;
 
-    /** 封面图片 **/
+    @ApiModelProperty(value ="封面图片")
     private String image;
 
-    /** 售价 **/
+    @ApiModelProperty(value ="售价")
     private String price;
 
-    /** 商品ID **/
+    @ApiModelProperty(value ="商品ID")
     private Long goodsId;
 
-    /** 开始时间 **/
+    @ApiModelProperty(value ="开始时间")
     private Date beginTime;
 
-    /** 截止时间 **/
+    @ApiModelProperty(value ="截止时间")
     private Date endTime;
 
-    /** 状态[0-未上架,1-已上架] **/
+    @ApiModelProperty(value ="状态[0-未上架,1-已上架]")
     private String status;
 
-    /** 创建时间 **/
+    @ApiModelProperty(value ="创建时间")
     private Date createTime;
 
-    /** 发售详情 **/
+    @ApiModelProperty(value ="发售详情")
     private String info;
 
-    /** 备注 **/
+    @ApiModelProperty(value ="备注")
     private String remark;
 
-	/** 目标助力次数 **/
+	@ApiModelProperty(value ="目标助力次数")
 	private Long boostCount;
 
-	/** 当前助力次数 **/
+	@ApiModelProperty(value ="当前助力次数")
 	private Long currentCount;
 
-	/** 市场价 **/
+	@ApiModelProperty(value ="市场价")
 	private String originalPrice;
 
-	/** 数量 **/
+	@ApiModelProperty(value ="数量")
 	private String saleCount;
     
-    /** 服务器当前时间 **/
+    @ApiModelProperty(value ="服务器当前时间")
     private Date now;
+
+	@ApiModelProperty(value ="单用户购买数量上线")
+	private Long buyLimit;
+
+	@ApiModelProperty(value ="当前用户已购买数量")
+	private Long buyCount;
 
 	public Long getId() {
 		return id;
@@ -186,5 +194,21 @@ public class LimitedSaleInfoDto implements Serializable {
 
 	public void setCurrentCount(Long currentCount) {
 		this.currentCount = currentCount;
+	}
+
+	public Long getBuyCount() {
+		return buyCount;
+	}
+
+	public void setBuyCount(Long buyCount) {
+		this.buyCount = buyCount;
+	}
+
+	public Long getBuyLimit() {
+		return buyLimit;
+	}
+
+	public void setBuyLimit(Long buyLimit) {
+		this.buyLimit = buyLimit;
 	}
 }

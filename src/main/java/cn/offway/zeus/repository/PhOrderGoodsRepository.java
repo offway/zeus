@@ -7,6 +7,7 @@ import cn.offway.zeus.domain.PhOrderGoods;
 import org.springframework.data.jpa.repository.Query;
 
 import java.lang.String;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,4 +24,7 @@ public interface PhOrderGoodsRepository extends JpaRepository<PhOrderGoods,Long>
 
 	@Query(nativeQuery = true,value = "select SUM(goods_count) from ph_order_goods where order_no=?1")
 	int sumGoodsCountByOrderNo(String orderNo);
+
+	@Query(nativeQuery = true,value = "select ifnull(SUM(og.goods_count),0) from ph_order_goods og where og.goods_id =?1 and EXISTS(select 1 from ph_order_info o where  o.order_no = og.order_no and o.user_id = ?2 and  o.status !='4'  and o.create_time BETWEEN ?3 and ?4)")
+	int sumGoodsCountByLimitSale(Long goodsId, Long userId, Date beginTime, Date endTime);
 }

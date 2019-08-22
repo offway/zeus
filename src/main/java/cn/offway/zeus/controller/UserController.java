@@ -117,7 +117,7 @@ public class UserController {
 	private PhWithdrawInfoService phWithdrawInfoService;
 
 	@Autowired
-	private PhLimitedSaleService phLimitedSaleService;
+	private PhGoodsService phGoodsService;
 
 	
 	@ApiOperation("微信用户信息保存")
@@ -484,8 +484,9 @@ public class UserController {
 			@ApiParam("类型相应的ID,如商品ID,品牌ID等") @RequestParam Long matchId){
 		try {
 			if("0".equals(type)){
-				PhLimitedSale phLimitedSale = phLimitedSaleService.findByGoodsId(matchId);
-				if(null != phLimitedSale){
+				//限量商品不能收藏
+				PhGoods phGoods = phGoodsService.findById(matchId);
+				if("1".equals(phGoods.getLabel())){
 					return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_NOT_COLLECT);
 				}
 			}
