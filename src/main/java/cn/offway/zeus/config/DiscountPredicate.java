@@ -76,7 +76,7 @@ public class DiscountPredicate<Y>
 		return ( (Renderable) getExpression() ).render( renderingContext )
 				+"*"+
 				( (Renderable) getObject() ).render( renderingContext )
-				+ " <= "
+				+ " >= "
 				+ ( (Renderable) getExpression1() ).render( renderingContext );
 	}
 
