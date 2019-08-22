@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,9 +65,10 @@ public class StarsameController {
 	public JsonResult list(
 			@ApiParam("页码,从0开始") @RequestParam int page,
 		    @ApiParam("页大小") @RequestParam int size,
-		    @ApiParam("明星姓名") @RequestParam(required = false) String starName){
+		    @ApiParam("明星姓名") @RequestParam(required = false) String starName,
+			@ApiParam("排序字段[sort-APP,sortMini-小程序]") @RequestParam(defaultValue = "sort") String sortName){
 		
-		return jsonResultHelper.buildSuccessJsonResult(phStarsameService.findByPage(starName,PageRequest.of(page,size)));
+		return jsonResultHelper.buildSuccessJsonResult(phStarsameService.findByPage(starName,PageRequest.of(page,size, Sort.by(Sort.Order.asc(sortName),Sort.Order.desc("createTime")))));
 	}
 	
 	@SuppressWarnings("unchecked")
