@@ -11,7 +11,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import cn.offway.zeus.domain.*;
-import cn.offway.zeus.repository.PhPromotionRuleRepository;
+import cn.offway.zeus.repository.*;
 import cn.offway.zeus.service.*;
 import cn.offway.zeus.utils.CommonResultCode;
 import org.apache.commons.lang3.StringUtils;
@@ -33,9 +33,6 @@ import cn.offway.zeus.dto.OrderAddDto;
 import cn.offway.zeus.dto.OrderInitStockDto;
 import cn.offway.zeus.dto.OrderMerchantDto;
 import cn.offway.zeus.exception.StockException;
-import cn.offway.zeus.repository.PhAddressRepository;
-import cn.offway.zeus.repository.PhOrderGoodsRepository;
-import cn.offway.zeus.repository.PhOrderInfoRepository;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import cn.offway.zeus.utils.MathUtils;
@@ -109,6 +106,12 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 
 	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
+
+	@Autowired
+	private PhLimitedSaleService phLimitedSaleService;
+
+	@Autowired
+	private PhLimitedSaleOpRepository phLimitedSaleOpRepository;
 	
 	
 	@Override
@@ -219,6 +222,26 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 					}
 				}
+				//限量发售检查
+				PhLimitedSale phLimitedSale = phLimitedSaleService.findByGoodsId(phGoodsStock.getGoodsId());
+				if(null != phLimitedSale){
+
+					if("0".equals(phLimitedSale.getStatus()) || phLimitedSale.getBeginTime().after(now)
+							|| phLimitedSale.getEndTime().before(now)){
+						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+					}
+
+					int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(phLimitedSale.getId(), userId, "0");
+					if(c < phLimitedSale.getBoostCount().intValue()){
+						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+					}
+					int buyCount = phOrderGoodsRepository.sumGoodsCountByLimitSale(phLimitedSale.getGoodsId(),userId,phLimitedSale.getBeginTime(),phLimitedSale.getEndTime());
+					if(buyCount+phGoodsStock.getStock().intValue() > phLimitedSale.getBoostCount()){
+						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+					}
+
+				}
+
 			}
 		}
 		//检查是否有未上架的商品

@@ -82,6 +82,9 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 	@Autowired
 	private PhPromotionRuleRepository phPromotionRuleRepository;
 
+	@Autowired
+	private PhOrderGoodsService phOrderGoodsService;
+
 	@Override
 	public PhShoppingCart save(PhShoppingCart phShoppingCart){
 		return phShoppingCartRepository.save(phShoppingCart);
@@ -353,6 +356,11 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 				if(c < phLimitedSale.getBoostCount().intValue()){
 					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 				}
+				int buyCount = phOrderGoodsService.sumGoodsCountByLimitSale(phLimitedSale.getGoodsId(),userId,phLimitedSale.getBeginTime(),phLimitedSale.getEndTime());
+				if(buyCount+phGoodsStock.getStock().intValue() > phLimitedSale.getBoostCount()){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+				}
+
 			}
 
 			Long id = phGoodsStock.getId();

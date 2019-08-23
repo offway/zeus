@@ -63,6 +63,11 @@ public class PhLimitedSaleServiceImpl implements PhLimitedSaleService {
 	}
 
 	@Override
+	public Long findByShow() {
+		return phLimitedSaleRepository.findByShow();
+	}
+
+	@Override
 	public List<PhLimitedSale> findHead(int channel){
 		return phLimitedSaleRepository.findHead(channel);
 	}

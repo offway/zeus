@@ -3,9 +3,8 @@ package cn.offway.zeus.controller;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import cn.offway.zeus.domain.PhUserInfo;
-import cn.offway.zeus.service.PhOrderGoodsService;
-import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.domain.*;
+import cn.offway.zeus.service.*;
 import cn.offway.zeus.utils.CommonResultCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,13 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import cn.offway.zeus.domain.PhLimitedSale;
-import cn.offway.zeus.domain.PhLimitedSaleOp;
 import cn.offway.zeus.dto.LimitedSaleDto;
 import cn.offway.zeus.dto.LimitedSaleInfoDto;
 import cn.offway.zeus.repository.PhGoodsStockRepository;
 import cn.offway.zeus.repository.PhLimitedSaleOpRepository;
-import cn.offway.zeus.service.PhLimitedSaleService;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
@@ -61,6 +57,18 @@ public class LimitedSaleController {
 
 	@Autowired
     private PhOrderGoodsService phOrderGoodsService;
+
+	@Autowired
+	private PhGoodsService phGoodsService;
+
+	@Autowired
+	private PhGoodsImageService phGoodsImageService;
+
+	@Autowired
+	private PhGoodsStockService phGoodsStockService;
+
+	@Autowired
+	private PhGoodsPropertyService phGoodsPropertyService;
 	
 	@ApiOperation("限量发售列表")
 	@PostMapping("/list")
@@ -83,6 +91,7 @@ public class LimitedSaleController {
 			map.put("id",sale.getId());
 			map.put("date",sdf.format(sale.getBeginTime()));
 			map.put("text",now.before(sale.getBeginTime())?"即将发售":"进行中");
+			map.put("isShow",sale.getIsShow());
 			list.add(map);
 		}
 
@@ -92,6 +101,7 @@ public class LimitedSaleController {
 			map.put("id",phLimitedSale.getId());
 			map.put("date",sdf.format(phLimitedSale.getBeginTime()));
 			map.put("text","已结束");
+			map.put("isShow",phLimitedSale.getIsShow());
 			list.add(map);
 		}
 
@@ -123,6 +133,87 @@ public class LimitedSaleController {
 		dto.setNow(new Date());
 
 		return jsonResultHelper.buildSuccessJsonResult(dto);
+	}
+
+	@ApiOperation("商品详情")
+	@PostMapping("/goods/info")
+	public JsonResult goodsInfo(
+			@ApiParam("限量发售ID") @RequestParam Long lsId,
+			@ApiParam("用户ID") @RequestParam Long userId) throws Exception{
+
+		Map<String, Object> resultMap = new HashMap<>();
+
+
+		PhLimitedSale phLimitedSale = phLimitedSaleService.findById(lsId);
+		if(null == phLimitedSale){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+		}
+
+		int currentCount = 0;//当前助力次数
+		if(null != userId){
+			int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(lsId,userId,"0");
+			currentCount = c;
+		}
+
+		//是否助力成功
+		boolean isBoost = currentCount >= phLimitedSale.getBoostCount();
+		resultMap.put("isBoost",isBoost);
+
+		//查询该用户该商品已购买数量
+		int buyCount = 0;
+		if(null != userId){
+			buyCount = phOrderGoodsService.sumGoodsCountByLimitSale(phLimitedSale.getGoodsId(),userId,phLimitedSale.getBeginTime(),phLimitedSale.getEndTime());
+		}
+		resultMap.put("canBuyCount",phLimitedSale.getBuyLimit().intValue() - buyCount);
+
+
+		Long id = phLimitedSale.getGoodsId();
+		PhGoods phGoods = phGoodsService.findById(id);
+
+		List<String> banners = phGoodsImageService.findByGoodsId(id,"0");
+		List<String> contents = phGoodsImageService.findByGoodsId(id,"1");
+
+		List<Map<String, Object>> list = new ArrayList<>();
+		List<PhGoodsStock> phGoodsStocks = phGoodsStockService.findByGoodsId(id);
+		List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsId(id);
+
+		Long sumStock = 0L;
+		for (PhGoodsStock phGoodsStock : phGoodsStocks) {
+			Map<String, Object> map = new HashMap<>();
+			Long stock = phGoodsStock.getStock();
+			map.put("id", phGoodsStock.getId());
+			map.put("stock", stock);
+			map.put("img", phGoodsStock.getImage());
+			map.put("price", phGoodsStock.getPrice());
+
+			List<Map<String, Object>> attributes = new ArrayList<>();
+			for (PhGoodsProperty phGoodsProperty : phGoodsProperties) {
+				if(phGoodsProperty.getGoodsStockId().longValue()==phGoodsStock.getId().longValue()){
+					Map<String, Object> attr = new HashMap<>();
+					attr.put("key", phGoodsProperty.getName());
+					attr.put("value", phGoodsProperty.getValue());
+					attributes.add(attr);
+				}
+			}
+
+			map.put("attributes",attributes );
+			list.add(map);
+			sumStock +=stock;
+		}
+
+		resultMap.put("goods", phGoods);
+		resultMap.put("banners", banners);
+		resultMap.put("contents", contents);
+		resultMap.put("skus", list);
+
+		List<PhGoods> recommendGoods =  phGoodsService.findRecommend(id);
+		resultMap.put("recommendGoods", recommendGoods);
+
+		//是否售罄
+		resultMap.put("sellOut",sumStock==0);
+
+
+		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 	
 	@ApiOperation("好友助力/订阅")
