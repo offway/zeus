@@ -1,6 +1,7 @@
 package cn.offway.zeus.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,4 +38,6 @@ public interface PhGoodsService{
 	List<String> searchCategory(String brandName);
 
     int countByIdsAndStatus(List<Long> ids, String status);
+
+	boolean containsLimitGoods(Set<Long> stockIds);
 }

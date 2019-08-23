@@ -3,6 +3,7 @@ package cn.offway.zeus.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
@@ -209,5 +210,11 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 	@Override
 	public int countByIdsAndStatus(List<Long> ids,String status){
 		return phGoodsRepository.countByIdInAndStatus(ids,status);
+	}
+
+	@Override
+	public boolean containsLimitGoods(Set<Long> stockIds) {
+		int c = phGoodsRepository.countLimitGoods(stockIds);
+		return c > 0;
 	}
 }

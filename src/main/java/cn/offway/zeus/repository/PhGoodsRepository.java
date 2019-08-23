@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.offway.zeus.domain.PhGoods;
 import java.lang.Long;
+import java.util.Set;
 
 /**
  * 商品表Repository接口
@@ -50,6 +51,9 @@ public interface PhGoodsRepository extends JpaRepository<PhGoods,Long>,JpaSpecif
 	List<String> searchCategory(String brandName);
 
 	int countByIdInAndStatus(List<Long> ids,String status);
+
+	@Query(nativeQuery = true,value="select count(id) from ph_goods where label='1' and id in (select gs.goods_id from ph_goods_stock gs where gs.id in(?1))")
+	int countLimitGoods(Set<Long> stockIds);
 
 	
 	
