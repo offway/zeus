@@ -71,6 +71,9 @@ public class PhOrderGoods implements Serializable {
     /** 优惠后的金额 **/
     private Double amount;
 
+    /** 商品标识[0-普通商品,1-限量商品]**/
+    private String label;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -236,5 +239,14 @@ public class PhOrderGoods implements Serializable {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    @Column(name = "label",length = 2)
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

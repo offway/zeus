@@ -66,6 +66,9 @@ public class OrderGoodsDto implements Serializable {
     /**  退款状态 **/
     private String refundStatus;
 
+    /** 商品标识[0-普通商品,1-限量商品]**/
+    private String label;
+
 
     public Long getId() {
         return id;
@@ -209,5 +212,13 @@ public class OrderGoodsDto implements Serializable {
 
     public void setRefundStatus(String refundStatus) {
         this.refundStatus = refundStatus;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }
