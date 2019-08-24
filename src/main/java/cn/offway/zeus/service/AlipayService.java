@@ -8,8 +8,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 
 import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.request.AlipaySystemOauthTokenRequest;
-import com.alipay.api.request.AlipayUserInfoShareRequest;
+import com.alipay.api.request.*;
 import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.alipay.api.response.AlipayUserInfoShareResponse;
 import com.aliyun.mq.http.MQClient;
@@ -28,8 +27,6 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
-import com.alipay.api.request.AlipayFundTransToaccountTransferRequest;
-import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 
@@ -63,6 +60,34 @@ public class AlipayService {
 
 	private static final String ALIPAY_REFRESH_TOKEN="zeus.alipay.refreshToken";
 
+
+	/**
+	 * 手机网站支付请求
+	 * @param outtradeno
+	 * @param amount
+	 * @param subject
+	 * @param returnUrl
+	 * @return
+	 */
+	public String tradeByWeb(String outtradeno,Double amount,String subject,String returnUrl){
+		String form = null; //调用SDK生成表单
+		try {
+			AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();//创建API对应的request
+			alipayRequest.setReturnUrl(returnUrl);
+			alipayRequest.setNotifyUrl(systemUrl+"/notify/alipay");//在公共参数中设置回跳和通知地址
+			alipayRequest.setBizContent("{" +
+					"    \"out_trade_no\":\""+outtradeno+"\"," +
+					"    \"total_amount\":"+amount+"," +
+					"    \"subject\":\""+subject+"\"," +
+					"    \"product_code\":\"QUICK_WAP_WAY\"" +
+					"  }");//填充业务参数
+			form = alipayClient.pageExecute(alipayRequest).getBody();
+		} catch (AlipayApiException e) {
+			e.printStackTrace();
+			logger.error("手机网站支付请求异常,订单号：{}",outtradeno,e);
+		}
+		return form;
+	}
 	/**
 	 * 生成 APP支付订单信息
 	 * @return

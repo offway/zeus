@@ -7,10 +7,7 @@ import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 
@@ -69,6 +66,20 @@ public class PayController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
 		
+	}
+
+	@ApiOperation("支付宝手机网站支付")
+	@GetMapping(value = "/alipay/trade/web.html",produces="text/html;charset=UTF-8")
+	public String tradeByWeb(
+			@ApiParam("预订单号") @RequestParam String preorderNo,
+			@ApiParam("支付宝服务器主动通知商户服务器里指定的页面http/https路径。") @RequestParam String returnUrl){
+		PhPreorderInfo phPreorderInfo = phPreorderInfoService.findByOrderNoAndStatus(preorderNo, "0");
+		if(null == phPreorderInfo){
+			return "PARAM_ERROR";
+		}
+		String subject = "很潮商品购买";
+		double amount = phPreorderInfo.getAmount();
+		return alipayService.tradeByWeb(preorderNo,amount,subject,returnUrl);
 	}
 	
 	@ApiOperation("微信-统一下单")

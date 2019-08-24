@@ -5,6 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "alipay")
 public class AlipayProperties {
 
+	/** 支付宝网关	**/
+	private String url;
+
 	/** APPID即创建应用后生成	 **/
 	private String appid;
 	
@@ -25,6 +28,14 @@ public class AlipayProperties {
 
 	/** 阿里云身份验证，在阿里云服务器管理控制台创建 **/
 	private String accessKey;
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	public String getAppid() {
 		return appid;
