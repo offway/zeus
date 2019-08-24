@@ -377,16 +377,16 @@ public class PhShoppingCartServiceImpl implements PhShoppingCartService {
 				
 				if("0".equals(phLimitedSale.getStatus()) || phLimitedSale.getBeginTime().after(now)
 						|| phLimitedSale.getEndTime().before(now)){
-					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
 				}
 				
 				int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(phLimitedSale.getId(), userId, "0");
 				if(c < phLimitedSale.getBoostCount().intValue()){
-					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_BOOST_LESS);
 				}
 				int buyCount = phOrderGoodsService.sumGoodsCountByLimitSale(phLimitedSale.getGoodsId(),userId,phLimitedSale.getBeginTime(),phLimitedSale.getEndTime());
-				if(buyCount+param.get(phGoodsStock.getId()).intValue() > phLimitedSale.getBoostCount()){
-					return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+				if(buyCount + param.get(phGoodsStock.getId()).intValue() > phLimitedSale.getBuyLimit().intValue()){
+					return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_BUY_LIMIT);
 				}
 
 			}

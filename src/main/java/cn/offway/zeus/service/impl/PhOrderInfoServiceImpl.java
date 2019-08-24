@@ -235,16 +235,16 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 
 					if("0".equals(phLimitedSale.getStatus()) || phLimitedSale.getBeginTime().after(now)
 							|| phLimitedSale.getEndTime().before(now)){
-						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+						return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
 					}
 
 					int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(phLimitedSale.getId(), userId, "0");
 					if(c < phLimitedSale.getBoostCount().intValue()){
-						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+						return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_BOOST_LESS);
 					}
 					int buyCount = phOrderGoodsRepository.sumGoodsCountByLimitSale(phLimitedSale.getGoodsId(),userId,phLimitedSale.getBeginTime(),phLimitedSale.getEndTime());
-					if(buyCount+stock.getNum().intValue() > phLimitedSale.getBoostCount()){
-						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+					if(buyCount + stock.getNum().intValue() > phLimitedSale.getBuyLimit().intValue()){
+						return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_BUY_LIMIT);
 					}
 				}
 
@@ -296,6 +296,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				phOrderGoods.setMerchantName(phGoodsStock.getMerchantName());
 				phOrderGoods.setOrderNo(orderNo);
 				phOrderGoods.setPrice(price);
+                phOrderGoods.setLabel("1");
 
 				List<PhGoodsProperty> phGoodsProperties = phGoodsPropertyService.findByGoodsStockIdOrderBySortAsc(phGoodsStock.getId());
 				StringBuilder sb = new StringBuilder();
@@ -483,26 +484,6 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 					}
 				}
-				//限量发售检查
-				PhLimitedSale phLimitedSale = phLimitedSaleService.findByGoodsId(phGoodsStock.getGoodsId());
-				if(null != phLimitedSale){
-
-					if("0".equals(phLimitedSale.getStatus()) || phLimitedSale.getBeginTime().after(now)
-							|| phLimitedSale.getEndTime().before(now)){
-						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
-					}
-
-					int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(phLimitedSale.getId(), userId, "0");
-					if(c < phLimitedSale.getBoostCount().intValue()){
-						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
-					}
-					int buyCount = phOrderGoodsRepository.sumGoodsCountByLimitSale(phLimitedSale.getGoodsId(),userId,phLimitedSale.getBeginTime(),phLimitedSale.getEndTime());
-					if(buyCount+stock.getNum().intValue() > phLimitedSale.getBoostCount()){
-						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
-					}
-
-				}
-
 			}
 		}
 		//检查是否有未上架的商品
@@ -582,6 +563,7 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				phOrderGoods.setMerchantName(phGoodsStock.getMerchantName());
 				phOrderGoods.setOrderNo(orderNo);
 				phOrderGoods.setPrice(price);
+                phOrderGoods.setLabel("0");
 				if(discountStockIds.contains(phOrderGoods.getGoodsStockId())){
 					//计算折扣金额
 					phOrderGoods.setAmount(MathUtils.mul(price,discountRate));

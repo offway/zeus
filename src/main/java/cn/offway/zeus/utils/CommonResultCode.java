@@ -115,8 +115,11 @@ public enum CommonResultCode implements ResultCode {
     /** 限量商品不能加入购物车 */
     LIMITEDSALE_NOT_CAR("1036", "LIMITEDSALE_NOT_CAR"),
 
+    /** 限量商品助力次数不足 */
+    LIMITEDSALE_BOOST_LESS("1037", "LIMITEDSALE_BOOST_LESS"),
 
-
+    /** 限量商品超过单用户购买次数 */
+    LIMITEDSALE_BUY_LIMIT("1038", "LIMITEDSALE_BUY_LIMIT"),
     ;
 	
 	
