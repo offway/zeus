@@ -82,6 +82,8 @@ wx:
 mini:
   appid:  wx12d022a9493f1b26
   secret: 52ba3a89ae58aa6a2294806d516d6107
+  appidshop: wxa524a03865079836
+  secretshop: 8c5252a7430bd1e5a5156f01f4a3802e
 
   #神策数据接收地址
 sa:
@@ -117,10 +119,9 @@ alipay:
   access-key: MGOZFUbEZh8DLwWMQZhTu9tMBggl0F
 
 wxpay:
-  appid: wx6d864009d94d2cd7
   mch-id: 1531089441
-  paterner-key: 441bf662209846edb9e633ec0b7c5c0f
-  mini-appid: wxa524a03865079836
+  paterner-key: 690c5e2a1e3cfbd12b01882c01fe21ad
+  is-sandbox: true
 springfox:
   documentation:
     swagger:

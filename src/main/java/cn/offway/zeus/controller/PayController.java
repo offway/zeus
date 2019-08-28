@@ -86,8 +86,10 @@ public class PayController {
 	@PostMapping("/wx/trade")
 	public JsonResult wxTrade(
 			@ApiParam("预订单号") @RequestParam String preorderNo,
-			@ApiParam("支付方式[0-APP,1-小程序]") @RequestParam(defaultValue = "0") String type,
+			@ApiParam("交易类型[APP-APP支付,JSAPI-小程序,MWEB-H5支付") @RequestParam(defaultValue = "APP") String tradeType,
 			@ApiParam("openid[支付方式为小程序时该参数必传]") @RequestParam(required = false) String openid,
+			@ApiParam("WAP网站URL地址[支付方式为MWEB时该参数必传]") @RequestParam(required = false) String wapUrl,
+			@ApiParam("WAP网站名[支付方式为MWEB时该参数必传]") @RequestParam(required = false) String wapName,
 			HttpServletRequest request){
 
 		PhPreorderInfo phPreorderInfo = phPreorderInfoService.findByOrderNoAndStatus(preorderNo, "0");
@@ -95,41 +97,24 @@ public class PayController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
 
-//		String miniOpenid = null;
-		//小程序支付判断
-		if("1".equals(type)){
+		String body ="OFFWAY商品购买";
+		double amount = phPreorderInfo.getAmount();
+
+		if("JSAPI".equals(tradeType)){
 			if(StringUtils.isBlank(openid)){
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_MISS);
 			}
+			return wxpayService.trade_JSAPI(preorderNo,IpUtil.getIpAddr(request),body,amount,openid);
+		}else if("MWEB".equals(tradeType)){
+			if(StringUtils.isBlank(wapUrl) || StringUtils.isBlank(wapName)){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_MISS);
+			}
+			return wxpayService.trade_MWEB(preorderNo,IpUtil.getIpAddr(request),body,amount,wapUrl,wapName);
+		}else{
+			return wxpayService.trade_APP(preorderNo,IpUtil.getIpAddr(request),body,amount);
 
-			/*//查询小程序ID
-			PhUserInfo phUserInfo =  phUserInfoService.findById(phPreorderInfo.getUserId());
-			String unionid = phUserInfo.getUnionid();
-			PhWxuserInfo phWxuserInfo = phWxuserInfoService.findByUnionid(unionid);
-			miniOpenid = phWxuserInfo.getMiniopenid();*/
 		}
 
-		/*//修改订单状态位支付中
-		phPreorderInfo.setStatus("3");
-		phPreorderInfoService.save(phPreorderInfo);*/
-		String body ="OFFWAY商品购买";
-		double amount = phPreorderInfo.getAmount();
-		return wxpayService.trade(preorderNo,IpUtil.getIpAddr(request),body,amount,type,openid);
 	}
-	
-	/*@ApiOperation("取消支付")
-	@PostMapping("/cancel")
-	public JsonResult cancel(@ApiParam("预订单号") @RequestParam String preorderNo){
-		PhPreorderInfo phPreorderInfo = phPreorderInfoService.findByOrderNoAndStatus(preorderNo, "3");
-		if(null == phPreorderInfo){
-			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
-		}
-		//修改订单状态位支付中
-		phPreorderInfo.setStatus("0");
-		phPreorderInfoService.save(phPreorderInfo);
 
-		return jsonResultHelper.buildSuccessJsonResult(null);
-	}*/
-	
-	
 }

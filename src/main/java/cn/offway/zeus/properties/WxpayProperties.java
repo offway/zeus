@@ -16,6 +16,9 @@ public class WxpayProperties {
 	
 	/** 密钥 **/
 	private String paternerKey;
+
+	/** 是否沙箱环境 **/
+	private boolean isSandbox;
 	
 
 	public String getAppid() {
@@ -48,5 +51,13 @@ public class WxpayProperties {
 
 	public void setMiniAppid(String miniAppid) {
 		this.miniAppid = miniAppid;
+	}
+
+	public boolean getIsSandbox() {
+		return isSandbox;
+	}
+
+	public void setIsSandbox(boolean sandbox) {
+		isSandbox = sandbox;
 	}
 }

@@ -21,13 +21,13 @@ public interface PhCapitalFlowRepository extends JpaRepository<PhCapitalFlow,Lon
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="insert into ph_capital_flow select null,i.user_id,'0',o.order_no,'0',ROUND(o.amount*0.03,2),NOW(),null from ph_order_info o,ph_invite_info i where i.invite_user_id=o.user_id and o.`status`='3' and DATE_FORMAT(NOW(),'%Y-%m-%d') = DATE_FORMAT(DATE_ADD(o.receipt_time,INTERVAL 8 DAY),'%Y-%m-%d')")
+	@Query(nativeQuery=true,value="insert into ph_capital_flow select null,i.user_id,'0',o.order_no,'0',ROUND(o.amount*0.07,2),NOW(),null from ph_order_info o,ph_invite_info i where i.invite_user_id=o.user_id and o.`status`='3' and DATE_FORMAT(NOW(),'%Y-%m-%d') = DATE_FORMAT(DATE_ADD(o.receipt_time,INTERVAL 8 DAY),'%Y-%m-%d')")
 	int insertByReturnAmount();
 	
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery=true,value="update ph_user_info u set u.version = u.version+1,u.balance = u.balance +(select IFNULL(SUM(ROUND(o.amount*0.03,2)),0) from ph_order_info o,ph_invite_info i where i.user_id=u.id and i.invite_user_id=o.user_id and o.`status`='3' and DATE_FORMAT(NOW(),'%Y-%m-%d') = DATE_FORMAT(DATE_ADD(o.receipt_time,INTERVAL 8 DAY),'%Y-%m-%d')) where id in(select DISTINCT(i.user_id) from ph_order_info o,ph_invite_info i where i.invite_user_id=o.user_id and o.`status`='3' and DATE_FORMAT(NOW(),'%Y-%m-%d') = DATE_FORMAT(DATE_ADD(o.receipt_time,INTERVAL 8 DAY),'%Y-%m-%d'))")
+	@Query(nativeQuery=true,value="update ph_user_info u set u.version = u.version+1,u.balance = u.balance +(select IFNULL(SUM(ROUND(o.amount*0.07,2)),0) from ph_order_info o,ph_invite_info i where i.user_id=u.id and i.invite_user_id=o.user_id and o.`status`='3' and DATE_FORMAT(NOW(),'%Y-%m-%d') = DATE_FORMAT(DATE_ADD(o.receipt_time,INTERVAL 8 DAY),'%Y-%m-%d')) where id in(select DISTINCT(i.user_id) from ph_order_info o,ph_invite_info i where i.invite_user_id=o.user_id and o.`status`='3' and DATE_FORMAT(NOW(),'%Y-%m-%d') = DATE_FORMAT(DATE_ADD(o.receipt_time,INTERVAL 8 DAY),'%Y-%m-%d'))")
 	int updateBalanceByReturnAmount();
 	
 	List<PhCapitalFlow> findByBusinessTypeAndUserIdOrderByCreateTimeDesc(String businesstype,Long userId);

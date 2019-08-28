@@ -43,6 +43,12 @@ public class MiniController {
 
 	@Value("${mini.secret}")
 	private String SECRET;
+
+	@Value("${mini.appidshop}")
+	private String APPID_SHOP;
+
+	@Value("${mini.secretshop}")
+	private String SECRET_SHOP;
 	
 	private static final String JSCODE2SESSION = "https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=CODE&grant_type=authorization_code";
 	
@@ -76,6 +82,18 @@ public class MiniController {
 	}
 	
 	@ApiOperation("获取小程序用户SESSION")
+	@PostMapping("/jscode2session")
+	public JsonResult jscode2session(String code,String appid){
+
+		appid = StringUtils.isBlank(appid)?APPID:appid;
+		String serret = APPID_SHOP.equals(appid)?SECRET_SHOP:SECRET;
+		String url = JSCODE2SESSION;
+		url = url.replace("APPID", appid).replace("SECRET", serret).replace("CODE", code);
+		String result = HttpClientUtil.get(url);
+		return jsonResultHelper.buildSuccessJsonResult(JSON.parseObject(result));
+	}
+
+	@ApiOperation("获取小程序用户SESSION")
 	@PostMapping("/sendCode")
 	public JsonResult sendCode(String code){
 		String url = JSCODE2SESSION;
@@ -85,10 +103,10 @@ public class MiniController {
 		if(StringUtils.isNotBlank(jsonObject.getString("errcode"))){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
-		
+
 		String session_key = jsonObject.getString("session_key");
-		
-		
+
+
 		return jsonResultHelper.buildSuccessJsonResult(session_key);
 	}
 	
