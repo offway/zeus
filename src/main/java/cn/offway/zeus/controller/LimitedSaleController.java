@@ -69,6 +69,9 @@ public class LimitedSaleController {
 
 	@Autowired
 	private PhGoodsPropertyService phGoodsPropertyService;
+
+	@Autowired
+	private PhConfigService phConfigService;
 	
 	@ApiOperation("限量发售列表")
 	@PostMapping("/list")
@@ -215,8 +218,64 @@ public class LimitedSaleController {
 
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
+
+	@ApiOperation("批量助力")
+	@PostMapping("/op/batch")
+	public JsonResult opBatch(
+		    @ApiParam("分享用户ID") @RequestParam Long userId,
+			@ApiParam("助力用户手机号") @RequestParam String phone,
+			@ApiParam("助力用户验证码") @RequestParam String code,
+			@ApiParam("配置") @RequestParam String config){
+
+		String content = phConfigService.findContentByName(config);
+		String [] ids = content.split(",");
+
+		if(StringUtils.isBlank(phone)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_MISS);
+		}
+
+		phone = phone.contains("+")?phone:"+86"+phone;
+
+		String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
+		if(StringUtils.isBlank(smsCode)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);
+		}
+
+		if(!code.equals(smsCode)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_ERROR);
+		}
+
+
+		PhUserInfo phUserInfo = phUserInfoService.findByPhone(phone);
+
+
+		PhLimitedSale phLimitedSale = phLimitedSaleService.findById(Long.parseLong(ids[0]));
+
+		//用户类型[0-新用户,1-老用户]
+		String userType = phLimitedSale.getUserType();
+		if("0".equals(userType)){
+			if(null!=phUserInfo){
+				return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
+			}
+		}
+
+		if(null==phUserInfo){
+			phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null);
+		}
+
+		Long boostUserId = phUserInfo.getId();
+
+		if(userId.longValue()==boostUserId.longValue()){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_BOOST_MY);
+		}
+
+
+
+		phLimitedSaleOpRepository.boostBatch(userId,Arrays.asList(ids),boostUserId);
+		return jsonResultHelper.buildSuccessJsonResult(null);
+	}
 	
-	@ApiOperation("好友助力/订阅")
+	@ApiOperation("好友助力")
 	@PostMapping("/op")
 	public JsonResult op(
 			@ApiParam("限量发售ID") @RequestParam Long id,

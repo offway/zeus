@@ -153,24 +153,23 @@ public class ArticleController {
 		PhArticle phArticle = phArticleService.findById(id);
 		phArticle.setViewCount(phArticle.getViewCount()+1L);
 		phArticle = phArticleService.save(phArticle);
-		html = html.replaceAll("###TITLE###", phArticle.getTitle());
-		html = html.replaceAll("###TYPE###", phArticle.getTag());
-		html = html.replaceAll("###VIEWCOUNT###", phArticle.getViewCount()+"");
-		Date date = phArticle.getApproval();
-		html = html.replaceAll("###CREATETIME###", DateFormatUtils.format(null==date?phArticle.getCreateTime():date, "yyyy-MM-dd"));
-		String content = phArticle.getContent();
-		content = content.replaceAll("\\$", "###RDS_CHAR_DOLLAR###");// encode $;
-		html = html.replaceAll("###CONTENT###", content);
-		html = html.replaceAll("###RDS_CHAR_DOLLAR###", "\\$");// decode $
+		html = html.replace("###TITLE###", phArticle.getTitle());
+		html = html.replace("###TYPE###", phArticle.getTag());
+		html = html.replace("###VIEWCOUNT###", phArticle.getViewCount()+"");
 
-		html = html.replaceAll("###IMAGE###", phArticle.getImage());
-		html = html.replaceAll("###NAME###", phArticle.getName());
+		Date date = phArticle.getApproval();
+		html = html.replace("###CREATETIME###", DateFormatUtils.format(null==date?phArticle.getCreateTime():date, "yyyy-MM-dd"));
+
+		String content = phArticle.getContent();
+		html = html.replace("###CONTENT###", content);
+		html = html.replace("###IMAGE###", phArticle.getImage());
+		html = html.replace("###NAME###", phArticle.getName());
 
 		String re = "";
 		if("info".equals(type)){
-			html = html.replaceAll("<\\s*?script[^>]*?>[\\s\\S]*?<\\s*?/\\s*?script\\s*?>", ""); 
-			html = html.replaceAll("foot-btn", "undis"); 
-			html = html.replaceAll("foot-none", "undis"); 
+			html = html.replace("<\\s*?script[^>]*?>[\\s\\S]*?<\\s*?/\\s*?script\\s*?>", "");
+			html = html.replace("foot-btn", "undis");
+			html = html.replace("foot-none", "undis");
 		}else{
 
 			String goodsIds = phArticle.getGoodsIds();
@@ -191,7 +190,7 @@ public class ArticleController {
 				}
 			}
 		}
-		html = html.replaceAll("###RECOMMEND_GOODS###", re);
+		html = html.replace("###RECOMMEND_GOODS###", re);
 		return html;
 	}
 	
