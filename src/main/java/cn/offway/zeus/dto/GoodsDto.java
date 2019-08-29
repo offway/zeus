@@ -50,7 +50,7 @@ public class GoodsDto implements Serializable {
     @ApiModelProperty(value ="排序方向[asc-顺序,desc-倒序]")
     private String sortDir;
     
-    @ApiModelProperty(value ="排序类型[saleCount-销量,viewCount-人气,createTime-新品,price-价格]")
+    @ApiModelProperty(value ="排序类型[saleCount-销量,viewCount-人气,upTime-新品,price-价格]")
     private String sortName;
     
     @ApiModelProperty(value ="风格")

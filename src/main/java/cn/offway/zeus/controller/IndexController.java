@@ -161,6 +161,31 @@ public class IndexController {
 		logger.info("用户核实结果-标识:{},结果:{}",state,accessTokenResult);
 		return "中奖用户核实操作已完成";
 	}
+
+
+	@ApiOperation(value = "APP初始化")
+	@GetMapping("/init")
+	@ResponseBody
+	public JsonResult init(
+			@ApiParam("类型[ios-苹果,android-安卓]") @RequestParam String type,
+			@ApiParam("版本号") @RequestParam String version){
+		Map<String,Object> resultMap = new HashMap<>();
+		boolean isUpdateVersion = false;
+		String config = phConfigService.findContentByName("update_"+type);
+		if(StringUtils.isNotBlank(config)){
+			JSONObject jsonObject = JSON.parseObject(config);
+			String confVersion = jsonObject.getString("version");
+			int cv = Integer.parseInt(confVersion.trim().replace(".",""));
+			int v = Integer.parseInt(version.trim().replace(".",""));
+			if(v < cv){
+				isUpdateVersion = true;
+				resultMap.put("versionConf",jsonObject);
+			}
+		}
+		resultMap.put("isUpdateVersion",isUpdateVersion);
+		resultMap.put("ad",phBannerService.banners("2"));
+		return jsonResultHelper.buildSuccessJsonResult(resultMap);
+	}
 	
 	@ApiOperation(value = "首页banner")
 	@GetMapping("/banners")
