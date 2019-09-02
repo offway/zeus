@@ -167,11 +167,11 @@ public class IndexController {
 	@GetMapping("/init")
 	@ResponseBody
 	public JsonResult init(
-			@ApiParam("类型[ios-苹果,android-安卓]") @RequestParam String type,
+			@ApiParam("类型[IOS-苹果,ANDROID-安卓]") @RequestParam String type,
 			@ApiParam("版本号") @RequestParam String version){
 		Map<String,Object> resultMap = new HashMap<>();
 		boolean isUpdateVersion = false;
-		String config = phConfigService.findContentByName("update_"+type);
+		String config = phConfigService.findContentByName("UPDATE_"+type);
 		if(StringUtils.isNotBlank(config)){
 			JSONObject jsonObject = JSON.parseObject(config);
 			String confVersion = jsonObject.getString("version");
@@ -238,7 +238,7 @@ public class IndexController {
 		map.put("banners", banners);
 		map.put("promoteSales", promoteSales);
 
-		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES","INDEX_IMAGES_2","INDEX_BRAND_LOGO","INDEX_BRAND_GOODS","INDEX_CATEGORY","INDEX_STYLE","INDEX_DISCOUNT");
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES","INDEX_IMAGES_2","INDEX_BRAND_LOGO","INDEX_BRAND_GOODS","INDEX_CATEGORY","INDEX_STYLE","INDEX_DISCOUNT","INDEX_SELL_WELL");
 		for (PhConfig phConfig : configs) {
 			String name = phConfig.getName().toLowerCase();
 			String content = phConfig.getContent();
