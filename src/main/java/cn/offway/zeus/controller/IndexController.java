@@ -256,47 +256,6 @@ public class IndexController {
 		
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
-/*
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@ApiOperation(value = "首页乱七八糟的数据")
-	@GetMapping("/data/v3")
-	@ResponseBody
-	public JsonResult datav3(){
-		Map<String, Object> map = new HashMap<>();
-
-		List<PhBanner> phBanners = phBannerService.banners();
-
-		List<PhBanner> banners = new ArrayList<>();
-		List<PhBanner> promoteSales = new ArrayList<>();
-		for (PhBanner phBanner : phBanners) {
-			if("0".equals(phBanner.getPosition())){
-				banners.add(phBanner);
-			}else if("1".equals(phBanner.getPosition())){
-				promoteSales.add(phBanner);
-			}
-		}
-
-		map.put("banners", banners);
-		map.put("promoteSales", promoteSales);
-
-		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_CATEGORY_IMG","INDEX_IMAGES_2","INDEX_BRAND_LOGO","INDEX_BRAND_GOODS","INDEX_CATEGORY","INDEX_STYLE","INDEX_DISCOUNT");
-		for (PhConfig phConfig : configs) {
-			String name = phConfig.getName().toLowerCase();
-			String content = phConfig.getContent();
-			if("index_brand_goods".equals(name)){
-				List<Map> brands  = JSON.parseArray(content,Map.class);
-				for (Map<String,Object> brand : brands) {
-					Long brandId = Long.parseLong(brand.get("id").toString());
-					brand.put("goods", phGoodsService.findBrandRecommend(brandId));
-				}
-				map.put(name,brands);
-			}else{
-				map.put(name,JSON.parse(content));
-			}
-		}
-
-		return jsonResultHelper.buildSuccessJsonResult(map);
-	}*/
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@ApiOperation(value = "首页数据-小程序")
@@ -373,7 +332,6 @@ public class IndexController {
 	@ResponseBody
 	public JsonResult searchv2(@ApiParam("搜索关键字") @RequestParam String wd){
 		
-		
 		List<String> s = new ArrayList<>();
 		//匹配品牌
 		List<String> brands = phBrandService.findNameLike("%"+wd+"%");
@@ -389,27 +347,4 @@ public class IndexController {
 		
 		return jsonResultHelper.buildSuccessJsonResult(s);
 	}
-			
-	
-	/*public static void main(String[] args) {
-		List<Integer> a = new ArrayList<>();
-		for (int i=1;i<=3000;i++) {
-			int c = RandomUtils.nextInt(10000000, 99999999);
-			IndexController.cc(a, c);
-		}
-		
-		for (Integer integer : a) {
-			System.out.println(integer);
-		}
-	}
-	
-	public static void cc(List<Integer> a,int c){
-		if(a.contains(c)){
-			c = RandomUtils.nextInt(10000000, 99999999);
-			IndexController.cc(a, c);
-		}
-		a.add(c);
-	}*/
-	
-	
 }
