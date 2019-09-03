@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +114,21 @@ public class LotteryController {
 				}
 			}
 			phLotteryTicketService.register(productId, phWxuserInfo, iphWxuserInfo,formId);
-			return jsonResultHelper.buildSuccessJsonResult(null);
+
+            try {
+                //活动开始2小时查一条自己人数据，开奖使用
+                if(phProductInfo.getBeginTime().before(DateUtils.addHours(now,2))){
+                    int participates1 = phLotteryTicketService.countByProductIdAndUnionidAndSource(productId, "o9I8Z0n5tu6ivLHr_6gkSdNf8aZU", TicketSourceEnum.JOIN.getCode());
+                    if(participates1 == 0){
+                        PhWxuserInfo phWxuserInfo1 = phWxuserInfoService.findByUnionid("o9I8Z0n5tu6ivLHr_6gkSdNf8aZU");
+                        phLotteryTicketService.register(productId, phWxuserInfo1, null,null);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return jsonResultHelper.buildSuccessJsonResult(null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("登记抽奖异常",e);
