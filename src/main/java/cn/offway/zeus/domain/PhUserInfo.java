@@ -91,6 +91,13 @@ public class PhUserInfo implements Serializable {
     @ApiModelProperty("支付宝用户昵称")
     private String alipayNickName;
 
+    @ApiModelProperty("积分")
+    private Long points;
+
+    @ApiModelProperty("连续积分签到天数")
+    private Long signCount;
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -284,5 +291,23 @@ public class PhUserInfo implements Serializable {
 
     public void setAlipayNickName(String alipayNickName) {
         this.alipayNickName = alipayNickName;
+    }
+
+    @Column(name = "points", length = 11)
+    public Long getPoints() {
+        return points;
+    }
+
+    public void setPoints(Long points) {
+        this.points = points;
+    }
+
+    @Column(name = "sign_count", length = 11)
+    public Long getSignCount() {
+        return signCount;
+    }
+
+    public void setSignCount(Long signCount) {
+        this.signCount = signCount;
     }
 }

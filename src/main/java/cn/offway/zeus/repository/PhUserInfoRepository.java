@@ -38,4 +38,9 @@ public interface PhUserInfoRepository extends JpaRepository<PhUserInfo,Long>,Jpa
 	@Modifying
 	@Query(nativeQuery=true,value="update ph_user_info set alipay_user_id=?2,alipay_nick_name=?3,version=version+1 where id=?1")
 	int updateAlipayUserId(Long id,String alipayUserId,String alipayNickName);
+
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_user_info set points=points+?2,version=version+1  where id=?1")
+	int addPoints(Long id,Long points);
 }
