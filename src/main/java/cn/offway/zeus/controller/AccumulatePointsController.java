@@ -63,4 +63,33 @@ public class AccumulatePointsController {
             @ApiParam(value = "页大小",required = true) @RequestParam int size){
         return jsonResultHelper.buildSuccessJsonResult(phAccumulatePointsService.finByPage(userId, PageRequest.of(page, size)));
     }
+
+    @ApiOperation(value = "分享文章邀请注册")
+    @PostMapping("/points")
+    public JsonResult points(
+            @ApiParam(value = "用户ID", required = true) @RequestParam Long userId,
+            @ApiParam(value = "类型：2-分享文章,3-邀请好友完成注册", required = true) @RequestParam String type) {
+        try {
+            switch (type) {
+                case "2":
+                    if (phAccumulatePointsService.finByUseridInNow(userId, type) > 0) {
+                        return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
+                    }
+                    break;
+                case "3":
+                    if (phAccumulatePointsService.finByUseridInNow(userId, type) >= 10) {
+                        return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
+                    }
+                    break;
+                default:
+                    return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+            }
+            phAccumulatePointsService.points(userId, type);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("分享文章邀请注册异常：",e);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+        }
+    }
 }

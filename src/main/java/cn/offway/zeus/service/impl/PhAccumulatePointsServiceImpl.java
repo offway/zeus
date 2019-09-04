@@ -1,11 +1,12 @@
 package cn.offway.zeus.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
+import cn.offway.zeus.domain.PhAccumulatePoints;
 import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.exception.StockException;
+import cn.offway.zeus.repository.PhAccumulatePointsRepository;
+import cn.offway.zeus.service.PhAccumulatePointsService;
 import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.utils.JsonResult;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import cn.offway.zeus.service.PhAccumulatePointsService;
-
-import cn.offway.zeus.domain.PhAccumulatePoints;
-import cn.offway.zeus.repository.PhAccumulatePointsRepository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +24,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -187,5 +186,28 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 		resultMap.put("signCount",signCount);
 		resultMap.put("points",phUserInfo.getPoints());
 		return resultMap;
+	}
+
+	@Override
+	public int finByUseridInNow(Long userid, String type) {
+		return phAccumulatePointsRepository.findByUseridNoW(userid, type);
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
+	public void points(Long userId, String type) throws Exception {
+		Long points = 20L;
+		PhAccumulatePoints accumulatePoints = new PhAccumulatePoints();
+		accumulatePoints.setUserId(userId);
+		accumulatePoints.setCreateTime(new Date());
+		accumulatePoints.setType(type);
+		accumulatePoints.setPoints(points);
+		accumulatePoints.setPointsBalace(points);
+		accumulatePoints.setStatus("0");
+		accumulatePoints.setVersion(0L);
+		save(accumulatePoints);
+		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
+		phUserInfo.setPoints(phUserInfo.getPoints().longValue()+points);
+		phUserInfoService.save(phUserInfo);
 	}
 }

@@ -120,6 +120,9 @@ public enum CommonResultCode implements ResultCode {
 
     /** 限量商品超过单用户购买次数 */
     LIMITEDSALE_BUY_LIMIT("1038", "LIMITEDSALE_BUY_LIMIT"),
+
+    /** 当日增加积分已达上限 */
+    POINTS_LIMITED("1039", "POINTS_LIMITED"),
     ;
 	
 	
