@@ -101,6 +101,8 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 		resultMap.put("share",0L);
 		resultMap.put("invite",0L);
 
+		//当天是否签到
+		boolean signed = false;
 		List<Object> objects = phAccumulatePointsRepository.pointsByUserIdAndToday(userId);
 		for (Object object : objects) {
 			Object[] obj = (Object[]) object;
@@ -113,8 +115,12 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 				resultMap.put("share",value);
 			}else if(type.equals("3")){
 				resultMap.put("invite",value);
+			}else if(type.equals("0")){
+				signed = true;
 			}
 		}
+
+		resultMap.put("signed",signed);
 
 		return resultMap;
 	}
