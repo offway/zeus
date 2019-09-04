@@ -1,5 +1,7 @@
 package cn.offway.zeus.domain;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
@@ -14,31 +16,31 @@ import java.util.Date;
 @Table(name = "ph_accumulate_points")
 public class PhAccumulatePoints implements Serializable {
 
-    /** ID **/
+    @ApiModelProperty(value = "ID")
     private Long id;
 
-    /** 用户ID **/
+     @ApiModelProperty(value = "用户ID")
     private Long userId;
 
-    /** 来源[0-签到,1-阅读文章,2-分享文章,3-邀请好友完成注册,4-购物消费] **/
+     @ApiModelProperty(value = "来源[0-签到,1-阅读文章,2-分享文章,3-邀请好友完成注册,4-购物消费]")
     private String type;
 
-    /** 获得积分 **/
+     @ApiModelProperty(value = "获得积分")
     private Long points;
 
-    /** 积分余额 **/
+     @ApiModelProperty(value = "积分余额")
     private Long pointsBalace;
 
-    /** 状态[0-未使用,1-已使用,2-已过期] **/
+     @ApiModelProperty(value = "状态[0-未使用,1-已使用,2-已过期]")
     private String status;
 
-    /** 创建时间 **/
+     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
-    /** 版本号 **/
+     @ApiModelProperty(value = "版本号")
     private Long version;
 
-    /** 备注 **/
+     @ApiModelProperty(value = "备注")
     private String remark;
 
 

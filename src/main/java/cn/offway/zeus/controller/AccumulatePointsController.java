@@ -1,5 +1,6 @@
 package cn.offway.zeus.controller;
 
+import cn.offway.zeus.domain.PhAccumulatePoints;
 import cn.offway.zeus.service.PhAccumulatePointsService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
@@ -10,6 +11,7 @@ import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,7 +57,7 @@ public class AccumulatePointsController {
 
     @ApiOperation(value = "积分明细")
     @GetMapping("/list")
-    public JsonResult list(
+    public JsonResult<Page<PhAccumulatePoints>> list(
             @ApiParam(value = "用户ID",required = true) @RequestParam Long userId,
             @ApiParam(value = "页码,从0开始",required = true) @RequestParam int page,
             @ApiParam(value = "页大小",required = true) @RequestParam int size){

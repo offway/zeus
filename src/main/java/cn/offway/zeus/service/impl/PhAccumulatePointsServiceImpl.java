@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import cn.offway.zeus.service.PhAccumulatePointsService;
@@ -71,11 +72,13 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 		return phAccumulatePointsRepository.findAll(new Specification<PhAccumulatePoints>() {
 			@Override
 			public Predicate toPredicate(Root<PhAccumulatePoints> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-				List<Predicate> predicates = new ArrayList<>();
+				List<Predicate> params = new ArrayList<>();
 				if(null != userId){
-					criteriaBuilder.equal(root.get("userId"),userId);
+					params.add(criteriaBuilder.equal(root.get("userId"),userId));
 				}
-
+				Predicate[] predicates = new Predicate[params.size()];
+				criteriaQuery.where(params.toArray(predicates));
+				criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
 				return null;
 			}
 		},pageable);
