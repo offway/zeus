@@ -54,7 +54,7 @@ public class NoticeController {
 	@GetMapping("/list")
 	public JsonResult index(
 			@ApiParam("用户ID") @RequestParam Long userId,
-			@ApiParam("类型[0-系统消息，1-订单通知]") @RequestParam String type,
+			@ApiParam("类型[0-系统消息，1-订单通知，2-活动通知]") @RequestParam String type,
 			@ApiParam("页码,从0开始") @RequestParam int page,
 			@ApiParam("页大小") @RequestParam int size){
 		phNoticeService.read(type);
