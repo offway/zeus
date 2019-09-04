@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -50,5 +51,14 @@ public class AccumulatePointsController {
             logger.error("积分签到异常",e);
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
         }
+    }
+
+    @ApiOperation(value = "积分明细")
+    @GetMapping("/list")
+    public JsonResult list(
+            @ApiParam(value = "用户ID",required = true) @RequestParam Long userId,
+            @ApiParam(value = "页码,从0开始",required = true) @RequestParam int page,
+            @ApiParam(value = "页大小",required = true) @RequestParam int size){
+        return jsonResultHelper.buildSuccessJsonResult(phAccumulatePointsService.finByPage(userId, PageRequest.of(page, size)));
     }
 }

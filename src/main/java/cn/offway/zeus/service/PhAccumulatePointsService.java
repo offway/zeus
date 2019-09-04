@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import cn.offway.zeus.domain.PhAccumulatePoints;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * 积分记录Service接口
@@ -21,6 +23,8 @@ public interface PhAccumulatePointsService{
     void delete(Long id);
 
     List<PhAccumulatePoints> save(List<PhAccumulatePoints> entities);
+
+    Page<PhAccumulatePoints> finByPage(Long userId, Pageable pageable);
 
     boolean countByUserIdToday(Long userId);
 

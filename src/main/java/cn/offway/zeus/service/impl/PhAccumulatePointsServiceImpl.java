@@ -10,6 +10,9 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import cn.offway.zeus.service.PhAccumulatePointsService;
 
@@ -18,6 +21,11 @@ import cn.offway.zeus.repository.PhAccumulatePointsRepository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 
 /**
@@ -56,6 +64,21 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 	@Override
 	public List<PhAccumulatePoints> save(List<PhAccumulatePoints> entities){
 		return phAccumulatePointsRepository.saveAll(entities);
+	}
+
+	@Override
+	public Page<PhAccumulatePoints> finByPage(Long userId, Pageable pageable){
+		return phAccumulatePointsRepository.findAll(new Specification<PhAccumulatePoints>() {
+			@Override
+			public Predicate toPredicate(Root<PhAccumulatePoints> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+				List<Predicate> predicates = new ArrayList<>();
+				if(null != userId){
+					criteriaBuilder.equal(root.get("userId"),userId);
+				}
+
+				return null;
+			}
+		},pageable);
 	}
 
 	@Override
