@@ -8,12 +8,17 @@ import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 
 @Api(tags={"积分"})
@@ -28,6 +33,11 @@ public class AccumulatePointsController {
 
     @Autowired
     private PhAccumulatePointsService phAccumulatePointsService;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    private final String READING_KEY = "zeus.points.read";
 
     @ApiOperation(value = "初始化")
     @GetMapping("/init")
@@ -85,10 +95,41 @@ public class AccumulatePointsController {
                     return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
             }
             phAccumulatePointsService.points(userId, type);
-            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SUCCESS);
+            return jsonResultHelper.buildSuccessJsonResult(null);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("分享文章邀请注册异常：",e);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+        }
+    }
+
+    @ApiOperation(value = "阅读文章")
+    @PostMapping("/reading")
+    public JsonResult reading(
+            @ApiParam(value = "用户ID",required = true) @RequestParam Long userid,
+            @ApiParam(value = "阅读时长[单位：分种]",required = true)@RequestParam int minutes){
+        String minutesString =stringRedisTemplate.opsForValue().get(READING_KEY+"_"+userid+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"));
+        int nowMinutes;
+        if (null != minutesString){
+            nowMinutes = Integer.parseInt(minutesString);
+        }else {
+            stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userid+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(minutes),1, TimeUnit.DAYS);
+            nowMinutes = 0;
+        }
+        if (nowMinutes>=25){
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
+        }
+        if (minutes>25-nowMinutes){
+            minutes = 25-nowMinutes;
+        }
+        int remainder =nowMinutes%5;
+        remainder += minutes;
+        int addPoints = remainder/5;
+        nowMinutes += minutes;
+        stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userid+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(nowMinutes),1, TimeUnit.DAYS);
+        if (addPoints >0){
+            return jsonResultHelper.buildSuccessJsonResult("获得积分："+addPoints*5);
+        }else {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
         }
     }
