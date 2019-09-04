@@ -7,6 +7,9 @@ import java.util.Map;
 import cn.offway.zeus.domain.PhAccumulatePoints;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 积分记录Service接口
@@ -35,4 +38,7 @@ public interface PhAccumulatePointsService{
     int countByUserIdAndTypeToday(Long userId, String type);
 
     void points(Long userId, String type) throws Exception;
+
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
+    void reading(Long userId, int addPoints);
 }

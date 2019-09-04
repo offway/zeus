@@ -210,4 +210,24 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 		phUserInfo.setPoints(phUserInfo.getPoints().longValue()+points);
 		phUserInfoService.save(phUserInfo);
 	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
+	public void reading(Long userId, int addPoints){
+		if (addPoints>0){
+			Long points = 30L*addPoints;
+			PhAccumulatePoints accumulatePoints = new PhAccumulatePoints();
+			accumulatePoints.setUserId(userId);
+			accumulatePoints.setCreateTime(new Date());
+			accumulatePoints.setType("1");
+			accumulatePoints.setPoints(points);
+			accumulatePoints.setPointsBalace(points);
+			accumulatePoints.setStatus("0");
+			accumulatePoints.setVersion(0L);
+			save(accumulatePoints);
+			PhUserInfo phUserInfo = phUserInfoService.findById(userId);
+			phUserInfo.setPoints(phUserInfo.getPoints().longValue()+points);
+			phUserInfoService.save(phUserInfo);
+		}
+	}
 }
