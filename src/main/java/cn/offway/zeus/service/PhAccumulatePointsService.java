@@ -32,7 +32,7 @@ public interface PhAccumulatePointsService{
 
     Map<String, Object> sign(Long userId) throws Exception;
 
-    int finByUseridInNow(Long userid, String type);
+    int countByUserIdAndTypeToday(Long userId, String type);
 
     void points(Long userId, String type) throws Exception;
 }

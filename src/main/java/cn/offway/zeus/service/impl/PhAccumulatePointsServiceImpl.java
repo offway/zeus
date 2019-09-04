@@ -189,8 +189,8 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 	}
 
 	@Override
-	public int finByUseridInNow(Long userid, String type) {
-		return phAccumulatePointsRepository.findByUseridNoW(userid, type);
+	public int countByUserIdAndTypeToday(Long userId, String type) {
+		return phAccumulatePointsRepository.countByUserIdAndTypeToday(userId, type);
 	}
 
 	@Override

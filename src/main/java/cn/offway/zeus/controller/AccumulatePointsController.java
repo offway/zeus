@@ -41,8 +41,8 @@ public class AccumulatePointsController {
     public JsonResult sign(
             @ApiParam(value = "用户ID",required = true) @RequestParam Long userId){
 
-        boolean signed = phAccumulatePointsService.countByUserIdToday(userId);
-        if(signed){
+        int count = phAccumulatePointsService.countByUserIdAndTypeToday(userId,"0");
+        if(count > 0){
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.SIGNED);
         }
 
@@ -72,12 +72,12 @@ public class AccumulatePointsController {
         try {
             switch (type) {
                 case "2":
-                    if (phAccumulatePointsService.finByUseridInNow(userId, type) > 0) {
+                    if (phAccumulatePointsService.countByUserIdAndTypeToday(userId, type) > 0) {
                         return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
                     }
                     break;
                 case "3":
-                    if (phAccumulatePointsService.finByUseridInNow(userId, type) >= 10) {
+                    if (phAccumulatePointsService.countByUserIdAndTypeToday(userId, type) >= 10) {
                         return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
                     }
                     break;
