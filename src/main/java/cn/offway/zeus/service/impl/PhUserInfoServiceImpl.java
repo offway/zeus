@@ -120,6 +120,7 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		phUserInfo.setChannel(channel);
 		phUserInfo.setCreateTime(new Date());
 		phUserInfo.setPoints(0L);
+		phUserInfo.setSignCount(0L);
 		phUserInfo = save(phUserInfo);
 		
 		String content = phConfigService.findContentByName("VP_REGISTER");
