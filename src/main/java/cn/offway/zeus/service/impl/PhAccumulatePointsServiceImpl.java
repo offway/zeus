@@ -180,7 +180,7 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 
 		phUserInfo.setSignCount(signCount);
 		phUserInfo.setPoints(phUserInfo.getPoints().longValue()+points.longValue());
-		phUserInfoService.save(phUserInfo);
+		phUserInfo = phUserInfoService.save(phUserInfo);
 
 		Map<String,Object> resultMap = new HashMap<>();
 		resultMap.put("signCount",signCount);
