@@ -57,7 +57,7 @@ public class NoticeController {
 			@ApiParam("类型[0-系统消息，1-订单通知，2-活动通知]") @RequestParam String type,
 			@ApiParam("页码,从0开始") @RequestParam int page,
 			@ApiParam("页大小") @RequestParam int size){
-		phNoticeService.read(type);
+		if(null != userId) phNoticeService.read(type,userId);
 		return jsonResultHelper.buildSuccessJsonResult(phNoticeService.findByPage(type, userId, PageRequest.of(page,size)));
 	}
 	

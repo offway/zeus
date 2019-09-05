@@ -26,8 +26,8 @@ public interface PhNoticeRepository extends JpaRepository<PhNotice,Long>,JpaSpec
 	
 	@Transactional
 	@Modifying
-	@Query(nativeQuery = true,value="update ph_notice set is_read=1 where type=?1")
-	int read(String type);
+	@Query(nativeQuery = true,value="update ph_notice set is_read=1 where type=?1 and user_id=?2")
+	int read(String type,Long userId);
 	
 	int countByUserIdAndIsRead(Long userId,String isRead);
 }

@@ -21,11 +21,11 @@ public interface PhNoticeService{
 
 	Page<PhNotice> findByPage(String type, Long userId, Pageable page);
 
-	int read(String type);
-
 	List<PhNotice> findNoticeIndex(Long userId);
 
 	int countByUserIdAndIsRead(Long userId, String isRead);
 
 	List<String> findTypes();
+
+	int read(String type, Long userId);
 }

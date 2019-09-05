@@ -91,7 +91,7 @@ public class PhNoticeServiceImpl implements PhNoticeService {
 	}
 
 	@Override
-	public int read(String type) {
-		return phNoticeRepository.read(type);
+	public int read(String type,Long userId) {
+		return phNoticeRepository.read(type,userId);
 	}
 }
