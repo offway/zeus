@@ -106,18 +106,19 @@ public class AccumulatePointsController {
     @ApiOperation(value = "阅读文章")
     @PostMapping("/reading")
     public JsonResult reading(
-            @ApiParam(value = "用户ID",required = true) @RequestParam Long userid,
+            @ApiParam(value = "用户ID",required = true) @RequestParam Long userId,
             @ApiParam(value = "阅读时长[单位：分种]",required = true)@RequestParam int minutes){
         try {
             //获得Redis分钟数
-            String minutesString =stringRedisTemplate.opsForValue().get(READING_KEY+"_"+userid+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"));
-            int nowMinutes;
+            String minutesString =stringRedisTemplate.opsForValue().get(READING_KEY+"_"+userId+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"));
+            int nowMinutes = 0;
             if (null != minutesString){
                 nowMinutes = Integer.parseInt(minutesString);
-            }else {
-                stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userid+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(minutes),1, TimeUnit.DAYS);
-                nowMinutes = 0;
             }
+           /* else {
+                stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userId+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(minutes),1, TimeUnit.DAYS);
+                nowMinutes = 0;
+            }*/
             //进行业务处理
             //判断阅读时间是否超出上限
             if (nowMinutes>=25){
@@ -132,10 +133,10 @@ public class AccumulatePointsController {
             remainder += minutes;
             int addPoints = remainder/5;
             nowMinutes += minutes;
-            stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userid+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(nowMinutes),1, TimeUnit.DAYS);
+            stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userId+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(nowMinutes),1, TimeUnit.DAYS);
             //返回处理结果
             if (addPoints >0){
-                phAccumulatePointsService.reading(userid,addPoints);
+                phAccumulatePointsService.reading(userId,addPoints);
             }
             return jsonResultHelper.buildSuccessJsonResult(null);
         } catch (NumberFormatException e) {
