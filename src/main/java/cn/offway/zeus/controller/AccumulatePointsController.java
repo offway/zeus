@@ -1,13 +1,18 @@
 package cn.offway.zeus.controller;
 
 import cn.offway.zeus.domain.PhAccumulatePoints;
+import cn.offway.zeus.domain.PhLimitedSale;
+import cn.offway.zeus.domain.PhLimitedSaleOp;
+import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.service.PhAccumulatePointsService;
+import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +33,10 @@ public class AccumulatePointsController {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private final String READING_KEY = "zeus.points.read";
+
+    private static final String SMS_CODE_KEY="zeus.sms.code";
+
     @Autowired
     private JsonResultHelper jsonResultHelper;
 
@@ -37,7 +46,8 @@ public class AccumulatePointsController {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    private final String READING_KEY = "zeus.points.read";
+    @Autowired
+    private PhUserInfoService phUserInfoService;
 
     @ApiOperation(value = "初始化")
     @GetMapping("/init")
@@ -74,27 +84,20 @@ public class AccumulatePointsController {
         return jsonResultHelper.buildSuccessJsonResult(phAccumulatePointsService.finByPage(userId, PageRequest.of(page, size)));
     }
 
-    @ApiOperation(value = "分享文章邀请注册")
+    @ApiOperation(value = "分享文章")
     @PostMapping("/points")
     public JsonResult points(
             @ApiParam(value = "用户ID", required = true) @RequestParam Long userId,
-            @ApiParam(value = "类型：2-分享文章,3-邀请好友完成注册", required = true) @RequestParam String type) {
+            @ApiParam(value = "文章ID", required = true) @RequestParam Long articleId) {
         try {
-            switch (type) {
-                case "2":
-                    if (phAccumulatePointsService.countByUserIdAndTypeToday(userId, type) > 0) {
-                        return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
-                    }
-                    break;
-                case "3":
-                    if (phAccumulatePointsService.countByUserIdAndTypeToday(userId, type) >= 10) {
-                        return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
-                    }
-                    break;
-                default:
-                    return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
+
+            String type = "2"; //分享文章
+
+            if (phAccumulatePointsService.countByUserIdAndTypeToday(userId, type) > 0) {
+                return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
             }
-            phAccumulatePointsService.points(userId, type);
+
+            phAccumulatePointsService.points(userId, type,"分享了文章："+articleId);
             return jsonResultHelper.buildSuccessJsonResult(null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,37 +106,75 @@ public class AccumulatePointsController {
         }
     }
 
+    @ApiOperation("邀请好友注册")
+    @PostMapping("/register")
+    public JsonResult register(
+            @ApiParam(value = "分享用户ID",required = true) @RequestParam Long userId,
+            @ApiParam(value = "注册用户手机号",required = true) @RequestParam String phone,
+            @ApiParam(value = "注册用户验证码",required = true) @RequestParam String code) throws Exception{
+
+
+        if(StringUtils.isBlank(phone)){
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_MISS);
+        }
+
+        phone = phone.contains("+")?phone:"+86"+phone;
+
+        String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
+        if(StringUtils.isBlank(smsCode)){
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);
+        }
+
+        if(!code.equals(smsCode)){
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_ERROR);
+        }
+
+
+        PhUserInfo phUserInfo = phUserInfoService.findByPhone(phone);
+
+
+        if(null != phUserInfo){
+           return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
+        }
+
+        phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null);
+
+        String type = "3"; //邀请好友完成注册
+
+        if (phAccumulatePointsService.countByUserIdAndTypeToday(userId, type) < 10) {
+            phAccumulatePointsService.points(userId, type,"邀请了用户："+phUserInfo.getId());
+            return jsonResultHelper.buildSuccessJsonResult(null);
+        }else{
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
+        }
+    }
+
     @ApiOperation(value = "阅读文章")
     @PostMapping("/reading")
     public JsonResult reading(
             @ApiParam(value = "用户ID",required = true) @RequestParam Long userId,
-            @ApiParam(value = "阅读时长[单位：分种]",required = true)@RequestParam int minutes){
+            @ApiParam(value = "阅读时长[单位：秒]",required = true) @RequestParam int second){
         try {
-            //获得Redis分钟数
-            String minutesString =stringRedisTemplate.opsForValue().get(READING_KEY+"_"+userId+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"));
-            int nowMinutes = 0;
-            if (null != minutesString){
-                nowMinutes = Integer.parseInt(minutesString);
-            }
-           /* else {
-                stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userId+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(minutes),1, TimeUnit.DAYS);
-                nowMinutes = 0;
-            }*/
+
+            //获得已经阅读文章的时长
+            String secondString =stringRedisTemplate.opsForValue().get(READING_KEY+"_"+userId+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"));
+            int nowSecond = Integer.parseInt(StringUtils.isBlank(secondString)?"0":secondString);
+
             //进行业务处理
             //判断阅读时间是否超出上限
-            if (nowMinutes>=25){
+            if (nowSecond>=1500){
                 return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
             }
             //超出上限则给出默认值
-            if (minutes>25-nowMinutes){
-                minutes = 25-nowMinutes;
+            if (second > 1500-nowSecond){
+                second = 1500-nowSecond;
             }
             //计算出需要增加几次积分
-            int remainder =nowMinutes%5;
-            remainder += minutes;
-            int addPoints = remainder/5;
-            nowMinutes += minutes;
-            stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userId+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(nowMinutes),1, TimeUnit.DAYS);
+            int remainder =nowSecond%300;
+            remainder += second;
+            int addPoints = remainder/300;
+            nowSecond += second;
+            stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userId+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(nowSecond),1, TimeUnit.DAYS);
             //返回处理结果
             if (addPoints >0){
                 phAccumulatePointsService.reading(userId,addPoints);

@@ -195,7 +195,7 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
-	public void points(Long userId, String type) throws Exception {
+	public void points(Long userId, String type, String remark) throws Exception {
 		Long points = 20L;
 		PhAccumulatePoints accumulatePoints = new PhAccumulatePoints();
 		accumulatePoints.setUserId(userId);
@@ -205,6 +205,7 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 		accumulatePoints.setPointsBalace(points);
 		accumulatePoints.setStatus("0");
 		accumulatePoints.setVersion(0L);
+		accumulatePoints.setRemark(remark);
 		save(accumulatePoints);
 		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 		phUserInfo.setPoints(phUserInfo.getPoints().longValue()+points);

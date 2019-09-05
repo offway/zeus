@@ -37,8 +37,7 @@ public interface PhAccumulatePointsService{
 
     int countByUserIdAndTypeToday(Long userId, String type);
 
-    void points(Long userId, String type) throws Exception;
+    void points(Long userId, String type, String remark) throws Exception;
 
-    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
     void reading(Long userId, int addPoints);
 }
