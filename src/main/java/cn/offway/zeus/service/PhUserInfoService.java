@@ -31,4 +31,6 @@ public interface PhUserInfoService{
 	int subCollect(Long id);
 
     AlipayUserInfoShareResponse saveAlipayUser(Long userId, String code);
+
+    int addPoints(Long id, Long points);
 }

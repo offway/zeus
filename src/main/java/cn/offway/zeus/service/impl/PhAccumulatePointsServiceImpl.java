@@ -7,6 +7,7 @@ import cn.offway.zeus.repository.PhAccumulatePointsRepository;
 import cn.offway.zeus.service.PhAccumulatePointsService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.utils.JsonResult;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,20 +129,28 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class, StockException.class})
 	public Map<String, Object> sign(Long userId) throws Exception{
 		Date now = new Date();
-		Long points = 0L;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+
+        Long points = 0L;
 		Long signCount = 0L;//连续签到天数
 
 		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
 
-		//查询今天是否连续签到
-		Date endSignTime = phAccumulatePointsRepository.endSignTime(userId);
-		if(null != endSignTime){
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-			int compare = DateUtils.addDays(sdf.parse(sdf.format(endSignTime)),1).compareTo(sdf.parse(sdf.format(now)));
-			if(compare == 0){
-				signCount = phUserInfo.getSignCount();
-			}
-		}
+
+		//每月1号从新计算。
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        boolean isFirstDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH) == 1;
+        if(!isFirstDayOfMonth){
+            //查询今天是否连续签到
+            Date endSignTime = phAccumulatePointsRepository.endSignTime(userId);
+            if(null != endSignTime){
+                int compare = DateUtils.addDays(sdf.parse(sdf.format(endSignTime)),1).compareTo(sdf.parse(sdf.format(now)));
+                if(compare == 0){
+                    signCount = phUserInfo.getSignCount();
+                }
+            }
+        }
 
 
 		signCount = signCount.longValue() + 1L;
@@ -149,7 +158,7 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 		//计算积分
 		switch (signCount.intValue()){
 			case 1:
-				points = 1L;
+				points = 5L;
 				break;
 			case 2:
 				points = 7L;
@@ -163,8 +172,11 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 			case 5:
 				points = 13L;
 				break;
+            case 6:
+                points = 15L;
+                break;
 			default:
-				points = 15L;
+				points = 20L;
 				break;
 		}
 
@@ -194,9 +206,7 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
-	public void points(Long userId, String type, String remark) throws Exception {
-		Long points = 20L;
+	public void points(Long userId, String type,Long points, String remark){
 		PhAccumulatePoints accumulatePoints = new PhAccumulatePoints();
 		accumulatePoints.setUserId(userId);
 		accumulatePoints.setCreateTime(new Date());
@@ -207,28 +217,7 @@ public class PhAccumulatePointsServiceImpl implements PhAccumulatePointsService 
 		accumulatePoints.setVersion(0L);
 		accumulatePoints.setRemark(remark);
 		save(accumulatePoints);
-		PhUserInfo phUserInfo = phUserInfoService.findById(userId);
-		phUserInfo.setPoints(phUserInfo.getPoints().longValue()+points);
-		phUserInfoService.save(phUserInfo);
+		phUserInfoService.addPoints(userId,points);
 	}
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
-	public void reading(Long userId, int addPoints){
-		if (addPoints>0){
-			Long points = 30L*addPoints;
-			PhAccumulatePoints accumulatePoints = new PhAccumulatePoints();
-			accumulatePoints.setUserId(userId);
-			accumulatePoints.setCreateTime(new Date());
-			accumulatePoints.setType("1");
-			accumulatePoints.setPoints(points);
-			accumulatePoints.setPointsBalace(points);
-			accumulatePoints.setStatus("0");
-			accumulatePoints.setVersion(0L);
-			save(accumulatePoints);
-			PhUserInfo phUserInfo = phUserInfoService.findById(userId);
-			phUserInfo.setPoints(phUserInfo.getPoints().longValue()+points);
-			phUserInfoService.save(phUserInfo);
-		}
-	}
 }

@@ -165,4 +165,9 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		phUserInfoRepository.updateAlipayUserId(userId,alipayUserInfoShareResponse.getUserId(),alipayUserInfoShareResponse.getNickName());
 		return alipayUserInfoShareResponse;
 	}
+
+	@Override
+	public int addPoints(Long id,Long points){
+		return phUserInfoRepository.addPoints(id,points);
+	}
 }

@@ -78,6 +78,9 @@ public class OrderController {
 	@Autowired
 	private PhRefundOrderGoodsRepository phRefundOrderGoodsRepository;
 
+	@Autowired
+	private PhAccumulatePointsService phAccumulatePointsService;
+
 
 	@ApiOperation("下订单")
 	@PostMapping("/add")
@@ -130,6 +133,11 @@ public class OrderController {
 				phOrderInfo.setStatus("3");
 				phOrderInfo.setReceiptTime(new Date());
 				phOrderInfoService.save(phOrderInfo);
+
+				//增加积分
+				double amount = MathUtils.add(phOrderInfo.getAmount(),phOrderInfo.getWalletAmount());
+				Long points = (long)amount;
+				phAccumulatePointsService.points(phOrderInfo.getUserId(), "4",points,"确认收货,订单号："+orderNo);
 			}
 			return jsonResultHelper.buildSuccessJsonResult(null);
 		} catch (Exception e) {
@@ -137,7 +145,7 @@ public class OrderController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
 		}
 	}
-	
+
 	@ApiOperation("删除订单")
 	@PostMapping("/del")
 	public JsonResult del(@ApiParam("订单号") @RequestParam String orderNo){

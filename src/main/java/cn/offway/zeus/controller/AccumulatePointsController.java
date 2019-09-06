@@ -97,7 +97,7 @@ public class AccumulatePointsController {
                 return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
             }
 
-            phAccumulatePointsService.points(userId, type,"分享了文章："+articleId);
+            phAccumulatePointsService.points(userId, type,20L,"分享了文章："+articleId);
             return jsonResultHelper.buildSuccessJsonResult(null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,7 +142,7 @@ public class AccumulatePointsController {
         String type = "3"; //邀请好友完成注册
 
         if (phAccumulatePointsService.countByUserIdAndTypeToday(userId, type) < 10) {
-            phAccumulatePointsService.points(userId, type,"邀请了用户："+phUserInfo.getId());
+            phAccumulatePointsService.points(userId, type,20L,"邀请了用户："+phUserInfo.getId());
             return jsonResultHelper.buildSuccessJsonResult(null);
         }else{
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.POINTS_LIMITED);
@@ -177,10 +177,10 @@ public class AccumulatePointsController {
             stringRedisTemplate.opsForValue().set(READING_KEY+"_"+userId+"_"+ DateFormatUtils.format(new Date(),"yyyy-MM-dd"),String.valueOf(nowSecond),1, TimeUnit.DAYS);
             //返回处理结果
             if (addPoints >0){
-                phAccumulatePointsService.reading(userId,addPoints);
+                phAccumulatePointsService.points(userId, "1",(long)(30*addPoints),null);
             }
             return jsonResultHelper.buildSuccessJsonResult(null);
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             logger.error("阅读文章异常："+e);
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
