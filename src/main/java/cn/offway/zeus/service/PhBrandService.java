@@ -35,4 +35,6 @@ public interface PhBrandService{
 	List<PhBrand> findByMerchantId(Long merchantId);
 
 	List<String> findNameLike(String name);
+
+	List<PhBrand> findNewTop10();
 }

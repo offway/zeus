@@ -56,7 +56,6 @@ public class VPickGoodsServiceImpl implements VPickGoodsService {
 	@Override
 	public Page<VPickGoods> findByPage(final Long pickId,Pageable page){
 		return vPickGoodsRepository.findAll(new Specification<VPickGoods>() {
-			
 			@Override
 			public Predicate toPredicate(Root<VPickGoods> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 				List<Predicate> params = new ArrayList<Predicate>();
@@ -66,7 +65,7 @@ public class VPickGoodsServiceImpl implements VPickGoodsService {
 				}
 				
 				params.add(criteriaBuilder.equal(root.get("status"),  "1"));
-				
+
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
                 criteriaQuery.orderBy(criteriaBuilder.asc(root.get("pickGoodsId")));

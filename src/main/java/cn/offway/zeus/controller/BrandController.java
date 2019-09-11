@@ -94,6 +94,11 @@ public class BrandController {
 		}
 		return jsonResultHelper.buildSuccessJsonResult(phBrand);
 	}
-	
-	
+
+	@ApiOperation("品牌新上前10")
+	@GetMapping("/newtop10")
+	public JsonResult<PhBrand> newtop(){
+		List<PhBrand> phBrand = phBrandService.findNewTop10();
+		return jsonResultHelper.buildSuccessJsonResult(phBrand);
+	}
 }

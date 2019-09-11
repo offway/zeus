@@ -31,4 +31,7 @@ public interface PhBrandRepository extends JpaRepository<PhBrand,Long>,JpaSpecif
 	
 	@Query(nativeQuery=true,value="select name from ph_brand where status='1' and name like ?1")
 	List<String> findNameLike(String name);
+
+	@Query(nativeQuery=true,value="select * from ph_brand where status = 1 ORDER BY id DESC LIMIT 0,10 ")
+	List<PhBrand> findNewTop10();
 }

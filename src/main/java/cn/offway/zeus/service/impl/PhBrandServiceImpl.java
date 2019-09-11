@@ -145,4 +145,9 @@ public class PhBrandServiceImpl implements PhBrandService {
 			}
 		}, page);
 	}
+
+	@Override
+	public List<PhBrand> findNewTop10(){
+		return phBrandRepository.findNewTop10();
+	}
 }
