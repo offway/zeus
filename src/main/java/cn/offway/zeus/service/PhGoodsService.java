@@ -1,13 +1,13 @@
 package cn.offway.zeus.service;
 
-import java.util.List;
-import java.util.Set;
-
+import cn.offway.zeus.domain.PhGoods;
+import cn.offway.zeus.dto.GoodsDto;
+import cn.offway.zeus.dto.GoodsScreeningDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import cn.offway.zeus.domain.PhGoods;
-import cn.offway.zeus.dto.GoodsDto;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 商品表Service接口
@@ -18,7 +18,7 @@ import cn.offway.zeus.dto.GoodsDto;
 public interface PhGoodsService{
 
 	PhGoods save(PhGoods phGoods);
-	
+
 	PhGoods findById(Long id);
 
 	List<PhGoods> indexData();
@@ -40,4 +40,6 @@ public interface PhGoodsService{
     int countByIdsAndStatus(List<Long> ids, String status);
 
 	boolean containsLimitGoods(Set<Long> stockIds);
+
+	Page<PhGoods> screening(GoodsScreeningDto goodsScreeningDto, Pageable page);
 }

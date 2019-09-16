@@ -1,20 +1,15 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaBuilder.In;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import cn.offway.zeus.config.BitPredicate;
 import cn.offway.zeus.config.DiscountPredicate;
-import cn.offway.zeus.domain.*;
+import cn.offway.zeus.domain.PhBrand;
+import cn.offway.zeus.domain.PhGoods;
+import cn.offway.zeus.domain.PhPickGoods;
+import cn.offway.zeus.domain.PhPromotionGoods;
+import cn.offway.zeus.dto.GoodsDto;
+import cn.offway.zeus.dto.GoodsScreeningDto;
+import cn.offway.zeus.repository.PhGoodsRepository;
+import cn.offway.zeus.service.PhGoodsService;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.slf4j.Logger;
@@ -25,9 +20,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import cn.offway.zeus.dto.GoodsDto;
-import cn.offway.zeus.repository.PhGoodsRepository;
-import cn.offway.zeus.service.PhGoodsService;
+import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder.In;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 
 /**
@@ -216,5 +214,65 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 	public boolean containsLimitGoods(Set<Long> stockIds) {
 		int c = phGoodsRepository.countLimitGoods(stockIds);
 		return c > 0;
+	}
+
+	public <Y extends Comparable<? super Y>> Predicate bitand(CriteriaBuilderImpl criteriaBuilder,
+															  Expression<? extends Y> expression,Y object) {
+		return new BitPredicate<Y>( criteriaBuilder, expression, object);
+	}
+
+	@Override
+	public Page<PhGoods> screening(GoodsScreeningDto goodsScreeningDto, Pageable page) {
+		return phGoodsRepository.findAll(new Specification<PhGoods>() {
+			@Override
+			public Predicate toPredicate(Root<PhGoods> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+				List<Predicate> params = new ArrayList<Predicate>();
+				if (goodsScreeningDto.getPriceMini() != 0 && goodsScreeningDto.getPriceMax() != 0) {
+					params.add(criteriaBuilder.greaterThanOrEqualTo(root.get("price"), goodsScreeningDto.getPriceMini()));
+					params.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), goodsScreeningDto.getPriceMax()));
+				}
+				if (!"".equals(goodsScreeningDto.getStyle())) {
+					params.add(criteriaBuilder.equal(root.get("style"), goodsScreeningDto.getStyle()));
+				}
+				if (!"".equals(goodsScreeningDto.getCategory())) {
+					params.add(criteriaBuilder.equal(root.get("category"), goodsScreeningDto.getCategory()));
+				}
+				if (!"".equals(goodsScreeningDto.getType())) {
+					String type = goodsScreeningDto.getType();
+					if (StringUtils.isNotBlank(type)) {
+						In<String> in = criteriaBuilder.in(root.get("type"));
+						if ("男装".equals(type) || "女装".equals(type)) {
+							in.value("男装＆女装");
+						}
+						in.value(goodsScreeningDto.getType());
+						params.add(in);
+					}
+				}
+				switch (goodsScreeningDto.getSort()){
+					case 0:
+						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("viewCount")));
+						break;
+					case 1:
+						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("price")));
+						break;
+					case 2:
+						criteriaQuery.orderBy(criteriaBuilder.asc(root.get("price")));
+						break;
+					case 3:
+						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("saleCount")));
+						break;
+					case 4:
+						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("upTime")));
+						break;
+				}
+				String attribute = goodsScreeningDto.getAttribute();
+				if (!"".equals(goodsScreeningDto.getAttribute())){
+					params.add(new BitPredicate((CriteriaBuilderImpl)criteriaBuilder,root.get("tag"),Integer.parseInt(attribute,2)));
+				}
+				Predicate[] predicates = new Predicate[params.size()];
+				criteriaQuery.where(params.toArray(predicates));
+				return null;
+			}
+		}, page);
 	}
 }
