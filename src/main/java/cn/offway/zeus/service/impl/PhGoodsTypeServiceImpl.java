@@ -10,6 +10,7 @@ import cn.offway.zeus.service.PhGoodsTypeService;
 import cn.offway.zeus.domain.PhGoodsType;
 import cn.offway.zeus.repository.PhGoodsTypeRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -39,5 +40,10 @@ public class PhGoodsTypeServiceImpl implements PhGoodsTypeService {
 				return optional.get();
 			}
 		return null;
+	}
+
+	@Override
+	public List<PhGoodsType> findAll(){
+		return phGoodsTypeRepository.findAll();
 	}
 }

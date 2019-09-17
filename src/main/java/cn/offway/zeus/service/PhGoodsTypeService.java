@@ -2,6 +2,8 @@ package cn.offway.zeus.service;
 
 import cn.offway.zeus.domain.PhGoodsType;
 
+import java.util.List;
+
 /**
  * 商品类别Service接口
  *
@@ -13,4 +15,6 @@ public interface PhGoodsTypeService{
 	PhGoodsType save(PhGoodsType phGoodsType);
 	
 	PhGoodsType findById(Long id);
+
+	List<PhGoodsType> findAll();
 }
