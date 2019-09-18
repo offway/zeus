@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import cn.offway.zeus.domain.PhStarsameComments;
 
 /**
- * 文章评论Repository接口
+ * 明星同款评论Repository接口
  *
  * @author wn
  * @version $v: 1.0.0, $time:2019-09-18 16:05:55 Exp $
