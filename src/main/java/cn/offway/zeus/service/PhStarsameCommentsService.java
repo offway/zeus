@@ -1,9 +1,11 @@
 package cn.offway.zeus.service;
 
 
-import java.util.List;
-
 import cn.offway.zeus.domain.PhStarsameComments;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * 文章评论Service接口
@@ -14,10 +16,12 @@ import cn.offway.zeus.domain.PhStarsameComments;
 public interface PhStarsameCommentsService {
 
     PhStarsameComments save(PhStarsameComments phStarsameComments);
-	
+
     PhStarsameComments findOne(Long id);
 
     void delete(Long id);
 
     List<PhStarsameComments> save(List<PhStarsameComments> entities);
+
+    Page<PhStarsameComments> findByPage(Long starSameId, Pageable page);
 }

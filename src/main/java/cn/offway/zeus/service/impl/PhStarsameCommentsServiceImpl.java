@@ -1,16 +1,23 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-
+import cn.offway.zeus.domain.PhStarsameComments;
+import cn.offway.zeus.repository.PhStarsameCommentsRepository;
+import cn.offway.zeus.service.PhStarsameCommentsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import cn.offway.zeus.service.PhStarsameCommentsService;
 
-import cn.offway.zeus.domain.PhStarsameComments;
-import cn.offway.zeus.repository.PhStarsameCommentsRepository;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -44,6 +51,21 @@ public class PhStarsameCommentsServiceImpl implements PhStarsameCommentsService 
 	@Override
 	public void delete(Long id){
 		phStarsameCommentsRepository.deleteById(id);
+	}
+
+	@Override
+	public Page<PhStarsameComments> findByPage(Long starSameId, Pageable page) {
+		return phStarsameCommentsRepository.findAll(new Specification<PhStarsameComments>() {
+			@Override
+			public Predicate toPredicate(Root<PhStarsameComments> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+				List<Predicate> params = new ArrayList<Predicate>();
+				Predicate[] predicates = new Predicate[params.size()];
+				params.add(criteriaBuilder.equal(root.get("starsameId"), starSameId));
+				criteriaQuery.where(params.toArray(predicates));
+				criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
+				return null;
+			}
+		}, page);
 	}
 
 	@Override
