@@ -5,7 +5,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * 文章评论
+ * 明星同款评论
  *
  * @author wn
  * @version $v: 1.0.0, $time:2019-09-18 16:05:55 Exp $
@@ -20,7 +20,7 @@ public class PhStarsameComments implements Serializable {
     /** 用户ID **/
     private Long userId;
 
-    /** 文章ID **/
+    /** 明星同款ID **/
     private Long starsameId;
 
     /** 评论内容 **/
