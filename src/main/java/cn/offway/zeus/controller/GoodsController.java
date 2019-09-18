@@ -12,7 +12,6 @@ import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -280,43 +279,43 @@ public class GoodsController {
 
 	@ApiOperation("筛选条件")
 	@GetMapping("/screeningFilter")
-	public <T> JsonResult screeningFilter(){
-		Map<String,Object> map = new HashMap<>();
+	public <T> JsonResult screeningFilter() {
+		Map<String, Object> map = new HashMap<>();
 		List<Map> tag = new ArrayList<>();
 		List<Map> priceAll = new ArrayList<>();
-		Map<String,String> mapTag0 = new HashMap<>();
-		mapTag0.put("tag","0001");
-		mapTag0.put("value","特殊商品");
-		Map<String,String> mapTag1 = new HashMap<>();
-		mapTag1.put("tag","0010");
-		mapTag1.put("value","限量商品");
-		Map<String,String> mapTag2 = new HashMap<>();
-		mapTag2.put("tag","1000");
-		mapTag2.put("value","品牌保障");
-		for (int i = 0;i<1000;i+=100){
+		Map<String, String> mapTag0 = new HashMap<>();
+		mapTag0.put("tag", "0001");
+		mapTag0.put("value", "特殊商品");
+		Map<String, String> mapTag1 = new HashMap<>();
+		mapTag1.put("tag", "0010");
+		mapTag1.put("value", "限量商品");
+		Map<String, String> mapTag2 = new HashMap<>();
+		mapTag2.put("tag", "1000");
+		mapTag2.put("value", "品牌保障");
+		for (int i = 0; i < 1000; i += 100) {
 			int max = i + 100;
-			Map<String,String> price = new HashMap<>();
-			if (max<1000){
-				if (i<300){
-					price.put("priceMini",String.valueOf(i));
-					price.put("priceMax",String.valueOf(max));
-					price.put("value",("¥"+i+"-"+max));
+			Map<String, String> price = new HashMap<>();
+			if (max < 1000) {
+				if (i < 300) {
+					price.put("priceMini", String.valueOf(i));
+					price.put("priceMax", String.valueOf(max));
+					price.put("value", ("¥" + i + "-" + max));
 					priceAll.add(price);
-				}else if (i==300){
-					price.put("priceMini",String.valueOf(i));
-					price.put("priceMax",String.valueOf(500));
-					price.put("value",("¥"+i+"-"+500));
+				} else if (i == 300) {
+					price.put("priceMini", String.valueOf(i));
+					price.put("priceMax", String.valueOf(500));
+					price.put("value", ("¥" + i + "-" + 500));
 					priceAll.add(price);
-				}else if (i==500){
-					price.put("priceMini",String.valueOf(i));
-					price.put("priceMax",String.valueOf(800));
-					price.put("value",("¥"+i+"-"+800));
+				} else if (i == 500) {
+					price.put("priceMini", String.valueOf(i));
+					price.put("priceMax", String.valueOf(800));
+					price.put("value", ("¥" + i + "-" + 800));
 					priceAll.add(price);
 				}
-			}else {
-				price.put("priceMini",String.valueOf(1000));
-				price.put("priceMax",String.valueOf(9999999));
-				price.put("value","¥1000以上");
+			} else {
+				price.put("priceMini", String.valueOf(1000));
+				price.put("priceMax", String.valueOf(9999999));
+				price.put("value", "¥1000以上");
 				priceAll.add(price);
 			}
 		}
@@ -330,10 +329,10 @@ public class GoodsController {
 		for (Map m : jsonArray.toJavaList(Map.class)) {
 			style.add(m.get("value"));
 		}
-		map.put("type",goodsType);
-		map.put("tag",tag);
-		map.put("style",style);
-		map.put("price",priceAll);
+		map.put("type", goodsType);
+		map.put("tag", tag);
+		map.put("style", style);
+		map.put("price", priceAll);
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 }
