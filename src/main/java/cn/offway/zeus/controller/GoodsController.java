@@ -71,7 +71,7 @@ public class GoodsController {
 	private PhGoodsTypeService phGoodsTypeService;
 
 	@Autowired
-	private PhConfigService configService;
+	private PhConfigService phConfigService;
 
 	private static Date updateDate = null;
 
@@ -322,14 +322,22 @@ public class GoodsController {
 		tag.add(mapTag0);
 		tag.add(mapTag1);
 		tag.add(mapTag2);
-		List<PhGoodsType> goodsType = phGoodsTypeService.findAll();
+		List<Map> type0 = new ArrayList<>();
+		PhConfig configType = phConfigService.findByName("INDEX_SEARCH");
+		JSONArray jsonArray0 = JSON.parseArray(configType.getContent());
+		for (Map o : jsonArray0.toJavaList(Map.class)) {
+			Map<String,String> typeadd = new HashMap<>();
+			typeadd.put("name",o.get("name").toString());
+			typeadd.put("value",o.get("value").toString());
+			type0.add(typeadd);
+		}
 		List<Object> style = new ArrayList<>();
-		PhConfig config = configService.findByName("INDEX_STYLE_FULL");
+		PhConfig config = phConfigService.findByName("INDEX_STYLE_FULL");
 		JSONArray jsonArray = JSON.parseArray(config.getContent());
 		for (Map m : jsonArray.toJavaList(Map.class)) {
 			style.add(m.get("value"));
 		}
-		map.put("type", goodsType);
+		map.put("type", type0);
 		map.put("tag", tag);
 		map.put("style", style);
 		map.put("price", priceAll);
