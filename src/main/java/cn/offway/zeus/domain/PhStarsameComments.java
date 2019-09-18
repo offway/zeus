@@ -53,7 +53,7 @@ public class PhStarsameComments implements Serializable {
         this.userId = userId;
     }
 
-    @Column(name = "article_id", length = 11)
+    @Column(name = "starsame_id", length = 11)
     public Long getStarsameId() {
         return starsameId;
     }
