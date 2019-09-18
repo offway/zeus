@@ -77,8 +77,8 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: true
 #微信公众号配置
 wx:
-  appid:  wx1afc7441418d2417
-  secret: 410a0d284dea856571621dfbd9639845
+  appid:  wx22e5d09caef77790
+  secret: 05dfad0c04339cfbab32818f5e904056
 mini:
   appid:  wx12d022a9493f1b26
   secret: 52ba3a89ae58aa6a2294806d516d6107
