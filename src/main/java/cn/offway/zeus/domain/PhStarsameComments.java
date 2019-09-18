@@ -21,7 +21,7 @@ public class PhStarsameComments implements Serializable {
     private Long userId;
 
     /** 文章ID **/
-    private Long articleId;
+    private Long starsameId;
 
     /** 评论内容 **/
     private String content;
@@ -54,12 +54,12 @@ public class PhStarsameComments implements Serializable {
     }
 
     @Column(name = "article_id", length = 11)
-    public Long getArticleId() {
-        return articleId;
+    public Long getStarsameId() {
+        return starsameId;
     }
 
-    public void setArticleId(Long articleId) {
-        this.articleId = articleId;
+    public void setStarsameId(Long articleId) {
+        this.starsameId = articleId;
     }
 
     public String getContent() {
