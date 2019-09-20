@@ -47,6 +47,17 @@ public class GoodsScreeningDto implements Serializable {
     @ApiModelProperty(value ="优惠折扣")
     private Double discount;
 
+    @ApiModelProperty(value = "品牌id")
+    private Long brandID;
+
+
+    public Long getBrandID() {
+        return brandID;
+    }
+
+    public void setBrandID(Long brandID) {
+        this.brandID = brandID;
+    }
 
     public Double getDiscount() {
         return discount;

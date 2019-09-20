@@ -227,7 +227,7 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 			@Override
 			public Predicate toPredicate(Root<PhGoods> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 				List<Predicate> params = new ArrayList<Predicate>();
-				if (null != goodsScreeningDto.getPriceMini() && null != goodsScreeningDto.getPriceMax() && goodsScreeningDto.getPriceMini() != 0 && goodsScreeningDto.getPriceMax() != 0) {
+				if (null != goodsScreeningDto.getPriceMini() && null != goodsScreeningDto.getPriceMax() && (goodsScreeningDto.getPriceMini() != 0 || goodsScreeningDto.getPriceMax() != 0) && (goodsScreeningDto.getPriceMax()>goodsScreeningDto.getPriceMini())) {
 					params.add(criteriaBuilder.greaterThanOrEqualTo(root.get("price"), goodsScreeningDto.getPriceMini()));
 					params.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), goodsScreeningDto.getPriceMax()));
 				}
@@ -249,6 +249,9 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				}
 				if(null != goodsScreeningDto.getDiscount()){
 					params.add(new DiscountPredicate((CriteriaBuilderImpl)criteriaBuilder,root.get("originalPrice"),root.get("price"),goodsScreeningDto.getDiscount())) ;
+				}
+				if (null != goodsScreeningDto.getBrandID()){
+					params.add(criteriaBuilder.equal(root.get("brandId"),goodsScreeningDto.getBrandID()));
 				}
 				if (null != goodsScreeningDto.getType()) {
 					String type = goodsScreeningDto.getType();
