@@ -227,17 +227,30 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 			@Override
 			public Predicate toPredicate(Root<PhGoods> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
 				List<Predicate> params = new ArrayList<Predicate>();
-				if (goodsScreeningDto.getPriceMini() != 0 && goodsScreeningDto.getPriceMax() != 0) {
+				if (null != goodsScreeningDto.getPriceMini() && null != goodsScreeningDto.getPriceMax() && goodsScreeningDto.getPriceMini() != 0 && goodsScreeningDto.getPriceMax() != 0) {
 					params.add(criteriaBuilder.greaterThanOrEqualTo(root.get("price"), goodsScreeningDto.getPriceMini()));
 					params.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), goodsScreeningDto.getPriceMax()));
 				}
-				if (!"".equals(goodsScreeningDto.getStyle())) {
+				if (null!=goodsScreeningDto.getStyle()) {
 					params.add(criteriaBuilder.equal(root.get("style"), goodsScreeningDto.getStyle()));
 				}
-				if (!"".equals(goodsScreeningDto.getCategory())) {
+				if (null!= goodsScreeningDto.getCategory()) {
 					params.add(criteriaBuilder.equal(root.get("category"), goodsScreeningDto.getCategory()));
 				}
-				if (!"".equals(goodsScreeningDto.getType())) {
+				if(null != goodsScreeningDto.getPickId()){
+					Subquery<PhPickGoods> subquery = criteriaQuery.subquery(PhPickGoods.class);
+					Root<PhPickGoods> subRoot = subquery.from(PhPickGoods.class);
+					subquery.select(subRoot);
+					subquery.where(
+							criteriaBuilder.equal(root.get("id"), subRoot.get("goodsId")),
+							criteriaBuilder.equal(subRoot.get("pickId"), goodsScreeningDto.getPickId())
+					);
+					params.add(criteriaBuilder.exists(subquery));
+				}
+				if(null != goodsScreeningDto.getDiscount()){
+					params.add(new DiscountPredicate((CriteriaBuilderImpl)criteriaBuilder,root.get("originalPrice"),root.get("price"),goodsScreeningDto.getDiscount())) ;
+				}
+				if (null != goodsScreeningDto.getType()) {
 					String type = goodsScreeningDto.getType();
 					if (StringUtils.isNotBlank(type)) {
 						In<String> in = criteriaBuilder.in(root.get("type"));
@@ -266,7 +279,7 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 						break;
 				}
 				String attribute = goodsScreeningDto.getAttribute();
-				if (!"".equals(goodsScreeningDto.getAttribute())){
+				if (null != goodsScreeningDto.getAttribute()){
 					params.add(new BitPredicate((CriteriaBuilderImpl)criteriaBuilder,root.get("tag"),Integer.parseInt(attribute,2)));
 				}
 				Predicate[] predicates = new Predicate[params.size()];

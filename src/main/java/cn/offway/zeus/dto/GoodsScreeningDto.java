@@ -1,6 +1,7 @@
 package cn.offway.zeus.dto;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -40,7 +41,28 @@ public class GoodsScreeningDto implements Serializable {
     @ApiModelProperty("页大小")
     private int size;
 
+    @ApiModelProperty(value ="优选ID")
+    private Long pickId;
 
+    @ApiModelProperty(value ="优惠折扣")
+    private Double discount;
+
+
+    public Double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+    }
+
+    public Long getPickId() {
+        return pickId;
+    }
+
+    public void setPickId(Long pickId) {
+        this.pickId = pickId;
+    }
 
     public String getType() {
         return type;
