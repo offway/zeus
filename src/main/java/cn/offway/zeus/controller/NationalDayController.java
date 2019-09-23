@@ -118,9 +118,9 @@ public class NationalDayController {
         Map<String, LinkedList<Object>> data = new HashMap<>();
         LinkedList<Object> signList = new LinkedList<>();
         LinkedList<Object> rewardList = new LinkedList<>();
-        Map<String, String> defaultSignMap = new HashMap<>();
-        Map<String, String> defaultRewardMap = new HashMap<>();
         for (int i = 0; i < 7; i++) {
+            Map<String, String> defaultSignMap = new HashMap<>();
+            Map<String, String> defaultRewardMap = new HashMap<>();
             if (i > now.getDayOfMonth() - 1) {
                 defaultSignMap.put("msg", "尚未开始");
                 defaultSignMap.put("code", "-1");
