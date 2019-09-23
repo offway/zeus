@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 @Api(tags = {"国庆活动"})
 @RestController
@@ -34,6 +31,8 @@ public class NationalDayController {
     private StringRedisTemplate stringRedisTemplate;
     private static final String KEY_SIGN = "nationalDay_SIGN";
     private static final String KEY_REWARD = "nationalDay_REWARD";
+    private static final String KEY_SPECIAL_REWARD_1 = "nationalDay_SPECIAL_REWARD_1";
+    private static final String KEY_SPECIAL_REWARD_2 = "nationalDay_SPECIAL_REWARD_2";
     private Date startDate;
     private DateTime now;
 
@@ -169,5 +168,85 @@ public class NationalDayController {
         data.put("signList", signList);
         data.put("rewardList", rewardList);
         return jsonResultHelper.buildSuccessJsonResult(data);
+    }
+
+    private String randomPick(List<Map<String, String>> rewardPool) {
+        double randomRate = Math.random();
+        double p = 0;
+        for (Map<String, String> m : rewardPool) {
+            p += Double.valueOf(m.get("prob"));
+            if (randomRate <= p) {
+                return m.get("reward");
+            }
+        }
+        return null;
+    }
+
+    private List<Map<String, String>> generateRewardPool() {
+        double totalProb = 0;
+        List<Map<String, String>> rewardPool = new ArrayList<>();
+        //5元无门槛优惠券
+        Map<String, String> rewardObj1 = new HashMap<>();
+        rewardObj1.put("prob", "0.2");
+        totalProb += 0.2;
+        rewardObj1.put("reward", "5元无门槛优惠券");
+        rewardPool.add(rewardObj1);
+        //10元无门槛优惠券
+        Map<String, String> rewardObj2 = new HashMap<>();
+        rewardObj2.put("prob", "0.2");
+        totalProb += 0.2;
+        rewardObj2.put("reward", "10元无门槛优惠券");
+        rewardPool.add(rewardObj2);
+        //OFFWAY限量项链 暂定5条
+        String tmp1 = stringRedisTemplate.opsForValue().get(KEY_SPECIAL_REWARD_1);
+        if (tmp1 != null && Integer.valueOf(tmp1) > 0) {
+            Map<String, String> rewardObj3 = new HashMap<>();
+            rewardObj3.put("prob", "0.02");
+            totalProb += 0.02;
+            rewardObj3.put("reward", "OFFWAY限量项链");
+            rewardPool.add(rewardObj3);
+        }
+        //OFFWAY福袋 暂定8份
+        String tmp2 = stringRedisTemplate.opsForValue().get(KEY_SPECIAL_REWARD_2);
+        if (tmp2 != null && Integer.valueOf(tmp2) > 0) {
+            Map<String, String> rewardObj4 = new HashMap<>();
+            rewardObj4.put("prob", "0.02");
+            totalProb += 0.02;
+            rewardObj4.put("reward", "OFFWAY福袋");
+            rewardPool.add(rewardObj4);
+        }
+        //5-200元现金礼包
+        Map<String, String> rewardObj5 = new HashMap<>();
+        rewardObj5.put("prob", String.valueOf(1 - totalProb));//计算余下概率
+        rewardObj5.put("reward", "5-200元现金礼包");
+        rewardPool.add(rewardObj5);
+        return rewardPool;
+    }
+
+    @ApiOperation("抽奖")
+    @PostMapping("/lottery")
+    public JsonResult lottery(
+            @ApiParam("用户ID") @RequestParam String userId) {
+        if (isClose()) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
+        }
+        //检查抽奖券库存
+        //TODO
+        //扣除抽奖券库存
+        //TODO
+        //生成奖品池
+        List<Map<String, String>> rewardPool = generateRewardPool();
+        //落点随机法获得对应奖品
+        String reward = randomPick(rewardPool);
+        logger.info("reward is :" + reward);
+        //发放奖励
+        //TODO
+        //扣除限量奖品库存
+        if ("OFFWAY限量项链".equals(reward)) {
+            stringRedisTemplate.opsForValue().decrement(KEY_SPECIAL_REWARD_1);
+        } else if ("OFFWAY福袋".equals(reward)) {
+            stringRedisTemplate.opsForValue().decrement(KEY_SPECIAL_REWARD_2);
+        }
+        return jsonResultHelper.buildSuccessJsonResult(null);
     }
 }
