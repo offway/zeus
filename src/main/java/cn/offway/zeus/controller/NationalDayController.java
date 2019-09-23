@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,14 +36,18 @@ public class NationalDayController {
     private static final String KEY_SIGN = "nationalDay_SIGN";
     private static final String KEY_REWARD = "nationalDay_REWARD";
     private static final String KEY_LOTTERY = "nationalDay_LOTTERY";
+    private static final String KEY_SHARE = "nationalDay_SHARE";
     private static final String KEY_SPECIAL_REWARD_1 = "nationalDay_SPECIAL_REWARD_1";
     private static final String KEY_SPECIAL_REWARD_2 = "nationalDay_SPECIAL_REWARD_2";
     private Date startDate;
+    private String todayStr;
     private DateTime now;
 
     public NationalDayController() throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
         startDate = format.parse("2019-10-01 00:00:00");
+        todayStr = formatYMD.format(new Date());
         now = new DateTime();
     }
 
@@ -121,6 +126,34 @@ public class NationalDayController {
                 break;
         }
         return jsonResultHelper.buildSuccessJsonResult(null);
+    }
+
+    @ApiOperation("分享获取奖励")
+    @PostMapping("/share")
+    public JsonResult share(
+            @ApiParam("用户ID") @RequestParam String userId) {
+        if (isClose()) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
+        }
+        String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
+        long shareData = getData(dayKey, KEY_SHARE);
+        if (shareData == 0L) {
+            //具体发奖逻辑代码
+            stringRedisTemplate.opsForHash().putIfAbsent(KEY_LOTTERY, userId, 0);//初始化
+            stringRedisTemplate.opsForHash().putIfAbsent(KEY_SHARE, dayKey, 1);//标记为已使用
+            switch (now.getDayOfMonth()) {
+                case 6:
+                case 7:
+                    stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 2L);
+                    break;
+                default:
+                    stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 1L);
+                    break;
+            }
+            return jsonResultHelper.buildSuccessJsonResult(null);
+        } else {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.CALL_LIMIT);
+        }
     }
 
     @ApiOperation("签到以及奖励列表")
