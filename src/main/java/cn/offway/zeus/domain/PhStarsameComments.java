@@ -62,6 +62,7 @@ public class PhStarsameComments implements Serializable {
         this.starsameId = articleId;
     }
 
+    @Column(name = "content", length = 200)
     public String getContent() {
         return content;
     }
