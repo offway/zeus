@@ -29,37 +29,73 @@ public class NationalDayController {
     private JsonResultHelper jsonResultHelper;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
-    Date startDate = null;
     private static final String KEY_SIGN = "nationalDay_SIGN";
     private static final String KEY_REWARD = "nationalDay_REWARD";
+    private Date startDate;
+    private DateTime now;
 
     public NationalDayController() throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         startDate = format.parse("2019-10-01 00:00:00");
+        now = new DateTime();
+    }
+
+    private boolean isClose() {
+        return now.getMonthOfYear() != 10 || now.getDayOfMonth() > 7;
+    }
+
+    private long getData(String userId, String key) {
+        long data = 0L;
+        if (stringRedisTemplate.opsForHash().hasKey(key, userId)) {
+            data = Long.valueOf(String.valueOf(stringRedisTemplate.opsForHash().get(key, userId)));
+        }
+        return data;
+    }
+
+    private boolean isSignedOrIsGot(long data) {
+        return (data & 1L << (now.getDayOfMonth() - 1)) != 0;
     }
 
     @ApiOperation("签到")
     @PostMapping("/sign")
     public JsonResult sign(
             @ApiParam("用户ID") @RequestParam String userId) {
-        DateTime now = new DateTime();
-        if (now.getMonthOfYear() != 10) {
+        if (isClose()) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
         }
-        if (now.getDayOfMonth() > 7) {
-            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
-        }
-        long data = 0L;
-        if (stringRedisTemplate.opsForHash().hasKey(KEY_SIGN, userId)) {
-            data = Long.valueOf(String.valueOf(stringRedisTemplate.opsForHash().get(KEY_SIGN, userId)));
-        }
+        long data = getData(userId, KEY_SIGN);
         //是否签过到
-        if ((data & 1L << (now.getDayOfMonth() - 1)) != 0) {
+        if (isSignedOrIsGot(data)) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.SIGNED);
         }
         //签到
         data = data | 1L << (now.getDayOfMonth() - 1);
         stringRedisTemplate.opsForHash().put(KEY_SIGN, userId, data);
+        return jsonResultHelper.buildSuccessJsonResult(null);
+    }
+
+    @ApiOperation("领取签到奖励")
+    @PostMapping("/sign_getReward")
+    public JsonResult getSignReward(
+            @ApiParam("用户ID") @RequestParam String userId) {
+        if (isClose()) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
+        }
+        long signData = getData(userId, KEY_SIGN);
+        //是否签到
+        if (!isSignedOrIsGot(signData)) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.NOT_SIGNED);
+        }
+        long rewardData = getData(userId, KEY_REWARD);
+        //是否领过奖励
+        if (isSignedOrIsGot(rewardData)) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
+        }
+        //领奖
+        rewardData = rewardData | 1L << (now.getDayOfMonth() - 1);
+        stringRedisTemplate.opsForHash().put(KEY_REWARD, userId, rewardData);
+        //具体发奖逻辑代码
+        //TODO
         return jsonResultHelper.buildSuccessJsonResult(null);
     }
 }
