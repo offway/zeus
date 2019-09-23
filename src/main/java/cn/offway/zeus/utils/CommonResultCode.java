@@ -123,6 +123,11 @@ public enum CommonResultCode implements ResultCode {
 
     /** 当日增加积分已达上限 */
     POINTS_LIMITED("1039", "POINTS_LIMITED"),
+
+    /**
+     * 还未签到
+     */
+    NOT_SIGNED("1040", "NOT_SIGNED"),
     ;
 	
 	
