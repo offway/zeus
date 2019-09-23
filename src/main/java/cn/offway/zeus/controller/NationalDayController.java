@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 @Api(tags = {"国庆活动"})
 @RestController
@@ -54,6 +57,10 @@ public class NationalDayController {
 
     private boolean isSignedOrIsGot(long data) {
         return (data & 1L << (now.getDayOfMonth() - 1)) != 0;
+    }
+
+    private boolean isSignedOrIsGot(long data, int theDay) {
+        return (data & 1L << theDay) != 0;
     }
 
     @ApiOperation("签到")
@@ -97,5 +104,70 @@ public class NationalDayController {
         //具体发奖逻辑代码
         //TODO
         return jsonResultHelper.buildSuccessJsonResult(null);
+    }
+
+    @ApiOperation("签到以及奖励列表")
+    @PostMapping("/sign_reward_list")
+    public JsonResult list(
+            @ApiParam("用户ID") @RequestParam String userId) {
+        if (isClose()) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
+        }
+        long signData = getData(userId, KEY_SIGN);
+        long rewardData = getData(userId, KEY_REWARD);
+        Map<String, LinkedList<Object>> data = new HashMap<>();
+        LinkedList<Object> signList = new LinkedList<>();
+        LinkedList<Object> rewardList = new LinkedList<>();
+        Map<String, String> defaultSignMap = new HashMap<>();
+        Map<String, String> defaultRewardMap = new HashMap<>();
+        for (int i = 0; i < 7; i++) {
+            if (i > now.getDayOfMonth() - 1) {
+                defaultSignMap.put("msg", "尚未开始");
+                defaultSignMap.put("code", "-1");
+                signList.add(i, defaultSignMap);
+                rewardList.add(i, defaultSignMap);
+            } else if (i == now.getDayOfMonth() - 1) {
+                //签到数据
+                if (isSignedOrIsGot(signData, i)) {
+                    defaultSignMap.put("msg", "已签到");
+                    defaultSignMap.put("code", "1");
+                } else {
+                    defaultSignMap.put("msg", "点击签到");
+                    defaultSignMap.put("code", "0");
+                }
+                signList.add(i, defaultSignMap);
+                //领奖数据
+                if (isSignedOrIsGot(rewardData, i)) {
+                    defaultRewardMap.put("msg", "已领取");
+                    defaultRewardMap.put("code", "1");
+                } else {
+                    defaultRewardMap.put("msg", "点击领取");
+                    defaultRewardMap.put("code", "0");
+                }
+                rewardList.add(i, defaultRewardMap);
+            } else {
+                //签到数据
+                if (isSignedOrIsGot(signData, i)) {
+                    defaultSignMap.put("msg", "已签到");
+                    defaultSignMap.put("code", "1");
+                } else {
+                    defaultSignMap.put("msg", "未签到");
+                    defaultSignMap.put("code", "-2");
+                }
+                signList.add(i, defaultSignMap);
+                //领奖数据
+                if (isSignedOrIsGot(rewardData, i)) {
+                    defaultRewardMap.put("msg", "已领取");
+                    defaultRewardMap.put("code", "1");
+                } else {
+                    defaultRewardMap.put("msg", "未领取");
+                    defaultRewardMap.put("code", "-2");
+                }
+                rewardList.add(i, defaultRewardMap);
+            }
+        }
+        data.put("signList", signList);
+        data.put("rewardList", rewardList);
+        return jsonResultHelper.buildSuccessJsonResult(data);
     }
 }
