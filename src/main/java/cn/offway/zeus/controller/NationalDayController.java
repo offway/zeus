@@ -1,5 +1,6 @@
 package cn.offway.zeus.controller;
 
+import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -28,9 +29,12 @@ public class NationalDayController {
     @Autowired
     private JsonResultHelper jsonResultHelper;
     @Autowired
+    private PhVoucherInfoService voucherInfoService;
+    @Autowired
     private StringRedisTemplate stringRedisTemplate;
     private static final String KEY_SIGN = "nationalDay_SIGN";
     private static final String KEY_REWARD = "nationalDay_REWARD";
+    private static final String KEY_LOTTERY = "nationalDay_LOTTERY";
     private static final String KEY_SPECIAL_REWARD_1 = "nationalDay_SPECIAL_REWARD_1";
     private static final String KEY_SPECIAL_REWARD_2 = "nationalDay_SPECIAL_REWARD_2";
     private Date startDate;
@@ -101,7 +105,21 @@ public class NationalDayController {
         rewardData = rewardData | 1L << (now.getDayOfMonth() - 1);
         stringRedisTemplate.opsForHash().put(KEY_REWARD, userId, rewardData);
         //具体发奖逻辑代码
-        //TODO
+        stringRedisTemplate.opsForHash().putIfAbsent(KEY_LOTTERY, userId, 0);//初始化
+        switch (now.getDayOfMonth()) {
+            case 6:
+                stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 3L);
+                break;
+            case 7:
+                stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 3L);
+                //并送一个优惠券礼包（5元无门槛，99-10，199-20，299-30，399-40，599-60，799-80，999-100）
+                String[] voucherProjectIds = {"6", "7", "8", "9", "10", "11"};
+                voucherInfoService.giveVoucher(Long.valueOf(userId), Arrays.asList(voucherProjectIds));
+                break;
+            default:
+                stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 2L);
+                break;
+        }
         return jsonResultHelper.buildSuccessJsonResult(null);
     }
 
@@ -114,7 +132,8 @@ public class NationalDayController {
         }
         long signData = getData(userId, KEY_SIGN);
         long rewardData = getData(userId, KEY_REWARD);
-        Map<String, LinkedList<Object>> data = new HashMap<>();
+        long lotteryData = getData(userId, KEY_LOTTERY);
+        Map<String, Object> data = new HashMap<>();
         LinkedList<Object> signList = new LinkedList<>();
         LinkedList<Object> rewardList = new LinkedList<>();
         for (int i = 0; i < 7; i++) {
@@ -167,6 +186,7 @@ public class NationalDayController {
         }
         data.put("signList", signList);
         data.put("rewardList", rewardList);
+        data.put("lotteryData", lotteryData);
         return jsonResultHelper.buildSuccessJsonResult(data);
     }
 
@@ -247,9 +267,12 @@ public class NationalDayController {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
         }
         //检查抽奖券库存
-        //TODO
+        long lotteryData = getData(userId, KEY_LOTTERY);
+        if (lotteryData <= 0) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.LOTTERYNUM_LESS);
+        }
         //扣除抽奖券库存
-        //TODO
+        stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, -1L);
         //生成奖品池
         List<Map<String, String>> rewardPool = generateRewardPool();
         //落点随机法获得对应奖品
@@ -261,7 +284,41 @@ public class NationalDayController {
             logger.info("inner reward is :" + reward);
         }
         //发放奖励
-        //TODO
+        long userIdLong = Long.valueOf(userId);
+        switch (reward) {
+            case "5元无门槛优惠券":
+                voucherInfoService.giveVoucher(userIdLong, 110L);
+                break;
+            case "10元无门槛优惠券":
+                voucherInfoService.giveVoucher(userIdLong, 111L);
+                break;
+            case "OFFWAY限量项链":
+                //TODO
+                break;
+            case "OFFWAY福袋":
+                //TODO
+                break;
+            case "满100-5":
+                voucherInfoService.giveVoucher(userIdLong, 112L);
+                break;
+            case "满300-15":
+                voucherInfoService.giveVoucher(userIdLong, 113L);
+                break;
+            case "满500-30":
+                voucherInfoService.giveVoucher(userIdLong, 114L);
+                break;
+            case "满1000-60":
+                voucherInfoService.giveVoucher(userIdLong, 115L);
+                break;
+            case "满1500-100":
+                voucherInfoService.giveVoucher(userIdLong, 116L);
+                break;
+            case "满2000-140":
+                voucherInfoService.giveVoucher(userIdLong, 117L);
+                break;
+            default:
+                break;
+        }
         //扣除限量奖品库存
         if ("OFFWAY限量项链".equals(reward)) {
             stringRedisTemplate.opsForValue().decrement(KEY_SPECIAL_REWARD_1);
