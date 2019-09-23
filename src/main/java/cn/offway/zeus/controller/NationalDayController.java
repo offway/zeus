@@ -182,6 +182,22 @@ public class NationalDayController {
         return null;
     }
 
+    private String randomPick() {
+        Double[] probs = new Double[]{0.3, 0.25, 0.15, 0.1, 0.1, 0.1};
+        String[] rewards = new String[]{"满100-5", "满300-15", "满500-30", "满1000-60", "满1500-100", "满2000-140"};
+        double randomRate = Math.random();
+        double p = 0;
+        int index = 0;
+        for (double i : probs) {
+            p += i;
+            if (randomRate <= p) {
+                return rewards[index];
+            }
+            index++;
+        }
+        return null;
+    }
+
     private List<Map<String, String>> generateRewardPool() {
         double totalProb = 0;
         List<Map<String, String>> rewardPool = new ArrayList<>();
@@ -239,6 +255,11 @@ public class NationalDayController {
         //落点随机法获得对应奖品
         String reward = randomPick(rewardPool);
         logger.info("reward is :" + reward);
+        //是否需要二次抽奖
+        if ("5-200元现金礼包".equals(reward)) {
+            reward = randomPick();
+            logger.info("inner reward is :" + reward);
+        }
         //发放奖励
         //TODO
         //扣除限量奖品库存
