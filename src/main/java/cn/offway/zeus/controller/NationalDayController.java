@@ -178,7 +178,7 @@ public class NationalDayController {
                 voucherInfoService.giveVoucher(Long.valueOf(userId), Arrays.asList(voucherProjectIds));
                 int i = 0;
                 for (String s : voucherProjectIds) {
-                    stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("优惠券{0}一张", voucherProjectNames[i]));
+                    stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("{0}优惠券", voucherProjectNames[i]));
                     i++;
                 }
                 break;
@@ -462,48 +462,48 @@ public class NationalDayController {
         switch (reward) {
             case "5元无门槛优惠券":
                 voucherInfoService.giveVoucher(userIdLong, 110L);
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("优惠券{0}一张", reward));
+                stringRedisTemplate.opsForList().leftPush(redisKey, reward);
                 finalRewardStr = reward;
                 break;
             case "10元无门槛优惠券":
                 voucherInfoService.giveVoucher(userIdLong, 111L);
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("优惠券{0}一张", reward));
+                stringRedisTemplate.opsForList().leftPush(redisKey, reward);
                 finalRewardStr = reward;
                 break;
             case "OFFWAY限量项链":
             case "OFFWAY福袋":
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("奖品{0}一个", reward));
+                stringRedisTemplate.opsForList().leftPush(redisKey, reward);
                 finalRewardStr = reward;
                 break;
             case "满100-5":
                 voucherInfoService.giveVoucher(userIdLong, 112L);
                 finalRewardStr = "5元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("优惠券{0}一张", finalRewardStr));
+                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
             case "满300-15":
                 voucherInfoService.giveVoucher(userIdLong, 113L);
                 finalRewardStr = "15元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("优惠券{0}一张", finalRewardStr));
+                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
             case "满500-30":
                 voucherInfoService.giveVoucher(userIdLong, 114L);
                 finalRewardStr = "30元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("优惠券{0}一张", finalRewardStr));
+                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
             case "满1000-60":
                 voucherInfoService.giveVoucher(userIdLong, 115L);
                 finalRewardStr = "60元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("优惠券{0}一张", finalRewardStr));
+                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
             case "满1500-100":
                 voucherInfoService.giveVoucher(userIdLong, 116L);
                 finalRewardStr = "100元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("优惠券{0}一张", finalRewardStr));
+                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
             case "满2000-140":
                 voucherInfoService.giveVoucher(userIdLong, 117L);
                 finalRewardStr = "140元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("优惠券{0}一张", finalRewardStr));
+                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
             default:
                 break;
