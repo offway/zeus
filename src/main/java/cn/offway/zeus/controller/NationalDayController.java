@@ -325,9 +325,26 @@ public class NationalDayController {
                 rewardList.add(i, defaultRewardMap);
             }
         }
+        //可通过分享额外获取抽奖券数量
+        int extraGetMore;
+        switch (now.getDayOfMonth()) {
+            case 6:
+            case 7:
+                extraGetMore = 2;
+                break;
+            default:
+                extraGetMore = 1;
+                break;
+        }
+        //今日可分享状态
+        String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
+        long shareData = getData(dayKey, KEY_SHARE);
+        //返回数据包装
         data.put("rewardList", rewardList);
         data.put("rewardResult", rewardResult);
         data.put("lotteryData", lotteryData);
+        data.put("extraGetMore", extraGetMore);
+        data.put("shareable", shareData == 0L ? "1" : "0");
         return jsonResultHelper.buildSuccessJsonResult(data);
     }
 
