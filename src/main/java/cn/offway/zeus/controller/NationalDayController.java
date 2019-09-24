@@ -167,11 +167,11 @@ public class NationalDayController {
         switch (now.getDayOfMonth()) {
             case 6:
                 stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 3L);
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 3L));
+//                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 3L));
                 break;
             case 7:
                 stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 3L);
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 3L));
+//                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 3L));
                 //并送一个优惠券礼包（5元无门槛，99-10，199-20，299-30，399-40，599-60，799-80，999-100）
                 String[] voucherProjectIds = {"6", "7", "8", "9", "10", "11"};
                 String[] voucherProjectNames = {"满100减5", "满300减15", "满500减30", "满1000减60", "满1500减100", "满2000减140"};
@@ -184,7 +184,7 @@ public class NationalDayController {
                 break;
             default:
                 stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 2L);
-                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 2L));
+//                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 2L));
                 break;
         }
         return jsonResultHelper.buildSuccessJsonResult(null);
@@ -223,12 +223,12 @@ public class NationalDayController {
         long shareData = getShareTimes(userId);
         if (shareData > 0L) {
             //具体发奖逻辑代码
-            String redisKey = getRewardListKey(userId);
             stringRedisTemplate.opsForHash().putIfAbsent(KEY_LOTTERY, userId, 0);//初始化
 //            stringRedisTemplate.opsForHash().putIfAbsent(KEY_SHARE, dayKey, 1);//标记为已使用
             stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 1L);
             stringRedisTemplate.opsForHash().increment(KEY_SHARE, dayKey, -1L);
-            stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 1L));
+//            String redisKey = getRewardListKey(userId);
+//            stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 1L));
             return jsonResultHelper.buildSuccessJsonResult(null);
         } else {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.CALL_LIMIT);
