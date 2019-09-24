@@ -126,7 +126,19 @@ public class StarsameController {
 
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
-	
+
+	@ApiOperation("明星同款顶部滑动")
+	@GetMapping("/banner")
+    public JsonResult banner(){
+	    Map<String,Object> map = new HashMap<>();
+        List<PhStarsame> phStarsames = phStarsameService.indexData();
+        PhStarsame phStarsame = new PhStarsame();
+        phStarsame.setImageUrl("http://qiniu.offway.cn/image/f519e936b5a14339800e0862440ba72d%20.jpg");
+        phStarsames.add(phStarsame);
+        map.put("star", phStarsames);
+        return jsonResultHelper.buildSuccessJsonResult(map);
+    }
+
 	@ApiOperation("明星同款打call")
 	@PostMapping("/call")
 	public JsonResult call(
