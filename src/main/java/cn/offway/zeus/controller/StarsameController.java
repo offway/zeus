@@ -3,11 +3,13 @@ package cn.offway.zeus.controller;
 import cn.offway.zeus.domain.PhStarsame;
 import cn.offway.zeus.domain.PhStarsameComments;
 import cn.offway.zeus.domain.PhStarsameGoods;
+import cn.offway.zeus.domain.PhUserInfo;
 import cn.offway.zeus.repository.PhStarsameGoodsRepository;
 import cn.offway.zeus.repository.PhStarsameImageRepository;
 import cn.offway.zeus.repository.PhStarsameRepository;
 import cn.offway.zeus.service.PhStarsameCommentsService;
 import cn.offway.zeus.service.PhStarsameService;
+import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -51,6 +53,9 @@ public class StarsameController {
 	
 	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
+
+	@Autowired
+	private PhUserInfoService userInfoService;
 	
 	private static final String STARSAME_PRAISE="zeus.starsame.praise";
 	
@@ -156,12 +161,16 @@ public class StarsameController {
 			@ApiParam("用户ID") @RequestParam Long userId,
 			@ApiParam("明星同款ID") @RequestParam Long starSameId,
 			@ApiParam("评论内容") @RequestParam String content) {
+		PhUserInfo userInfo = userInfoService.findById(userId);
 		PhStarsameComments comments = new PhStarsameComments();
 		comments.setUserId(userId);
 		comments.setStarsameId(starSameId);
 		comments.setContent(content);
 		comments.setCreateTime(new Date());
 		comments.setStatus("0");
+		comments.setHeadimgurl(userInfo.getHeadimgurl());
+		comments.setNickname(userInfo.getNickname());
+		comments.setSex(userInfo.getSex());
 		starsameCommentsService.save(comments);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
