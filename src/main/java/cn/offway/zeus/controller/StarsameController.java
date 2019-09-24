@@ -15,11 +15,13 @@ import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -66,9 +68,28 @@ public class StarsameController {
 			@ApiParam("页码,从0开始") @RequestParam int page,
 		    @ApiParam("页大小") @RequestParam int size,
 		    @ApiParam("明星姓名") @RequestParam(required = false) String starName,
+			@ApiParam("用户ID") @RequestParam(required = false) Long userid,
 			@ApiParam("排序字段[sort-APP,sortMini-小程序]") @RequestParam(defaultValue = "sort") String sortName){
-		
-		return jsonResultHelper.buildSuccessJsonResult(phStarsameService.findByPage(starName,PageRequest.of(page,size, Sort.by(Sort.Order.asc(sortName),Sort.Order.desc("createTime")))));
+		Page<PhStarsame> phStarsames = phStarsameService.findByPage(starName,PageRequest.of(page,size, Sort.by(Sort.Order.asc(sortName),Sort.Order.desc("createTime"))));
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<String,Object> map = new HashMap<>();
+		List<Object> objectList = new ArrayList<>();
+		for (PhStarsame phStarsame : phStarsames) {
+			if (null != userid) {
+				String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE + "_" + phStarsame.getId() + "_" + userid);
+				Map<String,Object> map1 = objectMapper.convertValue(phStarsame,Map.class);
+				if (StringUtils.isBlank(starsamePraise)) {
+					map1.put("praise","0");
+				} else {
+					map1.put("praise","1");
+				}
+				objectList.add(map1);
+			}else {
+				objectList.add(phStarsame);
+			}
+		}
+		map.put("content",objectList);
+		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -129,15 +150,29 @@ public class StarsameController {
 
 	@ApiOperation("明星同款顶部滑动")
 	@GetMapping("/banner")
-    public JsonResult banner(){
-	    Map<String,Object> map = new HashMap<>();
-        List<PhStarsame> phStarsames = phStarsameService.indexData();
-        PhStarsame phStarsame = new PhStarsame();
-        phStarsame.setImageUrl("http://qiniu.offway.cn/image/f519e936b5a14339800e0862440ba72d%20.jpg");
-        phStarsames.add(phStarsame);
-        map.put("star", phStarsames);
-        return jsonResultHelper.buildSuccessJsonResult(map);
-    }
+	public JsonResult banner(
+			@ApiParam("用户ID") @RequestParam(required = false) Long userid) {
+		Map<String, Object> map = new HashMap<>();
+		List<PhStarsame> phStarsames = phStarsameService.indexData();
+		ObjectMapper objectMapper = new ObjectMapper();
+		List<Object> objectList = new ArrayList<>();
+		for (PhStarsame phStarsame : phStarsames) {
+			if (null != userid) {
+				String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE + "_" + phStarsame.getId() + "_" + userid);
+				Map<String,Object> map1 = objectMapper.convertValue(phStarsame,Map.class);
+				if (StringUtils.isBlank(starsamePraise)) {
+					map1.put("praise","0");
+				} else {
+					map1.put("praise","1");
+				}
+				objectList.add(map1);
+			}else {
+				objectList.add(phStarsame);
+			}
+		}
+		map.put("content",objectList);
+		return jsonResultHelper.buildSuccessJsonResult(map);
+	}
 
 	@ApiOperation("明星同款打call")
 	@PostMapping("/call")
