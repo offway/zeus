@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +33,6 @@ public class NationalDayController {
     private JsonResultHelper jsonResultHelper;
     @Autowired
     private PhVoucherInfoService voucherInfoService;
-    @Autowired
     private StringRedisTemplate stringRedisTemplate;
     private static final String KEY_SIGN = "nationalDay_SIGN";
     private static final String KEY_REWARD = "nationalDay_REWARD";
@@ -44,12 +45,21 @@ public class NationalDayController {
     private String todayStr;
     private DateTime now;
 
-    public NationalDayController() throws ParseException {
+    @Autowired
+    public NationalDayController(StringRedisTemplate stringRedisTemplate) throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
         startDate = format.parse("2019-10-01 00:00:00");
         todayStr = formatYMD.format(new Date());
         now = new DateTime();
+        this.stringRedisTemplate = stringRedisTemplate;
+    }
+
+    private void setRedisTemplate() {
+        this.stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
+        this.stringRedisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class));
+        this.stringRedisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        this.stringRedisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class));
     }
 
     private boolean isClose() {
@@ -142,6 +152,7 @@ public class NationalDayController {
         if (isClose()) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
         }
+        setRedisTemplate();
         long rewardData = getData(userId, KEY_REWARD);
         //是否领过奖励
         if (isSignedOrIsGot(rewardData)) {
@@ -186,6 +197,7 @@ public class NationalDayController {
         if (isClose()) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
         }
+        setRedisTemplate();
         String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
         long shareData = getData(dayKey, KEY_SHARE);
         if (shareData == 0L) {
@@ -285,6 +297,7 @@ public class NationalDayController {
         if (isClose()) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
         }
+        setRedisTemplate();
         long rewardData = getData(userId, KEY_REWARD);
         long lotteryData = getData(userId, KEY_LOTTERY);
         String redisKey = getRewardListKey(userId);
@@ -424,6 +437,7 @@ public class NationalDayController {
         if (isClose()) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
         }
+        setRedisTemplate();
         //检查抽奖券库存
         long lotteryData = getData(userId, KEY_LOTTERY);
         if (lotteryData <= 0) {
