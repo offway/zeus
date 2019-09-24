@@ -190,6 +190,27 @@ public class NationalDayController {
         return jsonResultHelper.buildSuccessJsonResult(null);
     }
 
+    private long getShareTimes(String userId) {
+        String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
+        Boolean isExist = stringRedisTemplate.opsForHash().hasKey(dayKey, KEY_SHARE);
+        long shareData;
+        if (isExist != null && isExist) {
+            shareData = getData(dayKey, KEY_SHARE);
+        } else {
+            switch (now.getDayOfMonth()) {
+                case 6:
+                case 7:
+                    shareData = 2L;
+                    break;
+                default:
+                    shareData = 1L;
+                    break;
+            }
+            stringRedisTemplate.opsForHash().putIfAbsent(KEY_SHARE, dayKey, shareData);
+        }
+        return shareData;
+    }
+
     @ApiOperation("分享获取奖励")
     @PostMapping("/share")
     public JsonResult share(
@@ -199,23 +220,15 @@ public class NationalDayController {
         }
         setRedisTemplate();
         String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
-        long shareData = getData(dayKey, KEY_SHARE);
-        if (shareData == 0L) {
+        long shareData = getShareTimes(userId);
+        if (shareData > 0L) {
             //具体发奖逻辑代码
             String redisKey = getRewardListKey(userId);
             stringRedisTemplate.opsForHash().putIfAbsent(KEY_LOTTERY, userId, 0);//初始化
-            stringRedisTemplate.opsForHash().putIfAbsent(KEY_SHARE, dayKey, 1);//标记为已使用
-            switch (now.getDayOfMonth()) {
-                case 6:
-                case 7:
-                    stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 2L);
-                    stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 2L));
-                    break;
-                default:
-                    stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 1L);
-                    stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 1L));
-                    break;
-            }
+//            stringRedisTemplate.opsForHash().putIfAbsent(KEY_SHARE, dayKey, 1);//标记为已使用
+            stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 1L);
+            stringRedisTemplate.opsForHash().increment(KEY_SHARE, dayKey, -1L);
+            stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 1L));
             return jsonResultHelper.buildSuccessJsonResult(null);
         } else {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.CALL_LIMIT);
@@ -338,26 +351,13 @@ public class NationalDayController {
                 rewardList.add(i, defaultRewardMap);
             }
         }
-        //可通过分享额外获取抽奖券数量
-        int extraGetMore;
-        switch (now.getDayOfMonth()) {
-            case 6:
-            case 7:
-                extraGetMore = 2;
-                break;
-            default:
-                extraGetMore = 1;
-                break;
-        }
-        //今日可分享状态
-        String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
-        long shareData = getData(dayKey, KEY_SHARE);
+        //今日可通过分享额外获取抽奖券次数/数量
+        long shareData = getShareTimes(userId);
         //返回数据包装
         data.put("rewardList", rewardList);
         data.put("rewardResult", rewardResult);
         data.put("lotteryData", lotteryData);
-        data.put("extraGetMore", extraGetMore);
-        data.put("shareable", shareData == 0L ? "1" : "0");
+        data.put("shareTimes", shareData);
         return jsonResultHelper.buildSuccessJsonResult(data);
     }
 
