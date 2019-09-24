@@ -192,7 +192,7 @@ public class NationalDayController {
 
     private long getShareTimes(String userId) {
         String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
-        Boolean isExist = stringRedisTemplate.opsForHash().hasKey(dayKey, KEY_SHARE);
+        Boolean isExist = stringRedisTemplate.opsForHash().hasKey(KEY_SHARE, dayKey);
         long shareData;
         if (isExist != null && isExist) {
             shareData = getData(dayKey, KEY_SHARE);
