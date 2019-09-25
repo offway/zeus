@@ -75,17 +75,19 @@ public class StarsameController {
 		Map<String,Object> map = new HashMap<>();
 		List<Object> objectList = new ArrayList<>();
 		for (PhStarsame phStarsame : phStarsames) {
-			if (null != userid) {
-				String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE + "_" + phStarsame.getId() + "_" + userid);
-				Map<String,Object> map1 = objectMapper.convertValue(phStarsame,Map.class);
-				if (StringUtils.isBlank(starsamePraise)) {
-					map1.put("praise","0");
+			if(phStarsame.getSort() == 999) {
+				if (null != userid) {
+					String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE + "_" + phStarsame.getId() + "_" + userid);
+					Map<String, Object> map1 = objectMapper.convertValue(phStarsame, Map.class);
+					if (StringUtils.isBlank(starsamePraise)) {
+						map1.put("praise", "0");
+					} else {
+						map1.put("praise", "1");
+					}
+					objectList.add(map1);
 				} else {
-					map1.put("praise","1");
+					objectList.add(phStarsame);
 				}
-				objectList.add(map1);
-			}else {
-				objectList.add(phStarsame);
 			}
 		}
 		map.put("content",objectList);
