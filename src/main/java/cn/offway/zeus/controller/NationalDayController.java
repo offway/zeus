@@ -303,12 +303,30 @@ public class NationalDayController {
         return jsonResultHelper.buildSuccessJsonResult(data);
     }
 
+    private Map<String, Object> getDefaultData() {
+        Map<String, Object> data = new HashMap<>();
+        LinkedList<Object> rewardList = new LinkedList<>();
+        for (int i = 0; i < 7; i++) {
+            Map<String, String> defaultRewardMap = new HashMap<>();
+            defaultRewardMap.put("msg", "尚未开始");
+            defaultRewardMap.put("code", "-1");
+            rewardList.add(i, defaultRewardMap);
+        }
+        //返回数据包装
+        data.put("rewardList", rewardList);
+        data.put("rewardResult", new ArrayList<>());
+        data.put("lotteryData", 0);
+        data.put("shareTimes", 0);
+        return data;
+    }
+
     @ApiOperation("签到入口")
     @PostMapping("/sign_index")
     public JsonResult index(
             @ApiParam("用户ID") @RequestParam String userId) {
         if (isClose()) {
-            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
+            return jsonResultHelper.buildSuccessJsonResult(getDefaultData());
+//            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
         }
         setRedisTemplate();
         long rewardData = getData(userId, KEY_REWARD);
