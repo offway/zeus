@@ -76,6 +76,7 @@ public class PhStarsameServiceImpl implements PhStarsameService {
                 if(StringUtils.isNotBlank(starName)){
                 	params.add(criteriaBuilder.like(root.get("starName"), "%"+starName+"%"));
                 }
+				params.add(criteriaBuilder.equal(root.get("sort"), "999"));
                 criteriaQuery.where(params.toArray(predicates));
                 criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
 				return null;

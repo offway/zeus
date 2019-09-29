@@ -83,6 +83,25 @@ public class GoodsController {
 		return jsonResultHelper.buildSuccessJsonResult(phGoodsCategoryService.findByGoodsTypeNameOrderBySortAsc(type));
 	}
 
+	@ApiOperation("所有商品类目")
+	@GetMapping("/categoryAll")
+	public JsonResult categoryAll(){
+		List<PhGoodsType> goodsType = phGoodsTypeService.findAll();
+		List<Map> list = new ArrayList<>();
+		for (PhGoodsType phGoodsType : goodsType) {
+			Map<String,Object> map = new HashMap<>();
+			List<PhGoodsCategory> goodsCategory = phGoodsCategoryService.findByGoodsTypeNameOrderBySortAsc(phGoodsType.getName());
+			if (phGoodsType.getName() == "男装＆女装"){
+				continue;
+			}else {
+				map.put("type",phGoodsType.getName());
+				map.put("goodsCategory",goodsCategory);
+				list.add(map);
+			}
+		}
+		return jsonResultHelper.buildSuccessJsonResult(list);
+	}
+
 	@ApiOperation("商品列表")
 	@PostMapping("/list")
 	public JsonResult list(@RequestBody @ApiParam("商品属性") GoodsDto goodsDto ){
@@ -294,27 +313,27 @@ public class GoodsController {
 		mapTag2.put("value", "品牌保障");
 		for (int i = 0; i < 1000; i += 100) {
 			int max = i + 100;
-			Map<String, String> price = new HashMap<>();
+			Map<String, Object> price = new HashMap<>();
 			if (max < 1000) {
 				if (i < 300) {
-					price.put("priceMini", String.valueOf(i));
-					price.put("priceMax", String.valueOf(max));
+					price.put("priceMini", i);
+					price.put("priceMax", max);
 					price.put("value", ("¥" + i + "-" + max));
 					priceAll.add(price);
 				} else if (i == 300) {
-					price.put("priceMini", String.valueOf(i));
-					price.put("priceMax", String.valueOf(500));
+					price.put("priceMini", i);
+					price.put("priceMax", 500);
 					price.put("value", ("¥" + i + "-" + 500));
 					priceAll.add(price);
 				} else if (i == 500) {
-					price.put("priceMini", String.valueOf(i));
-					price.put("priceMax", String.valueOf(800));
+					price.put("priceMini", i);
+					price.put("priceMax", 800);
 					price.put("value", ("¥" + i + "-" + 800));
 					priceAll.add(price);
 				}
 			} else {
-				price.put("priceMini", String.valueOf(1000));
-				price.put("priceMax", String.valueOf(9999999));
+				price.put("priceMini", 1000);
+				price.put("priceMax", 9999999);
 				price.put("value", "¥1000以上");
 				priceAll.add(price);
 			}
