@@ -57,7 +57,7 @@ public class NationalDayController {
 
     private void setRedisTemplate() {
         this.stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
-        this.stringRedisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class));
+        this.stringRedisTemplate.setValueSerializer(new StringRedisSerializer());
         this.stringRedisTemplate.setHashKeySerializer(new StringRedisSerializer());
         this.stringRedisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class));
     }
