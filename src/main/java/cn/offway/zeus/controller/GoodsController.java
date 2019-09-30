@@ -303,13 +303,14 @@ public class GoodsController {
 		List<Map> tag = new ArrayList<>();
 		List<Map> priceAll = new ArrayList<>();
 		Map<String, String> mapTag0 = new HashMap<>();
-		mapTag0.put("tag", "0001");
+		/* 标签,该字段为二进制位运算标识,0否1是,从右到左第一位表示品牌保障,第二位表示7天退换货,第三位表示限量商品,第四位表示特殊商品。 **/
+		mapTag0.put("tag", "1000");
 		mapTag0.put("value", "特殊商品");
 		Map<String, String> mapTag1 = new HashMap<>();
-		mapTag1.put("tag", "0010");
+		mapTag1.put("tag", "0100");
 		mapTag1.put("value", "限量商品");
 		Map<String, String> mapTag2 = new HashMap<>();
-		mapTag2.put("tag", "1000");
+		mapTag2.put("tag", "0001");
 		mapTag2.put("value", "品牌保障");
 		for (int i = 0; i < 1000; i += 100) {
 			int max = i + 100;
