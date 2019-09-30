@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -41,17 +40,12 @@ public class NationalDayController {
     private static final String KEY_SHARE = "nationalDay_SHARE";
     private static final String KEY_SPECIAL_REWARD_1 = "nationalDay_SPECIAL_REWARD_1";
     private static final String KEY_SPECIAL_REWARD_2 = "nationalDay_SPECIAL_REWARD_2";
-    private Date startDate;
     private String todayStr;
     private DateTime now;
+    private SimpleDateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
-    public NationalDayController(StringRedisTemplate stringRedisTemplate) throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
-        startDate = format.parse("2019-10-01 00:00:00");
-        todayStr = formatYMD.format(new Date());
-        now = new DateTime();
+    public NationalDayController(StringRedisTemplate stringRedisTemplate) {
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
@@ -63,6 +57,8 @@ public class NationalDayController {
     }
 
     private boolean isClose() {
+        todayStr = formatYMD.format(new Date());
+        now = new DateTime();
         return now.getMonthOfYear() != 10 || now.getDayOfMonth() > 7;
     }
 
