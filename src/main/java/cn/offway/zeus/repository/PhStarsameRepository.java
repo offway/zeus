@@ -30,6 +30,11 @@ public interface PhStarsameRepository extends JpaRepository<PhStarsame,Long>,Jpa
 	@Modifying
 	@Query(nativeQuery=true,value="update ph_starsame set call_count=call_count+1 where id=?1")
 	int addCall(Long id);
+
+	@Transactional
+	@Modifying
+	@Query(nativeQuery=true,value="update ph_starsame set view_count=view_count+1 where id=?1")
+	int addView(Long id);
 	
 	@Transactional
 	@Modifying

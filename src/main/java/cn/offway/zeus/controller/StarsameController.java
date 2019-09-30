@@ -97,8 +97,12 @@ public class StarsameController {
 	@GetMapping("/info")
 	public JsonResult info(
 			@ApiParam("用户ID") @RequestParam(required = false) Long userId,
-			@ApiParam("明星同款ID") @RequestParam Long id){
-		
+			@ApiParam("明星同款ID") @RequestParam Long id,
+			@ApiParam("是否加浏览数") @RequestParam int plusOne) {
+
+		if (plusOne > 0) {
+			phStarsameRepository.addView(id);
+		}
 		Map<String, Object> resultMap = new HashMap<>();
 		PhStarsame phStarsame = phStarsameService.findById(id);
 		resultMap = JSON.parseObject(JSON.toJSONString(phStarsame,SerializerFeature.WriteMapNullValue),Map.class);
