@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -43,6 +40,7 @@ public class NationalDayController {
     private String todayStr;
     private DateTime now;
     private SimpleDateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     public NationalDayController(StringRedisTemplate stringRedisTemplate) {
@@ -76,6 +74,12 @@ public class NationalDayController {
 
     private boolean isSignedOrIsGot(long data, int theDay) {
         return (data & 1L << theDay) != 0;
+    }
+
+    @GetMapping("/showTime")
+    public String showTime() {
+        isClose();
+        return format.format(now.toDate());
     }
 
     @ApiOperation("签到(过期)")
