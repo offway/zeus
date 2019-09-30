@@ -70,28 +70,26 @@ public class StarsameController {
 		    @ApiParam("明星姓名") @RequestParam(required = false) String starName,
 			@ApiParam("用户ID") @RequestParam(required = false) Long userid,
 			@ApiParam("排序字段[sort-APP,sortMini-小程序]") @RequestParam(defaultValue = "sort") String sortName){
-//		Page<PhStarsame> phStarsames = phStarsameService.findByPage(starName,PageRequest.of(page,size, Sort.by(Sort.Order.asc(sortName),Sort.Order.desc("createTime"))));
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		Map<String,Object> map = new HashMap<>();
-//		List<Object> objectList = new ArrayList<>();
-//		for (PhStarsame phStarsame : phStarsames) {
-//			if(phStarsame.getSort() == 999) {
-//				if (null != userid) {
-//					String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE + "_" + phStarsame.getId() + "_" + userid);
-//					Map<String, Object> map1 = objectMapper.convertValue(phStarsame, Map.class);
-//					if (StringUtils.isBlank(starsamePraise)) {
-//						map1.put("praise", "0");
-//					} else {
-//						map1.put("praise", "1");
-//					}
-//					objectList.add(map1);
-//				} else {
-//					objectList.add(phStarsame);
-//				}
-//			}
-//		}
-//		map.put("content",objectList);
-		return jsonResultHelper.buildSuccessJsonResult( phStarsameService.findByPage(starName,PageRequest.of(page,size, Sort.by(Sort.Order.asc(sortName),Sort.Order.desc("createTime")))));
+		Page<PhStarsame> phStarsames = phStarsameService.findByPage(starName, PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortName), Sort.Order.desc("createTime"))));
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<String, Object> map = new HashMap<>();
+		List<Object> objectList = new ArrayList<>();
+		for (PhStarsame phStarsame : phStarsames) {
+			if (null != userid) {
+				String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE + "_" + phStarsame.getId() + "_" + userid);
+				Map<String, Object> map1 = objectMapper.convertValue(phStarsame, Map.class);
+				if (StringUtils.isBlank(starsamePraise)) {
+					map1.put("praise", "0");
+				} else {
+					map1.put("praise", "1");
+				}
+				objectList.add(map1);
+			} else {
+				objectList.add(phStarsame);
+			}
+		}
+		map.put("content", objectList);
+		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 	
 	@SuppressWarnings("unchecked")
