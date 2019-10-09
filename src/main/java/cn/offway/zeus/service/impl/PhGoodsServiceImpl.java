@@ -2,10 +2,7 @@ package cn.offway.zeus.service.impl;
 
 import cn.offway.zeus.config.BitPredicate;
 import cn.offway.zeus.config.DiscountPredicate;
-import cn.offway.zeus.domain.PhBrand;
-import cn.offway.zeus.domain.PhGoods;
-import cn.offway.zeus.domain.PhPickGoods;
-import cn.offway.zeus.domain.PhPromotionGoods;
+import cn.offway.zeus.domain.*;
 import cn.offway.zeus.dto.GoodsDto;
 import cn.offway.zeus.dto.GoodsScreeningDto;
 import cn.offway.zeus.repository.PhGoodsRepository;
@@ -192,12 +189,12 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 
 				params.add(criteriaBuilder.equal(root.get("label"),  "0"));
 
-				/*Subquery<PhLimitedSale> subquery = criteriaQuery.subquery(PhLimitedSale.class);
+				//剔除限定发售的商品
+				Subquery<PhLimitedSale> subquery = criteriaQuery.subquery(PhLimitedSale.class);
 				Root<PhLimitedSale> subRoot = subquery.from(PhLimitedSale.class);
 				subquery.select(subRoot);
 				subquery.where(criteriaBuilder.equal(root.get("id"), subRoot.get("goodsId")));
-				params.add(criteriaBuilder.not(criteriaBuilder.exists(subquery)));*/
-				
+				params.add(criteriaBuilder.not(criteriaBuilder.exists(subquery)));
                 Predicate[] predicates = new Predicate[params.size()];
                 criteriaQuery.where(params.toArray(predicates));
 				return null;
@@ -285,6 +282,12 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				if (null != goodsScreeningDto.getAttribute()){
 					params.add(new BitPredicate((CriteriaBuilderImpl)criteriaBuilder,root.get("tag"),Integer.parseInt(attribute,2)));
 				}
+				//剔除限定发售的商品
+				Subquery<PhLimitedSale> subquery = criteriaQuery.subquery(PhLimitedSale.class);
+				Root<PhLimitedSale> subRoot = subquery.from(PhLimitedSale.class);
+				subquery.select(subRoot);
+				subquery.where(criteriaBuilder.equal(root.get("id"), subRoot.get("goodsId")));
+				params.add(criteriaBuilder.not(criteriaBuilder.exists(subquery)));
 				Predicate[] predicates = new Predicate[params.size()];
 				criteriaQuery.where(params.toArray(predicates));
 				return null;
