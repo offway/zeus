@@ -282,6 +282,8 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				if (null != goodsScreeningDto.getAttribute()){
 					params.add(new BitPredicate((CriteriaBuilderImpl)criteriaBuilder,root.get("tag"),Integer.parseInt(attribute,2)));
 				}
+
+				params.add(criteriaBuilder.equal(root.get("status"),  "1"));
 				//剔除限定发售的商品
 				Subquery<PhLimitedSale> subquery = criteriaQuery.subquery(PhLimitedSale.class);
 				Root<PhLimitedSale> subRoot = subquery.from(PhLimitedSale.class);
