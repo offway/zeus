@@ -25,6 +25,9 @@ public class ProductInfo implements Serializable {
     /** 活动描述 **/
     private String desc;
 
+	/** 封面图 **/
+	private String coverImage;
+
     /** 活动列表图 **/
     private String image;
 
@@ -190,6 +193,14 @@ public class ProductInfo implements Serializable {
 
 	public void setShowImage(String showImage) {
 		this.showImage = showImage;
+	}
+
+	public String getCoverImage() {
+		return coverImage;
+	}
+
+	public void setCoverImage(String coverImage) {
+		this.coverImage = coverImage;
 	}
 
 }
