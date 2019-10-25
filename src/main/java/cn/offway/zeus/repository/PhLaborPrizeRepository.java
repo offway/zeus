@@ -20,4 +20,7 @@ public interface PhLaborPrizeRepository extends JpaRepository<PhLaborPrize, Long
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     PhLaborPrize findByTypeAndStatusAndRemark(String type, String status, String remark);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    PhLaborPrize findByTypeAndRemark(String type, String remark);
 }

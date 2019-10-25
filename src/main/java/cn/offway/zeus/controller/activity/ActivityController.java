@@ -49,8 +49,11 @@ public class ActivityController {
             @ApiParam("抽奖码") @RequestParam String code,
             @ApiParam("活动批次") @RequestParam String type) {
         String name = null;
-        PhLaborPrize phLaborPrize = phLaborPrizeRepository.findByTypeAndStatusAndRemark(type, "0", code);
+        PhLaborPrize phLaborPrize = phLaborPrizeRepository.findByTypeAndRemark(type, code);
         if (null != phLaborPrize) {
+            if ("1".equals(phLaborPrize.getStatus())) {
+                return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
+            }
             phLaborPrize.setStatus("1");
             phLaborPrize.setUserId(userId);
             phLaborPrizeRepository.save(phLaborPrize);
