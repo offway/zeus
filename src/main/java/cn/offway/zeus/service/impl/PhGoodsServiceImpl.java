@@ -263,7 +263,9 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 				}
 				switch (goodsScreeningDto.getSort()){
 					case 0:
-						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("viewCount")));
+						if (null == goodsScreeningDto.getPickId()){
+							criteriaQuery.orderBy(criteriaBuilder.desc(root.get("viewCount")));
+						}
 						break;
 					case 1:
 						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("price")));
