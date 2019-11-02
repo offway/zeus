@@ -98,7 +98,7 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		
 		PhProductInfo phProductInfo = phProductInfoService.findById(productId);
 		String channel = StringUtils.isNotBlank(formId)?"小程序":"公众号";
-		saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
+//		saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
 
 		
 		if(null != iphWxuserInfo){
@@ -239,19 +239,19 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 	}
 
 	private void saTrack(String unionid, int getTickets,String productName,String channel) {
-		try {
-			Map<String, Object> properties = new HashMap<>();
-			properties.put("activity_name", productName);
-			properties.put("channel", StringUtils.isBlank(channel)?"公众号":channel);
-			properties.put("activity_id", 1);
-			properties.put("prize", "抽奖码");
-			properties.put("prize_num", getTickets);
-			
-			sa.track(unionid, false, "event_prize", properties);
-		} catch (InvalidArgumentException e) {
-			e.printStackTrace();
-			logger.error("神策记录数据异常",e);
-		}
+//		try {
+//			Map<String, Object> properties = new HashMap<>();
+//			properties.put("activity_name", productName);
+//			properties.put("channel", StringUtils.isBlank(channel)?"公众号":channel);
+//			properties.put("activity_id", 1);
+//			properties.put("prize", "抽奖码");
+//			properties.put("prize_num", getTickets);
+//
+//			sa.track(unionid, false, "event_prize", properties);
+//		} catch (InvalidArgumentException e) {
+//			e.printStackTrace();
+//			logger.error("神策记录数据异常",e);
+//		}
 	}
 	
 	
