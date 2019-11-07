@@ -30,13 +30,11 @@ public class DoubleElevenController {
     @Autowired
     private PhVoucherInfoService voucherInfoService;
     private StringRedisTemplate stringRedisTemplate;
-    private static final String KEY_SIGN = "nationalDay_SIGN";
-    private static final String KEY_REWARD = "nationalDay_REWARD";
-    private static final String KEY_LOTTERY = "nationalDay_LOTTERY";
-    private static final String KEY_REWARD_LIST = "nationalDay_REWARD_LIST_{0}";
-    private static final String KEY_SHARE = "nationalDay_SHARE";
-    private static final String KEY_SPECIAL_REWARD_1 = "nationalDay_SPECIAL_REWARD_1";
-    private static final String KEY_SPECIAL_REWARD_2 = "nationalDay_SPECIAL_REWARD_2";
+    private static final String KEY_REWARD_LIST = "DoubleEleven_REWARD_LIST_{0}";
+    private static final String KEY_LOTTERY = "DoubleEleven_LOTTERY";
+    private static final String KEY_SHARE = "DoubleEleven_SHARE";
+    private static final String KEY_SPECIAL_REWARD_1 = "DoubleEleven_SPECIAL_REWARD_1";
+    private static final String KEY_SPECIAL_REWARD_2 = "DoubleEleven_SPECIAL_REWARD_2";
     private String todayStr;
     private DateTime now;
     private SimpleDateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
@@ -54,12 +52,6 @@ public class DoubleElevenController {
         this.stringRedisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class));
     }
 
-    private boolean isClose() {
-        todayStr = formatYMD.format(new Date());
-        now = new DateTime();
-        return now.getMonthOfYear() != 10 || now.getDayOfMonth() > 7;
-    }
-
     private long getData(String userId, String key) {
         long data = 0L;
         if (stringRedisTemplate.opsForHash().hasKey(key, userId)) {
@@ -68,17 +60,8 @@ public class DoubleElevenController {
         return data;
     }
 
-    private boolean isSignedOrIsGot(long data) {
-        return (data & 1L << (now.getDayOfMonth() - 1)) != 0;
-    }
-
-    private boolean isSignedOrIsGot(long data, int theDay) {
-        return (data & 1L << theDay) != 0;
-    }
-
     @GetMapping("/showTime")
     public String showTime() {
-        isClose();
         return format.format(now.toDate());
     }
 
@@ -86,49 +69,9 @@ public class DoubleElevenController {
         return MessageFormat.format(KEY_REWARD_LIST, userId);
     }
 
-    @ApiOperation("签到并获得奖励")
-    @PostMapping("/sign_doSign")
-    public JsonResult signReal(
-            @ApiParam("用户ID") @RequestParam String userId) {
-        if (isClose()) {
-            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
-        }
-        setRedisTemplate();
-        long rewardData = getData(userId, KEY_REWARD);
-        //是否领过奖励
-        if (isSignedOrIsGot(rewardData)) {
-            return jsonResultHelper.buildFailJsonResult(CommonResultCode.VOUCHER_GIVED);
-        }
-        //领奖
-        rewardData = rewardData | 1L << (now.getDayOfMonth() - 1);
-        stringRedisTemplate.opsForHash().putIfAbsent(KEY_LOTTERY, userId, 0);//初始化
-        stringRedisTemplate.opsForHash().put(KEY_REWARD, userId, rewardData);
-        //具体发奖逻辑代码
-        String redisKey = getRewardListKey(userId);
-        switch (now.getDayOfMonth()) {
-            case 6:
-                stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 3L);
-//                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 3L));
-                break;
-            case 7:
-                stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 3L);
-//                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 3L));
-                //并送一个优惠券礼包（5元无门槛，99-10，199-20，299-30，399-40，599-60，799-80，999-100）
-                String[] voucherProjectIds = {"6", "7", "8", "9", "10", "11"};
-                String[] voucherProjectNames = {"满100减5", "满300减15", "满500减30", "满1000减60", "满1500减100", "满2000减140"};
-                voucherInfoService.giveVoucher(Long.valueOf(userId), Arrays.asList(voucherProjectIds));
-                int i = 0;
-                for (String s : voucherProjectIds) {
-                    stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("{0}优惠券", voucherProjectNames[i]));
-                    i++;
-                }
-                break;
-            default:
-                stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 2L);
-//                stringRedisTemplate.opsForList().leftPush(redisKey, MessageFormat.format("抽奖券{0}张", 2L));
-                break;
-        }
-        return jsonResultHelper.buildSuccessJsonResult(null);
+    private void refreshDateTime() {
+        todayStr = formatYMD.format(new Date());
+        now = new DateTime();
     }
 
     private long getShareTimes(String userId) {
@@ -138,34 +81,23 @@ public class DoubleElevenController {
         if (isExist != null && isExist) {
             shareData = getData(dayKey, KEY_SHARE);
         } else {
-            switch (now.getDayOfMonth()) {
-                case 6:
-                case 7:
-                    shareData = 2L;
-                    break;
-                default:
-                    shareData = 1L;
-                    break;
-            }
+            shareData = 3L;
             stringRedisTemplate.opsForHash().putIfAbsent(KEY_SHARE, dayKey, shareData);
         }
         return shareData;
     }
 
-    @ApiOperation("分享获取奖励")
+    @ApiOperation("分享获取抽奖次数")
     @PostMapping("/share")
     public JsonResult share(
             @ApiParam("用户ID") @RequestParam String userId) {
-        if (isClose()) {
-            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
-        }
         setRedisTemplate();
+        refreshDateTime();
         String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
         long shareData = getShareTimes(userId);
         if (shareData > 0L) {
             //具体发奖逻辑代码
             stringRedisTemplate.opsForHash().putIfAbsent(KEY_LOTTERY, userId, 0);//初始化
-//            stringRedisTemplate.opsForHash().putIfAbsent(KEY_SHARE, dayKey, 1);//标记为已使用
             stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, 1L);
             stringRedisTemplate.opsForHash().increment(KEY_SHARE, dayKey, -1L);
 //            String redisKey = getRewardListKey(userId);
@@ -176,33 +108,12 @@ public class DoubleElevenController {
         }
     }
 
-    private Map<String, Object> getDefaultData() {
-        Map<String, Object> data = new HashMap<>();
-        LinkedList<Object> rewardList = new LinkedList<>();
-        for (int i = 0; i < 7; i++) {
-            Map<String, String> defaultRewardMap = new HashMap<>();
-            defaultRewardMap.put("msg", "尚未开始");
-            defaultRewardMap.put("code", "-1");
-            rewardList.add(i, defaultRewardMap);
-        }
-        //返回数据包装
-        data.put("rewardList", rewardList);
-        data.put("rewardResult", new ArrayList<>());
-        data.put("lotteryData", 0);
-        data.put("shareTimes", 0);
-        return data;
-    }
-
-    @ApiOperation("签到入口")
-    @PostMapping("/sign_index")
+    @ApiOperation("活动入口")
+    @PostMapping("/index")
     public JsonResult index(
             @ApiParam("用户ID") @RequestParam String userId) {
-        if (isClose()) {
-            return jsonResultHelper.buildSuccessJsonResult(getDefaultData());
-//            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
-        }
         setRedisTemplate();
-        long rewardData = getData(userId, KEY_REWARD);
+        refreshDateTime();
         long lotteryData = getData(userId, KEY_LOTTERY);
         String redisKey = getRewardListKey(userId);
         Boolean redisKeyExist = stringRedisTemplate.hasKey(redisKey);
@@ -213,39 +124,9 @@ public class DoubleElevenController {
             rewardResult = stringRedisTemplate.opsForList().range(redisKey, 0, 100);
         }
         Map<String, Object> data = new HashMap<>();
-        LinkedList<Object> rewardList = new LinkedList<>();
-        for (int i = 0; i < 7; i++) {
-            Map<String, String> defaultRewardMap = new HashMap<>();
-            if (i > now.getDayOfMonth() - 1) {
-                defaultRewardMap.put("msg", "尚未开始");
-                defaultRewardMap.put("code", "-1");
-                rewardList.add(i, defaultRewardMap);
-            } else if (i == now.getDayOfMonth() - 1) {
-                //领奖数据
-                if (isSignedOrIsGot(rewardData, i)) {
-                    defaultRewardMap.put("msg", "已领取");
-                    defaultRewardMap.put("code", "1");
-                } else {
-                    defaultRewardMap.put("msg", "点击领取");
-                    defaultRewardMap.put("code", "0");
-                }
-                rewardList.add(i, defaultRewardMap);
-            } else {
-                //领奖数据
-                if (isSignedOrIsGot(rewardData, i)) {
-                    defaultRewardMap.put("msg", "已领取");
-                    defaultRewardMap.put("code", "1");
-                } else {
-                    defaultRewardMap.put("msg", "未领取");
-                    defaultRewardMap.put("code", "-2");
-                }
-                rewardList.add(i, defaultRewardMap);
-            }
-        }
         //今日可通过分享额外获取抽奖券次数/数量
         long shareData = getShareTimes(userId);
         //返回数据包装
-        data.put("rewardList", rewardList);
         data.put("rewardResult", rewardResult);
         data.put("lotteryData", lotteryData);
         data.put("shareTimes", shareData);
@@ -264,59 +145,55 @@ public class DoubleElevenController {
         return "";
     }
 
-    private String randomPick() {
-        Double[] probs = new Double[]{0.3, 0.25, 0.15, 0.1, 0.1, 0.1};
-        String[] rewards = new String[]{"满100-5", "满300-15", "满500-30", "满1000-60", "满1500-100", "满2000-140"};
-        double randomRate = Math.random();
-        double p = 0;
-        int index = 0;
-        for (double i : probs) {
-            p += i;
-            if (randomRate <= p) {
-                return rewards[index];
-            }
-            index++;
-        }
-        return "";
+    private Map<String, String> buildRewardObj(String prob, String name) {
+        Map<String, String> rewardObj = new HashMap<>();
+        rewardObj.put("prob", prob);
+        rewardObj.put("reward", name);
+        return rewardObj;
     }
 
     private List<Map<String, String>> generateRewardPool() {
         double totalProb = 0;
         List<Map<String, String>> rewardPool = new ArrayList<>();
-        //5元无门槛优惠券
+        //5元无门槛代金券
         Map<String, String> rewardObj1 = new HashMap<>();
-        rewardObj1.put("prob", "0.2");
-        totalProb += 0.2;
-        rewardObj1.put("reward", "5元无门槛优惠券");
+        rewardObj1.put("prob", "0.3");
+        totalProb += 0.3;
+        rewardObj1.put("reward", "5元无门槛代金券");
         rewardPool.add(rewardObj1);
-        //10元无门槛优惠券
-        Map<String, String> rewardObj2 = new HashMap<>();
-        rewardObj2.put("prob", "0.2");
-        totalProb += 0.2;
-        rewardObj2.put("reward", "10元无门槛优惠券");
-        rewardPool.add(rewardObj2);
-        //OFFWAY限量项链 暂定5条
+        //5-200元现金礼包 除了 满100-5
+        Double[] probs = new Double[]{0.06, 0.06, 0.06, 0.06, 0.06};
+        String[] rewards = new String[]{"满300-15", "满500-30", "满1000-60", "满1500-100", "满2000-140"};
+        int index = 0;
+        for (double i : probs) {
+            totalProb += i;
+            rewardPool.add(buildRewardObj(String.valueOf(i), rewards[index]));
+            index++;
+        }
+        //OFFWAY限量PVC袋子 暂定20个
+        stringRedisTemplate.opsForValue().setIfAbsent(KEY_SPECIAL_REWARD_1, "20");
         String tmp1 = stringRedisTemplate.opsForValue().get(KEY_SPECIAL_REWARD_1);
         if (tmp1 != null && Integer.valueOf(tmp1) > 0) {
             Map<String, String> rewardObj3 = new HashMap<>();
             rewardObj3.put("prob", "0.02");
             totalProb += 0.02;
-            rewardObj3.put("reward", "OFFWAY限量项链");
+            rewardObj3.put("reward", "OFFWAY限量PVC袋子");
             rewardPool.add(rewardObj3);
         }
-        //OFFWAY福袋 暂定8份
+        //OFFWAY潮流福袋 暂定5份
+        stringRedisTemplate.opsForValue().setIfAbsent(KEY_SPECIAL_REWARD_2, "5");
         String tmp2 = stringRedisTemplate.opsForValue().get(KEY_SPECIAL_REWARD_2);
         if (tmp2 != null && Integer.valueOf(tmp2) > 0) {
             Map<String, String> rewardObj4 = new HashMap<>();
             rewardObj4.put("prob", "0.02");
             totalProb += 0.02;
-            rewardObj4.put("reward", "OFFWAY福袋");
+            rewardObj4.put("reward", "OFFWAY潮流福袋");
             rewardPool.add(rewardObj4);
         }
-        //5-200元现金礼包
+        //5-200元现金礼包 满100-5
         Map<String, String> rewardObj5 = new HashMap<>();
         rewardObj5.put("prob", String.valueOf(1 - totalProb));//计算余下概率
-        rewardObj5.put("reward", "5-200元现金礼包");
+        rewardObj5.put("reward", "满100-5");
         rewardPool.add(rewardObj5);
         return rewardPool;
     }
@@ -325,10 +202,8 @@ public class DoubleElevenController {
     @PostMapping("/lottery")
     public JsonResult lottery(
             @ApiParam("用户ID") @RequestParam String userId) {
-        if (isClose()) {
-            return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
-        }
         setRedisTemplate();
+        refreshDateTime();
         //检查抽奖券库存
         long lotteryData = getData(userId, KEY_LOTTERY);
         if (lotteryData <= 0) {
@@ -341,11 +216,6 @@ public class DoubleElevenController {
         //落点随机法获得对应奖品
         String reward = randomPick(rewardPool);
         logger.info("reward is :" + reward);
-        //是否需要二次抽奖
-        if ("5-200元现金礼包".equals(reward)) {
-            reward = randomPick();
-            logger.info("inner reward is :" + reward);
-        }
         //发放奖励
         long userIdLong = Long.valueOf(userId);
         String redisKey = getRewardListKey(userId);
@@ -356,13 +226,8 @@ public class DoubleElevenController {
                 stringRedisTemplate.opsForList().leftPush(redisKey, reward);
                 finalRewardStr = reward;
                 break;
-            case "10元无门槛优惠券":
-                voucherInfoService.giveVoucher(userIdLong, 111L);
-                stringRedisTemplate.opsForList().leftPush(redisKey, reward);
-                finalRewardStr = reward;
-                break;
-            case "OFFWAY限量项链":
-            case "OFFWAY福袋":
+            case "OFFWAY限量PVC袋子":
+            case "OFFWAY潮流福袋":
                 stringRedisTemplate.opsForList().leftPush(redisKey, reward);
                 finalRewardStr = reward;
                 break;
@@ -400,9 +265,9 @@ public class DoubleElevenController {
                 break;
         }
         //扣除限量奖品库存
-        if ("OFFWAY限量项链".equals(reward)) {
+        if ("OFFWAY限量PVC袋子".equals(reward)) {
             stringRedisTemplate.opsForValue().decrement(KEY_SPECIAL_REWARD_1);
-        } else if ("OFFWAY福袋".equals(reward)) {
+        } else if ("OFFWAY潮流福袋".equals(reward)) {
             stringRedisTemplate.opsForValue().decrement(KEY_SPECIAL_REWARD_2);
         }
         return jsonResultHelper.buildSuccessJsonResult(finalRewardStr);
