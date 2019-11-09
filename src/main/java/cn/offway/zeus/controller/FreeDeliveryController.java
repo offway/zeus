@@ -167,7 +167,7 @@ public class FreeDeliveryController {
 			}
 
 			if(null==phUserInfo){
-				phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null);
+				phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null,null);
 			}
 
 			Long boostUserId = phUserInfo.getId();

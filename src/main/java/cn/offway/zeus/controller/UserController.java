@@ -240,7 +240,7 @@ public class UserController {
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
 		}
 		
-		return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, weiboid, qqid, nickName, headimgurl, inviteUserId,null));
+		return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, weiboid, qqid, nickName, headimgurl, inviteUserId,null,null));
 
 	}
 
@@ -277,7 +277,7 @@ public class UserController {
             if(null!=phUserInfo){
                 return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
             }
-            return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, null, null, nickName, headimgurl, null,null));
+            return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, null, null, nickName, headimgurl, null,null,"2"));
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("小程序注册异常",e);
@@ -317,7 +317,7 @@ public class UserController {
 				phone = "+86"+phone;
 				PhUserInfo phUserInfo = phUserInfoService.findByPhone(phone);
 				if(null == phUserInfo){
-					phUserInfo = phUserInfoService.register(phone, null, null, null, null, null, null,null);
+					phUserInfo = phUserInfoService.register(phone, null, null, null, null, null, null,null,null);
 				}
 				Map<String, Object> map = userData(phUserInfo);
 				return jsonResultHelper.buildSuccessJsonResult(map);
@@ -338,8 +338,9 @@ public class UserController {
 			@ApiParam("验证码") @RequestParam(required=false) String code,
 			@ApiParam("微信用户ID") @RequestParam(required=false) String unionid,
 			@ApiParam("微博ID") @RequestParam(required=false) String weiboid,
-			@ApiParam("QQID") @RequestParam(required=false) String qqid){
-		
+			@ApiParam("QQID") @RequestParam(required=false) String qqid,
+			@ApiParam("用户渠道") @RequestParam(required = false) String source){
+
 		PhUserInfo phUserInfo = null;
 		if(StringUtils.isNotBlank(phone)){
 			
@@ -356,7 +357,7 @@ public class UserController {
 			phUserInfo = phUserInfoService.findByPhone(phone);
 			if(null==phUserInfo){
 				//手机号没有直接注册
-				phUserInfo = phUserInfoService.register(phone, null, null, null, null, null, null,null);
+				phUserInfo = phUserInfoService.register(phone, null, null, null, null, null, null,null,source);
 			}
 		}
 		
@@ -589,7 +590,7 @@ public class UserController {
 		phUserChannel.setPhone(phone);
 		phUserChannelService.save(phUserChannel);*/
 
-		phUserInfoService.register(phone, null, null, null, null, null, null,channel);
+		phUserInfoService.register(phone, null, null, null, null, null, null,channel,null);
 		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 

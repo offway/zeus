@@ -260,7 +260,7 @@ public class LimitedSaleController {
 		}
 
 		if(null==phUserInfo){
-			phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null);
+			phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null,null);
 		}
 
 		Long boostUserId = phUserInfo.getId();
@@ -317,7 +317,7 @@ public class LimitedSaleController {
 		}
 
 		if(null==phUserInfo){
-			phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null);
+			phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null,null);
 		}
 
 		Long boostUserId = phUserInfo.getId();

@@ -137,7 +137,7 @@ public class AccumulatePointsController {
            return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
         }
 
-        phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null);
+        phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null,null);
 
         String type = "3"; //邀请好友完成注册
 

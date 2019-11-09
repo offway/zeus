@@ -26,7 +26,7 @@ public interface PhUserInfoService{
 	int updateCollect(Long id);
 
 	PhUserInfo register(String phone, String unionid, String weiboid, String qqid, String nickName, String headimgurl,
-			Long inviteUserId,String channel);
+			Long inviteUserId,String channel,String source);
 
 	int subCollect(Long id);
 

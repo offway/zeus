@@ -101,11 +101,16 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class,StockException.class})
 	public PhUserInfo register(String phone, String unionid, String weiboid, String qqid, String nickName,
-			String headimgurl, Long inviteUserId,String channel) {
+			String headimgurl, Long inviteUserId,String channel,String source) {
 		PhUserInfo phUserInfo = new PhUserInfo();
 		phUserInfo.setPhone(phone);
 		if(StringUtils.isNotBlank(phone)){
 			nickName = StringUtils.isBlank(nickName)?"OFFWAY_"+phone.substring(5):nickName;
+		}
+		if (StringUtils.isNotBlank(source)){
+			phUserInfo.setSource(source);
+		}else {
+			phUserInfo.setSource("4");
 		}
 		phUserInfo.setNickname(nickName);
 		phUserInfo.setHeadimgurl(headimgurl);
