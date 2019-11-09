@@ -1,5 +1,7 @@
 package cn.offway.zeus.controller;
 
+import cn.offway.zeus.domain.PhUserInfo;
+import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
@@ -7,6 +9,7 @@ import cn.offway.zeus.utils.JsonResultHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,8 @@ public class DoubleElevenController {
     private JsonResultHelper jsonResultHelper;
     @Autowired
     private PhVoucherInfoService voucherInfoService;
+    @Autowired
+    private PhUserInfoService userInfoService;
     private StringRedisTemplate stringRedisTemplate;
     private static final String KEY_REWARD_LIST = "DoubleEleven_REWARD_LIST_{0}";
     private static final String KEY_LOTTERY = "DoubleEleven_LOTTERY";
@@ -74,6 +79,19 @@ public class DoubleElevenController {
         now = new DateTime();
     }
 
+    private boolean checkUser(String uid) {
+        if (StringUtils.isNotBlank(uid)) {
+            PhUserInfo userInfo = userInfoService.findById(Long.valueOf(uid));
+            if (userInfo != null) {
+                return StringUtils.isNotBlank(userInfo.getPhone());
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     private long getShareTimes(String userId) {
         String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
         Boolean isExist = stringRedisTemplate.opsForHash().hasKey(KEY_SHARE, dayKey);
@@ -93,6 +111,9 @@ public class DoubleElevenController {
             @ApiParam("用户ID") @RequestParam String userId) {
         setRedisTemplate();
         refreshDateTime();
+        if (!checkUser(userId)) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
+        }
         String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
         long shareData = getShareTimes(userId);
         if (shareData > 0L) {
@@ -114,6 +135,9 @@ public class DoubleElevenController {
             @ApiParam("用户ID") @RequestParam String userId) {
         setRedisTemplate();
         refreshDateTime();
+        if (!checkUser(userId)) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
+        }
         long lotteryData = getData(userId, KEY_LOTTERY);
         String redisKey = getRewardListKey(userId);
         Boolean redisKeyExist = stringRedisTemplate.hasKey(redisKey);
@@ -204,6 +228,9 @@ public class DoubleElevenController {
             @ApiParam("用户ID") @RequestParam String userId) {
         setRedisTemplate();
         refreshDateTime();
+        if (!checkUser(userId)) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
+        }
         //检查抽奖券库存
         long lotteryData = getData(userId, KEY_LOTTERY);
         if (lotteryData <= 0) {
