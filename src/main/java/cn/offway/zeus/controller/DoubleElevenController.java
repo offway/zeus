@@ -221,7 +221,7 @@ public class DoubleElevenController {
         String redisKey = getRewardListKey(userId);
         String finalRewardStr = "无";
         switch (reward) {
-            case "5元无门槛优惠券":
+            case "5元无门槛代金券":
                 voucherInfoService.giveVoucher(userIdLong, 110L);
                 stringRedisTemplate.opsForList().leftPush(redisKey, reward);
                 finalRewardStr = reward;
