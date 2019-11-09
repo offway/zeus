@@ -41,5 +41,7 @@ public interface PhGoodsService{
 
 	boolean containsLimitGoods(Set<Long> stockIds);
 
+	List<PhGoods> limtbypick(Long pickId, int page, int size);
+
 	Page<PhGoods> screening(GoodsScreeningDto goodsScreeningDto, Pageable page);
 }

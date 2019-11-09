@@ -219,6 +219,11 @@ public class PhGoodsServiceImpl implements PhGoodsService {
 	}
 
 	@Override
+	public List<PhGoods> limtbypick(Long pickId, int page, int size){
+		return phGoodsRepository.limtbypick(pickId,page,size);
+	}
+
+	@Override
 	public Page<PhGoods> screening(GoodsScreeningDto goodsScreeningDto, Pageable page) {
 		return phGoodsRepository.findAll(new Specification<PhGoods>() {
 			@Override
