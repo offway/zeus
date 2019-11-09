@@ -252,7 +252,8 @@ public class UserController {
             @ApiParam("微信用户头像") @RequestParam String headimgurl,
             @ApiParam("session_key") @RequestParam String sessionKey,
             @ApiParam("encryptedData,获取手机号得到") @RequestParam String encryptedData,
-            @ApiParam("iv,获取手机号得到") @RequestParam String iv){
+            @ApiParam("iv,获取手机号得到") @RequestParam String iv,
+			@ApiParam("用户渠道") @RequestParam(required = false) String source){
 
         try {
 
@@ -277,7 +278,10 @@ public class UserController {
             if(null!=phUserInfo){
                 return jsonResultHelper.buildSuccessJsonResult(phUserInfo);
             }
-            return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, null, null, nickName, headimgurl, null,null,"2"));
+            if (StringUtils.isBlank(source)){
+            	source = "2";
+			}
+            return jsonResultHelper.buildSuccessJsonResult(phUserInfoService.register(phone, unionid, null, null, nickName, headimgurl, null,null,source));
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("小程序注册异常",e);
