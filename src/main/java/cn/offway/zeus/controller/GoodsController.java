@@ -293,7 +293,11 @@ public class GoodsController {
 	@ApiOperation("商品筛选")
 	@PostMapping("/screening")
 	public JsonResult screening(@RequestBody @ApiParam("筛选条件") GoodsScreeningDto goodsScreeningDto) {
-		return jsonResultHelper.buildSuccessJsonResult(phGoodsService.screening(goodsScreeningDto, PageRequest.of(goodsScreeningDto.getPage(), goodsScreeningDto.getSize())));
+//		if ((goodsScreeningDto.getSort() == 0 && goodsScreeningDto.getPickId() != null) && goodsScreeningDto.getSort() == 0){
+//			return jsonResultHelper.buildSuccessJsonResult(phGoodsService.limtbypick(goodsScreeningDto.getPickId(),(goodsScreeningDto.getPage()*10),goodsScreeningDto.getSize()));
+//		}else {
+			return jsonResultHelper.buildSuccessJsonResult(phGoodsService.screening(goodsScreeningDto, PageRequest.of(goodsScreeningDto.getPage(), goodsScreeningDto.getSize())));
+//		}
 	}
 
 	@ApiOperation("筛选条件")

@@ -2,6 +2,7 @@ package cn.offway.zeus.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -55,6 +56,7 @@ public interface PhGoodsRepository extends JpaRepository<PhGoods,Long>,JpaSpecif
 	@Query(nativeQuery = true,value="select count(id) from ph_goods where label='1' and id in (select gs.goods_id from ph_goods_stock gs where gs.id in(?1))")
 	int countLimitGoods(Set<Long> stockIds);
 
-	
-	
+	@Query(nativeQuery = true,value="select a.* from ph_goods a LEFT JOIN ph_pick_goods b ON a.id = b.goods_id WHERE b.pick_id =?1 GROUP BY a.id ORDER BY b.id LIMIT ?2 ,?3 ")
+	List<PhGoods> limtbypick(Long pickId,int page,int size);
+
 }
