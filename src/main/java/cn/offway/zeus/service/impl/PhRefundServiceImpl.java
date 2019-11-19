@@ -297,6 +297,7 @@ public class PhRefundServiceImpl implements PhRefundService {
 			String phone = phOrderInfoRepository.findMerchantPhoneByOrderNo(orderNo);
 			smsService.sendMsg(phone, message);
 			smsService.sendMsg("15001775461", message);
+			smsService.sendMsg("15300959951", message);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("退款申请成功短信通知商户异常orderNo="+orderNo);
