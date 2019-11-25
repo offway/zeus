@@ -1,24 +1,25 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.*;
-
-import cn.offway.zeus.domain.*;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.sensorsdata.analytics.javasdk.SensorsAnalytics;
-import com.sensorsdata.analytics.javasdk.exceptions.InvalidArgumentException;
-
+import cn.offway.zeus.domain.PhInviteRecord;
+import cn.offway.zeus.domain.PhLotteryTicket;
+import cn.offway.zeus.domain.PhProductInfo;
+import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.enums.TicketSourceEnum;
 import cn.offway.zeus.repository.PhLotteryTicketRepository;
 import cn.offway.zeus.service.PhInviteRecordService;
 import cn.offway.zeus.service.PhLotteryTicketService;
 import cn.offway.zeus.service.PhProductInfoService;
 import cn.offway.zeus.service.PhWxuserInfoService;
-import cn.offway.zeus.utils.CommonResultCode;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -43,9 +44,6 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 	
 	@Autowired
 	private PhProductInfoService phProductInfoService;
-	
-	@Autowired
-	private SensorsAnalytics sa;
 	
 	@Override
 	public PhLotteryTicket save(PhLotteryTicket phLotteryTicket){
@@ -156,8 +154,6 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 				phLotteryTicket.setRemark("邀请用户所得,邀请了用户unionid:"+phWxuserInfo.getUnionid());
 				phLotteryTickets.add(phLotteryTicket);
 			}
-			
-			saTrack(iphWxuserInfo.getUnionid(), getTickets,phProductInfo.getName(),channel);
 		}
 		
 		
@@ -197,8 +193,6 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 			phLotteryTicketRepository.updateCode();
 			
 			PhProductInfo phProductInfo = phProductInfoService.findById(productId);
-			
-			saTrack(phWxuserInfo.getUnionid(), phLotteryTickets.size(),phProductInfo.getName(),channel);
 		}
 	}
 	
@@ -237,22 +231,4 @@ public class PhLotteryTicketServiceImpl implements PhLotteryTicketService {
 		
 		
 	}
-
-	private void saTrack(String unionid, int getTickets,String productName,String channel) {
-//		try {
-//			Map<String, Object> properties = new HashMap<>();
-//			properties.put("activity_name", productName);
-//			properties.put("channel", StringUtils.isBlank(channel)?"公众号":channel);
-//			properties.put("activity_id", 1);
-//			properties.put("prize", "抽奖码");
-//			properties.put("prize_num", getTickets);
-//
-//			sa.track(unionid, false, "event_prize", properties);
-//		} catch (InvalidArgumentException e) {
-//			e.printStackTrace();
-//			logger.error("神策记录数据异常",e);
-//		}
-	}
-	
-	
 }

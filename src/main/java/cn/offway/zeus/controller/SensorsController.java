@@ -1,26 +1,14 @@
 package cn.offway.zeus.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import cn.offway.zeus.utils.JsonResult;
+import cn.offway.zeus.utils.JsonResultHelper;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.sensorsdata.analytics.javasdk.SensorsAnalytics;
-import com.sensorsdata.analytics.javasdk.exceptions.InvalidArgumentException;
-
-import cn.offway.zeus.dto.SaTrack;
-import cn.offway.zeus.utils.CommonResultCode;
-import cn.offway.zeus.utils.JsonResult;
-import cn.offway.zeus.utils.JsonResultHelper;
-import io.swagger.annotations.Api;
 
 /**
  * 神策数据相关服务
@@ -31,10 +19,6 @@ import io.swagger.annotations.Api;
 @RestController
 @RequestMapping("/sensors")
 public class SensorsController {
-
-	@Autowired
-	private SensorsAnalytics sa;
-	
 	@Autowired
 	private JsonResultHelper jsonResultHelper;
 	
@@ -42,21 +26,10 @@ public class SensorsController {
 	
 	/**
 	 * 记录事件
-	 * @param saTrack 时间内容
-	 * @return
 	 */
 	@PostMapping("/track")
-	public JsonResult track(@RequestBody SaTrack saTrack){
-		
-		try {
-			sa.track(saTrack.getDistinctId(), saTrack.isLoginId(), saTrack.getEventName(), saTrack.getProperties());
-			return jsonResultHelper.buildSuccessJsonResult(null);
-		} catch (InvalidArgumentException e) {
-			e.printStackTrace();
-			logger.error("神策数据记录事件异常，请求参数:{}",JSON.toJSONString(saTrack,SerializerFeature.WriteMapNullValue),e);
-			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
-		}
-		
+	public JsonResult track(){
+		return jsonResultHelper.buildSuccessJsonResult(null);
 	}
 	
 	/*public static void main(String[] args) {
