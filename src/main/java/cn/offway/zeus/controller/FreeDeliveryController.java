@@ -131,6 +131,9 @@ public class FreeDeliveryController {
 			@ApiParam("免费送ID") @RequestParam Long freeDeliveryId,
 			@ApiParam("分享用户ID") @RequestParam Long userId,
 			@ApiParam("助力用户手机号") @RequestParam String phone,
+			@ApiParam("助力用户unionid") @RequestParam String unionid,
+			@ApiParam("助力用户微信昵称") @RequestParam String nickName,
+			@ApiParam("助力用户微信头像") @RequestParam String headimgurl,
 			@ApiParam("助力用户验证码") @RequestParam String code){
 		
 		try {
@@ -155,8 +158,11 @@ public class FreeDeliveryController {
 				//已抢光
 				return jsonResultHelper.buildFailJsonResult(CommonResultCode.FREE_LESS);
 			}
-
 			PhUserInfo phUserInfo = phUserInfoService.findByPhone(phone);
+			if (null == phUserInfo){
+				phUserInfo = phUserInfoService.findByUnionid(unionid);
+			}
+
 
 			//用户类型[0-新用户,1-老用户]
 			String userType = phFreeDelivery.getUserType();
@@ -167,7 +173,7 @@ public class FreeDeliveryController {
 			}
 
 			if(null==phUserInfo){
-				phUserInfo = phUserInfoService.register(phone,null,null,null,null,null,null,null,null);
+				phUserInfo = phUserInfoService.register(phone,unionid,null,null,nickName,headimgurl,null,null,"1");
 			}
 
 			Long boostUserId = phUserInfo.getId();
