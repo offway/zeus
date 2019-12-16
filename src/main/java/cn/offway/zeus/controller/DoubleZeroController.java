@@ -121,9 +121,9 @@ public class DoubleZeroController {
             Map<String, Object> item = new HashMap<>();
             initRewardStockDataIfNeed(dataStr);
             initGotStatusDataIfNeed(userId, dataStr);
-            item.put("date", dataStr);
             DateTime timePoint = new DateTime();
             String[] YMD = dataStr.split("-");
+            item.put("date", MessageFormat.format("{0}月{1}日", YMD[1], YMD[2]));
             timePoint = timePoint.withDate(Integer.valueOf(YMD[0]), Integer.valueOf(YMD[1]), Integer.valueOf(YMD[2]));
             DateTime startPoint = timePoint.withTime(12, 0, 0, 0);
             DateTime stopPoint = timePoint.withTime(23, 59, 59, 0);
