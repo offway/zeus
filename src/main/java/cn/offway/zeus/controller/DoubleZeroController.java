@@ -178,7 +178,7 @@ public class DoubleZeroController {
     private void generateRewardPool(String stockKey) {
         int index = 0;
         for (int i : count) {
-            stringRedisTemplate.opsForHash().putIfAbsent(stockKey, rewards[index], String.valueOf(i));
+            stringRedisTemplate.opsForHash().putIfAbsent(stockKey, rewards[index], i);
             index++;
         }
     }
