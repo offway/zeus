@@ -76,8 +76,16 @@ public class DoubleZeroController {
         return MessageFormat.format(KEY_REWARD_STOCK_TODAY, todayStr);
     }
 
+    private String getStockKey(String dateStr) {
+        return MessageFormat.format(KEY_REWARD_STOCK_TODAY, dateStr);
+    }
+
     private String getStatusKey() {
         return MessageFormat.format(KEY_REWARD_STATUS_TODAY, todayStr);
+    }
+
+    private String getStatusKey(String dateStr) {
+        return MessageFormat.format(KEY_REWARD_STATUS_TODAY, dateStr);
     }
 
     private void refreshDateTime() {
@@ -102,36 +110,55 @@ public class DoubleZeroController {
     @PostMapping("/index")
     public JsonResult index(
             @ApiParam("用户ID") @RequestParam String userId) {
-        Map<String, Object> data = new HashMap<>();
         setRedisTemplate();
         refreshDateTime();
         if (!checkUser(userId)) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
         }
-        initRewardStockDataIfNeed();
-        initGotStatusDataIfNeed(userId);
-        //库存列表
-        data.put("stockList", stringRedisTemplate.opsForHash().entries(getStockKey()));
-        //领取状态
-        Map<String, Integer> status = new HashMap<>();
-        long statusData = getData(userId, getStatusKey());
-        int i = 0;
-        for (String reward : rewards) {
-            status.put(reward, (statusData & 1 << i) == 0 ? 0 : 1);
-            i++;
+        String[] dateStrArr = new String[]{"2019-12-25", "2019-12-26", "2019-12-27", "2019-12-28", "2019-12-29", "2019-12-30", "2019-12-31", "2020-01-01"};
+        List<Object> list = new ArrayList<>();
+        for (String dataStr : dateStrArr) {
+            Map<String, Object> item = new HashMap<>();
+            initRewardStockDataIfNeed(dataStr);
+            initGotStatusDataIfNeed(userId, dataStr);
+            item.put("date", dataStr);
+            DateTime timePoint = new DateTime();
+            String[] YMD = dataStr.split("-");
+            timePoint = timePoint.withDate(Integer.valueOf(YMD[0]), Integer.valueOf(YMD[1]), Integer.valueOf(YMD[2]));
+            DateTime startPoint = timePoint.withTime(12, 0, 0, 0);
+            DateTime stopPoint = timePoint.withTime(23, 59, 59, 0);
+            item.put("dateTimeStart", startPoint.getMillis());
+            item.put("dateTimeStop", stopPoint.getMillis());
+            long statusData = getData(userId, getStatusKey(dataStr));
+            //库存列表
+            Map<Object, Object> stocks = stringRedisTemplate.opsForHash().entries(getStockKey(dataStr));
+            Map<String, Integer> reward = new HashMap<>();
+            int i = 0;
+            for (Object k : stocks.keySet()) {
+                String key = String.valueOf(k);
+                if (now.getMillis() >= startPoint.getMillis() && stopPoint.getMillis() >= now.getMillis()) {
+                    //库存数量
+                    int v = Integer.valueOf(String.valueOf(stocks.get(k)));
+                    //领取状态
+                    int got = (statusData & 1 << i) == 0 ? 0 : 1;
+                    if (v <= 0) {
+                        reward.put(key, 2);//已抢光
+                    } else if (got > 0) {
+                        reward.put(key, 3);//已领取
+                    } else {
+                        reward.put(key, 4);//可领取
+                    }
+                } else if (startPoint.getMillis() > now.getMillis()) {
+                    reward.put(key, 0);//尚未开始
+                } else if (now.getMillis() > stopPoint.getMillis()) {
+                    reward.put(key, 1);//已经结束
+                }
+                i++;
+            }
+            item.put("reward", reward);
+            list.add(item);
         }
-        data.put("status", status);
-        //奖品列表
-        List<String> rewardResult;
-        String redisKey = getRewardListKey(userId);
-        Boolean redisKeyExist = stringRedisTemplate.hasKey(redisKey);
-        if (redisKeyExist == null || !redisKeyExist) {
-            rewardResult = new ArrayList<>();
-        } else {
-            rewardResult = stringRedisTemplate.opsForList().range(redisKey, 0, 100);
-        }
-        data.put("rewardResult", rewardResult);
-        return jsonResultHelper.buildSuccessJsonResult(data);
+        return jsonResultHelper.buildSuccessJsonResult(list);
     }
 
     private int[] count = new int[]{0, 0, 0, 2, 3, 100, 100};
@@ -145,8 +172,8 @@ public class DoubleZeroController {
         }
     }
 
-    private void initRewardStockDataIfNeed() {
-        String stockKey = getStockKey();
+    private void initRewardStockDataIfNeed(String dateStr) {
+        String stockKey = dateStr == null ? getStockKey() : getStockKey(dateStr);
         Boolean redisKeyExist = stringRedisTemplate.hasKey(stockKey);
         if (redisKeyExist == null || !redisKeyExist) {
             //生成奖品池
@@ -154,8 +181,8 @@ public class DoubleZeroController {
         }
     }
 
-    private void initGotStatusDataIfNeed(String userId) {
-        String statusKey = getStatusKey();
+    private void initGotStatusDataIfNeed(String userId, String dateStr) {
+        String statusKey = dateStr == null ? getStatusKey() : getStatusKey(dateStr);
         Boolean redisKeyExist = stringRedisTemplate.hasKey(statusKey);
         if (redisKeyExist == null || !redisKeyExist) {
             stringRedisTemplate.opsForHash().putIfAbsent(statusKey, userId, 0);
@@ -175,8 +202,8 @@ public class DoubleZeroController {
         if (rewardIndex < 0 || rewardIndex >= rewards.length) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
         }
-        initRewardStockDataIfNeed();
-        initGotStatusDataIfNeed(userId);
+        initRewardStockDataIfNeed(null);
+        initGotStatusDataIfNeed(userId, null);
         //检查库存情况
         String reward = rewards[rewardIndex];
         Object stockNum = stringRedisTemplate.opsForHash().get(getStockKey(), reward);
