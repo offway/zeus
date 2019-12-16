@@ -129,33 +129,44 @@ public class DoubleZeroController {
             DateTime stopPoint = timePoint.withTime(23, 59, 59, 0);
             item.put("dateTimeStart", startPoint.getMillis());
             item.put("dateTimeStop", stopPoint.getMillis());
+            if (now.getMillis() >= startPoint.getMillis() && stopPoint.getMillis() >= now.getMillis()) {
+                item.put("status", 4);//可领取
+            } else if (startPoint.getMillis() > now.getMillis()) {
+                item.put("status", 0);//尚未开始
+            } else if (now.getMillis() > stopPoint.getMillis()) {
+                item.put("status", 1);//已经结束
+            }
             long statusData = getData(userId, getStatusKey(dataStr));
             //库存列表
             Map<Object, Object> stocks = stringRedisTemplate.opsForHash().entries(getStockKey(dataStr));
-            Map<String, Integer> reward = new HashMap<>();
+            List<Object> rewardList = new ArrayList<>();
             int i = 0;
             for (Object k : stocks.keySet()) {
+                Map<String, Object> reward = new HashMap<>();
+                reward.put("id", i);
                 String key = String.valueOf(k);
+                reward.put("name", key);
                 if (now.getMillis() >= startPoint.getMillis() && stopPoint.getMillis() >= now.getMillis()) {
                     //库存数量
                     int v = Integer.valueOf(String.valueOf(stocks.get(k)));
                     //领取状态
                     int got = (statusData & 1 << i) == 0 ? 0 : 1;
                     if (v <= 0) {
-                        reward.put(key, 2);//已抢光
+                        reward.put("status", 2);//已抢光
                     } else if (got > 0) {
-                        reward.put(key, 3);//已领取
+                        reward.put("status", 3);//已领取
                     } else {
-                        reward.put(key, 4);//可领取
+                        reward.put("status", 4);//可领取
                     }
                 } else if (startPoint.getMillis() > now.getMillis()) {
-                    reward.put(key, 0);//尚未开始
+                    reward.put("status", 0);//尚未开始
                 } else if (now.getMillis() > stopPoint.getMillis()) {
-                    reward.put(key, 1);//已经结束
+                    reward.put("status", 1);//已经结束
                 }
                 i++;
+                rewardList.add(reward);
             }
-            item.put("reward", reward);
+            item.put("reward", rewardList);
             list.add(item);
         }
         return jsonResultHelper.buildSuccessJsonResult(list);
