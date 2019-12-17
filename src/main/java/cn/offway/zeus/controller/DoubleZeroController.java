@@ -38,6 +38,7 @@ public class DoubleZeroController {
     private static final String KEY_REWARD_LIST = "DoubleZero_REWARD_LIST_{0}";
     private static final String KEY_REWARD_STOCK_TODAY = "DoubleZero_REWARD_STOCK_{0}";
     private static final String KEY_REWARD_STATUS_TODAY = "DoubleZero_REWARD_STATUS_{0}";
+    private static final String KEY_REWARD_NOTIFY = "DoubleZero_REWARD_NOTIFY_{0}";
     private String todayStr;
     private DateTime now;
     private SimpleDateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
@@ -88,6 +89,10 @@ public class DoubleZeroController {
         return MessageFormat.format(KEY_REWARD_STATUS_TODAY, dateStr);
     }
 
+    private String getNotifyKey(String userId) {
+        return MessageFormat.format(KEY_REWARD_NOTIFY, userId);
+    }
+
     private void refreshDateTime() {
         todayStr = formatYMD.format(new Date());
         now = new DateTime();
@@ -115,7 +120,7 @@ public class DoubleZeroController {
         if (!checkUser(userId)) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
         }
-        String[] dateStrArr = new String[]{"2019-12-25", "2019-12-26", "2019-12-27", "2019-12-28", "2019-12-29", "2019-12-30", "2019-12-31", "2020-01-01"};
+        String notifyKey = getNotifyKey(userId);
         List<Object> list = new ArrayList<>();
         for (String dataStr : dateStrArr) {
             Map<String, Object> item = new HashMap<>();
@@ -124,6 +129,13 @@ public class DoubleZeroController {
             DateTime timePoint = new DateTime();
             String[] YMD = dataStr.split("-");
             item.put("date", MessageFormat.format("{0}月{1}日", YMD[1], YMD[2]));
+            item.put("dateStd", dataStr);
+            //订阅通知情况
+            if (stringRedisTemplate.opsForHash().hasKey(notifyKey, dataStr)) {
+                item.put("subscribe", 1);
+            } else {
+                item.put("subscribe", 0);
+            }
             timePoint = timePoint.withDate(Integer.valueOf(YMD[0]), Integer.valueOf(YMD[1]), Integer.valueOf(YMD[2]));
             DateTime startPoint = timePoint.withTime(12, 0, 0, 0);
             DateTime stopPoint = timePoint.withTime(23, 59, 59, 0);
@@ -174,6 +186,7 @@ public class DoubleZeroController {
 
     private int[] count = new int[]{0, 0, 0, 2, 3, 100, 100};
     private String[] rewards = new String[]{"666无门槛代金券", "200无门槛代金券", "满1000-500", "满1000-200", "满500-100", "满300-50", "满100-15"};
+    private String[] dateStrArr = new String[]{"2019-12-25", "2019-12-26", "2019-12-27", "2019-12-28", "2019-12-29", "2019-12-30", "2019-12-31", "2020-01-01"};
 
     private void generateRewardPool(String stockKey) {
         int index = 0;
@@ -200,9 +213,39 @@ public class DoubleZeroController {
         }
     }
 
+    @ApiOperation("订阅通知")
+    @PostMapping("/subscribe")
+    public JsonResult subscribe(
+            @ApiParam("用户ID") @RequestParam String userId,
+            @ApiParam("日期") @RequestParam String dateStd) {
+        setRedisTemplate();
+        refreshDateTime();
+        if (!checkUser(userId)) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
+        }
+        String key = getNotifyKey(userId);
+        stringRedisTemplate.opsForHash().putIfAbsent(key, dateStd, 1);
+        return jsonResultHelper.buildSuccessJsonResult(null);
+    }
+
+    @ApiOperation("取消订阅通知")
+    @PostMapping("/unsubscribe")
+    public JsonResult unsubscribe(
+            @ApiParam("用户ID") @RequestParam String userId,
+            @ApiParam("日期") @RequestParam String dateStd) {
+        setRedisTemplate();
+        refreshDateTime();
+        if (!checkUser(userId)) {
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
+        }
+        String key = getNotifyKey(userId);
+        stringRedisTemplate.opsForHash().delete(key, dateStd);
+        return jsonResultHelper.buildSuccessJsonResult(null);
+    }
+
     @ApiOperation("领取")
     @PostMapping("/get")
-    public JsonResult lottery(
+    public JsonResult get(
             @ApiParam("用户ID") @RequestParam String userId,
             @ApiParam("奖品索引") @RequestParam int rewardIndex) {
         setRedisTemplate();
