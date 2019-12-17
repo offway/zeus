@@ -69,6 +69,11 @@ public class DoubleZeroController {
         return format.format(now.toDate());
     }
 
+    @GetMapping("/showTimeStamp")
+    public Long showTimeStamp() {
+        return now.getMillis();
+    }
+
     private String getRewardListKey(String userId) {
         return MessageFormat.format(KEY_REWARD_LIST, userId);
     }
