@@ -1,6 +1,7 @@
 package cn.offway.zeus.controller;
 
 import cn.offway.zeus.domain.PhUserInfo;
+import cn.offway.zeus.service.JPushService;
 import cn.offway.zeus.service.PhUserInfoService;
 import cn.offway.zeus.service.PhVoucherInfoService;
 import cn.offway.zeus.utils.CommonResultCode;
@@ -34,6 +35,8 @@ public class DoubleZeroController {
     private PhVoucherInfoService voucherInfoService;
     @Autowired
     private PhUserInfoService userInfoService;
+    @Autowired
+    private JPushService jPushService;
     private StringRedisTemplate stringRedisTemplate;
     private static final String KEY_REWARD_LIST = "DoubleZero_REWARD_LIST_{0}";
     private static final String KEY_REWARD_STOCK_TODAY = "DoubleZero_REWARD_STOCK_{0}";
@@ -229,7 +232,22 @@ public class DoubleZeroController {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
         }
         String key = getNotifyKey(userId);
-        stringRedisTemplate.opsForHash().putIfAbsent(key, dateStd, 1);
+        if (stringRedisTemplate.opsForHash().hasKey(key, dateStd)) {
+            //重复请求，忽略
+        } else {
+            Map<String, String> args = new HashMap<>();
+            args.put("type", "");
+            args.put("id", "");
+            args.put("url", "");
+            DateTime timePoint = new DateTime();
+            String[] YMD = dateStd.split("-");
+            timePoint = timePoint.withDate(Integer.valueOf(YMD[0]), Integer.valueOf(YMD[1]), Integer.valueOf(YMD[2]));
+            timePoint = timePoint.withTime(12, 0, 0, 0);
+            //添加定时任务到极光
+            String scheduleId = jPushService.createSingleSchedule("name", timePoint.toDate(), "title", "alert", args, userId);
+            //将极光返回的任务标记写入REDIS
+            stringRedisTemplate.opsForHash().putIfAbsent(key, dateStd, scheduleId);
+        }
         return jsonResultHelper.buildSuccessJsonResult(null);
     }
 
@@ -244,6 +262,12 @@ public class DoubleZeroController {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
         }
         String key = getNotifyKey(userId);
+        Object scheduleId = stringRedisTemplate.opsForHash().get(key, dateStd);
+        if (scheduleId != null) {
+            //从极光删除任务
+            jPushService.deleteSchedule(String.valueOf(scheduleId));
+        }
+        //从REDIS删除标记
         stringRedisTemplate.opsForHash().delete(key, dateStd);
         return jsonResultHelper.buildSuccessJsonResult(null);
     }
