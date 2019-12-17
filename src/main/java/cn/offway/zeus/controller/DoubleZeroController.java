@@ -238,22 +238,22 @@ public class DoubleZeroController {
         String finalRewardStr = "无";
         switch (reward) {
             case "满1000-200":
-                voucherInfoService.giveVoucher(userIdLong, 112L);
+                voucherInfoService.giveVoucher(userIdLong, 143L);
                 finalRewardStr = "满1000-200优惠券";
                 stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
             case "满500-100":
-                voucherInfoService.giveVoucher(userIdLong, 113L);
+                voucherInfoService.giveVoucher(userIdLong, 144L);
                 finalRewardStr = "满500-100优惠券";
                 stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
             case "满300-50":
-                voucherInfoService.giveVoucher(userIdLong, 114L);
+                voucherInfoService.giveVoucher(userIdLong, 145L);
                 finalRewardStr = "满300-50优惠券";
                 stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
             case "满100-15":
-                voucherInfoService.giveVoucher(userIdLong, 115L);
+                voucherInfoService.giveVoucher(userIdLong, 146L);
                 finalRewardStr = "满100-15优惠券";
                 stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
                 break;
