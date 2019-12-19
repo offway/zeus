@@ -69,11 +69,13 @@ public class DoubleZeroController {
 
     @GetMapping("/showTime")
     public String showTime() {
+        refreshDateTime();
         return format.format(now.toDate());
     }
 
     @GetMapping("/showTimeStamp")
     public Long showTimeStamp() {
+        refreshDateTime();
         return now.getMillis();
     }
 
