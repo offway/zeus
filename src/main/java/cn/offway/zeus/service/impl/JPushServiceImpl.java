@@ -143,13 +143,7 @@ public class JPushServiceImpl implements JPushService {
                         .setAlert(IosAlert.newBuilder().setTitleAndBody(tilte, null, alert).build()).addExtras(extras)
                         .build())
                 .build();
-
-        //开发环境只推送给Mark
-        Audience audience = Audience.alias("7", "8");
-
-        if (jPushProperties.getApnsProduction()) {
-            audience = Audience.alias(alias);
-        }
+        Audience audience = Audience.alias(alias);
         return PushPayload.newBuilder().setPlatform(Platform.all()).setAudience(audience)
                 .setNotification(notification).build();
     }
