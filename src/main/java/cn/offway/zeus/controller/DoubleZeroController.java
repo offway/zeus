@@ -238,15 +238,15 @@ public class DoubleZeroController {
             //重复请求，忽略
         } else {
             Map<String, String> args = new HashMap<>();
-            args.put("type", "");
-            args.put("id", "");
-            args.put("url", "");
+            args.put("type", "0");//0-H5,1-精选文章,2-活动
+            args.put("id", null);
+            args.put("url", "https://h5.offway.cn/act/#/doubledan?uid=");
             DateTime timePoint = new DateTime();
             String[] YMD = dateStd.split("-");
             timePoint = timePoint.withDate(Integer.valueOf(YMD[0]), Integer.valueOf(YMD[1]), Integer.valueOf(YMD[2]));
             timePoint = timePoint.withTime(12, 0, 0, 0);
             //添加定时任务到极光
-            String scheduleId = jPushService.createSingleSchedule("name", timePoint.toDate(), "title", "alert", args, userId);
+            String scheduleId = jPushService.createSingleSchedule("DoubleZeroSubscribe" + userId, timePoint.toDate(), "双蛋抢券倒计时5分钟！", "¥1000000无门槛券准点放送，冲！", args, userId);
             //将极光返回的任务标记写入REDIS
             stringRedisTemplate.opsForHash().putIfAbsent(key, dateStd, scheduleId);
         }
