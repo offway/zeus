@@ -244,7 +244,7 @@ public class DoubleZeroController {
             DateTime timePoint = new DateTime();
             String[] YMD = dateStd.split("-");
             timePoint = timePoint.withDate(Integer.valueOf(YMD[0]), Integer.valueOf(YMD[1]), Integer.valueOf(YMD[2]));
-            timePoint = timePoint.withTime(12, 0, 0, 0);
+            timePoint = timePoint.withTime(11, 55, 0, 0);
             //添加定时任务到极光
             String scheduleId = jPushService.createSingleSchedule("DoubleZeroSubscribe" + userId, timePoint.toDate(), "双蛋抢券倒计时5分钟！", "¥1000000无门槛券准点放送，冲！", args, userId);
             //将极光返回的任务标记写入REDIS
