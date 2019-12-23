@@ -242,7 +242,7 @@ public class DoubleZeroController {
             args.put("id", null);
             args.put("url", "https://h5.offway.cn/act/#/doubledan?uid=");
             DateTime timePoint = new DateTime();
-            String[] YMD = dateStd.split("-");
+            String[] YMD = "2019-12-23".split("-");
             timePoint = timePoint.withDate(Integer.valueOf(YMD[0]), Integer.valueOf(YMD[1]), Integer.valueOf(YMD[2]));
             timePoint = timePoint.withTime(11, 55, 0, 0);
             //添加定时任务到极光
