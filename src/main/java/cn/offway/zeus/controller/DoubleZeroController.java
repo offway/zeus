@@ -227,7 +227,8 @@ public class DoubleZeroController {
     @PostMapping("/subscribe")
     public JsonResult subscribe(
             @ApiParam("用户ID") @RequestParam String userId,
-            @ApiParam("日期") @RequestParam String dateStd) {
+            @ApiParam("日期") @RequestParam(defaultValue = "2019-12-23") String dateStd,
+            @ApiParam("时间") @RequestParam(defaultValue = "11:55:00", required = false) String timeStd) {
         setRedisTemplate();
         refreshDateTime();
         if (!checkUser(userId)) {
@@ -242,9 +243,10 @@ public class DoubleZeroController {
             args.put("id", null);
             args.put("url", "https://h5.offway.cn/act/#/doubledan?uid=");
             DateTime timePoint = new DateTime();
-            String[] YMD = "2019-12-23".split("-");
+            String[] YMD = dateStd.split("-");
+            String[] HMS = timeStd.split(":");
             timePoint = timePoint.withDate(Integer.valueOf(YMD[0]), Integer.valueOf(YMD[1]), Integer.valueOf(YMD[2]));
-            timePoint = timePoint.withTime(11, 55, 0, 0);
+            timePoint = timePoint.withTime(Integer.valueOf(HMS[0]), Integer.valueOf(HMS[1]), Integer.valueOf(HMS[2]), 0);
             //添加定时任务到极光
             String scheduleId = jPushService.createSingleSchedule("DoubleZeroSubscribe" + userId, timePoint.toDate(), "双蛋抢券倒计时5分钟！", "¥1000000无门槛券准点放送，冲！", args, userId);
             //将极光返回的任务标记写入REDIS
