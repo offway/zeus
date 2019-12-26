@@ -55,6 +55,11 @@ public class PhNoticeServiceImpl implements PhNoticeService {
 	public List<PhNotice> findNoticeIndex(Long userId){
 		return phNoticeRepository.findNoticeIndex(userId);
 	}
+
+	@Override
+	public List<PhNotice> findUserAll(){
+		return phNoticeRepository.findNoticeIndex(0L);
+	}
 	
 	@Override
 	public List<String> findTypes(){

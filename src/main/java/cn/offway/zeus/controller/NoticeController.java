@@ -43,7 +43,9 @@ public class NoticeController {
 	public JsonResult index(@ApiParam("用户ID") @RequestParam Long userId){
 		
 //		String str = "[{\"type\":\"0\",\"content\":\"#CONTENT0#\"},{\"type\":\"1\",\"content\":\"#CONTENT1#\"}]";
+		List<PhNotice> notice = phNoticeService.findUserAll();
 		List<PhNotice> notices = phNoticeService.findNoticeIndex(userId);
+		notices.addAll(notice);
 		/*for (PhNotice phNotice : notices) {
 			str.replace("CONTENT"+phNotice.getType(), phNotice.getContent());
 		}*/
