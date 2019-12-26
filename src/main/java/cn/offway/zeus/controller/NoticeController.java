@@ -44,8 +44,11 @@ public class NoticeController {
 		
 //		String str = "[{\"type\":\"0\",\"content\":\"#CONTENT0#\"},{\"type\":\"1\",\"content\":\"#CONTENT1#\"}]";
 		List<PhNotice> notice = phNoticeService.findUserAll();
-		List<PhNotice> notices = phNoticeService.findNoticeIndex(userId);
-		notices.addAll(notice);
+        List<PhNotice> notices = phNoticeService.findNoticeIndex(userId);
+        for (PhNotice phNotice : notice) {
+            phNotice.setUserId(userId);
+            notices.add(phNotice);
+        }
 		/*for (PhNotice phNotice : notices) {
 			str.replace("CONTENT"+phNotice.getType(), phNotice.getContent());
 		}*/
