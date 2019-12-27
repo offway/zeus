@@ -249,6 +249,9 @@ public class DoubleZeroController {
             timePoint = timePoint.withTime(Integer.valueOf(HMS[0]), Integer.valueOf(HMS[1]), Integer.valueOf(HMS[2]), 0);
             //添加定时任务到极光
             String scheduleId = jPushService.createSingleSchedule("DoubleZeroSubscribe" + userId, timePoint.toDate(), "双蛋抢券倒计时5分钟！", "¥1000000无门槛券准点放送，冲！", args, userId);
+            if (StringUtils.isBlank(scheduleId)) {
+                return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+            }
             //将极光返回的任务标记写入REDIS
             stringRedisTemplate.opsForHash().putIfAbsent(key, dateStd, scheduleId);
         }
