@@ -28,7 +28,7 @@ public class ZeusApplicationTests {
         GIOEventMessage eventMessage = new GIOEventMessage.Builder()
                 .eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
                 .eventKey("elevenProductClick")                           // 事件标识 (必填)
-                .loginUserId("uuuuserId")                   // 登录用户ID (必填)
+                .loginUserId("5588")                   // 登录用户ID (必填)
                 .addEventVariable("place", "ni cai")          // 事件级变量 (选填)
                 .addEventVariable("channel", "1")      // 事件级变量 (选填)
                 .addEventVariable("productId", 666)            // 事件级变量 (选填)
