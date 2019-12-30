@@ -97,7 +97,7 @@ public class BrandController {
 		GIOEventMessage eventMessage = new GIOEventMessage.Builder()
 				.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
 				.eventKey("brandDetails")                           // 事件标识 (必填)
-				.loginUserId("18")                   // 登录用户ID (必填)
+				.loginUserId("13")                   // 登录用户ID (必填)
 				.addEventVariable("BannerID", phBrand.getId().toString())    // 事件级变量 (选填)
 				.build();
 		//上传事件行为消息到服务器

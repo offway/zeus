@@ -161,15 +161,40 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		if(null != phUserChannel){
 			phUserInfo.setChannel(phUserChannel.getChannel());
 		}*/
+		if (null != phUserInfo){
+			send("0",phUserInfo.getId());
+		}else {
+			send("0",13L);
+		}
+		return phUserInfo;
+	}
+
+	public void send(String type,Long id){
+		if ("0".equals(type)){
+			GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+					.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+					.eventKey("userRegistrationSucce")                           // 事件标识 (必填)
+					.loginUserId(id.toString())                   // 登录用户ID (必填)
+					.build();
+			//上传事件行为消息到服务器
+			GrowingAPI.send(eventMessage);
+
+		}else if ("1".equals(type)){
+			GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+					.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+					.eventKey("userRegistrationFailure")                           // 事件标识 (必填)
+					.loginUserId(id.toString())                   // 登录用户ID (必填)
+					.build();
+			//上传事件行为消息到服务器
+			GrowingAPI.send(eventMessage);
+		}
 		GIOEventMessage eventMessage = new GIOEventMessage.Builder()
 				.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
-				.eventKey("goodsDetails")                           // 事件标识 (必填)
-				.loginUserId(phUserInfo.getId().toString())                   // 登录用户ID (必填)
+				.eventKey("userRegistration")                           // 事件标识 (必填)
+				.loginUserId(id.toString())                   // 登录用户ID (必填)
 				.build();
 		//上传事件行为消息到服务器
 		GrowingAPI.send(eventMessage);
-		
-		return phUserInfo;
 	}
 
 	@Override

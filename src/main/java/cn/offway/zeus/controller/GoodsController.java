@@ -221,7 +221,7 @@ public class GoodsController {
 		GIOEventMessage eventMessage = new GIOEventMessage.Builder()
 				.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
 				.eventKey("goodsDetails")                           // 事件标识 (必填)
-				.loginUserId("18")                   // 登录用户ID (必填)
+				.loginUserId("13")                   // 登录用户ID (必填)
 				.addEventVariable("productId", id.toString())          // 事件级变量 (选填)
 				.addEventVariable("BannerID", phGoods.getBrandId().toString())      // 事件级变量 (选填)
 				.build();
