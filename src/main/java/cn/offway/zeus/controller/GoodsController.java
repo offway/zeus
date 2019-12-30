@@ -12,6 +12,8 @@ import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import io.growing.sdk.java.GrowingAPI;
+import io.growing.sdk.java.dto.GIOEventMessage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -216,6 +218,15 @@ public class GoodsController {
 		resultMap.put("sellOut",sumStock==0);
 		//更新商品浏览量
 		phGoodsService.updateViewCount(id);
+		GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+				.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+				.eventKey("goodsDetails")                           // 事件标识 (必填)
+				.loginUserId("18")                   // 登录用户ID (必填)
+				.addEventVariable("productId", id.toString())          // 事件级变量 (选填)
+				.addEventVariable("BannerID", phGoods.getBrandId().toString())      // 事件级变量 (选填)
+				.build();
+		//上传事件行为消息到服务器
+		GrowingAPI.send(eventMessage);
 
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}

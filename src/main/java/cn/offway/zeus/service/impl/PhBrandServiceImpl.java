@@ -10,6 +10,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import cn.offway.zeus.domain.PhMerchant;
+import io.growing.sdk.java.GrowingAPI;
+import io.growing.sdk.java.dto.GIOEventMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,14 @@ public class PhBrandServiceImpl implements PhBrandService {
 	public PhBrand findById(Long id){
 		Optional<PhBrand> optional = phBrandRepository.findById(id);
 			if (optional.isPresent()){
+				GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+						.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+						.eventKey("brandDetails")                           // 事件标识 (必填)
+						.loginUserId("18")                   // 登录用户ID (必填)
+						.addEventVariable("BannerID", id.toString())          // 事件级变量 (选填)
+						.build();
+				//上传事件行为消息到服务器
+				GrowingAPI.send(eventMessage);
 				return optional.get();
 			}
 		return null;

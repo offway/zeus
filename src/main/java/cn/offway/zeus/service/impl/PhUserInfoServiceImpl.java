@@ -8,6 +8,8 @@ import cn.offway.zeus.domain.PhMerchant;
 import cn.offway.zeus.service.*;
 import cn.offway.zeus.utils.JsonResult;
 import com.alipay.api.response.AlipayUserInfoShareResponse;
+import io.growing.sdk.java.GrowingAPI;
+import io.growing.sdk.java.dto.GIOEventMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,6 +161,13 @@ public class PhUserInfoServiceImpl implements PhUserInfoService {
 		if(null != phUserChannel){
 			phUserInfo.setChannel(phUserChannel.getChannel());
 		}*/
+		GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+				.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+				.eventKey("goodsDetails")                           // 事件标识 (必填)
+				.loginUserId(phUserInfo.getId().toString())                   // 登录用户ID (必填)
+				.build();
+		//上传事件行为消息到服务器
+		GrowingAPI.send(eventMessage);
 		
 		return phUserInfo;
 	}
