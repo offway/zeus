@@ -1,21 +1,20 @@
 package cn.offway.zeus.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaBuilder.In;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import cn.offway.zeus.domain.*;
+import cn.offway.zeus.dto.OrderAddDto;
+import cn.offway.zeus.dto.OrderInitStockDto;
+import cn.offway.zeus.dto.OrderMerchantDto;
+import cn.offway.zeus.exception.StockException;
 import cn.offway.zeus.repository.*;
 import cn.offway.zeus.service.*;
 import cn.offway.zeus.utils.CommonResultCode;
+import cn.offway.zeus.utils.JsonResult;
+import cn.offway.zeus.utils.JsonResultHelper;
+import cn.offway.zeus.utils.MathUtils;
+import io.growing.sdk.java.GrowingAPI;
+import io.growing.sdk.java.dto.GIOEventMessage;
+import io.netty.util.HashedWheelTimer;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +28,14 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.offway.zeus.dto.OrderAddDto;
-import cn.offway.zeus.dto.OrderInitStockDto;
-import cn.offway.zeus.dto.OrderMerchantDto;
-import cn.offway.zeus.exception.StockException;
-import cn.offway.zeus.utils.JsonResult;
-import cn.offway.zeus.utils.JsonResultHelper;
-import cn.offway.zeus.utils.MathUtils;
-import io.netty.util.HashedWheelTimer;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.In;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -154,10 +153,8 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 
 	/**
 	 * 检查是否存在限定商品
-	 * @param orderAddDto
-	 * @return
 	 */
-	public boolean containsLimitGoods(OrderAddDto orderAddDto){
+	private boolean containsLimitGoods(OrderAddDto orderAddDto){
 
 		Set<Long> stockIds = new HashSet<>();
 		for (OrderMerchantDto orderMerchantDto : orderAddDto.getMerchantDtos()) {
@@ -171,18 +168,16 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = {Exception.class,StockException.class})
-	public JsonResult add(OrderAddDto orderAddDto) throws Exception,StockException{
-
+	public JsonResult add(OrderAddDto orderAddDto) throws StockException, Exception {
 		//检查是否存在限定商品
-		if(containsLimitGoods(orderAddDto)){
+		if (containsLimitGoods(orderAddDto)) {
 			return addLimit(orderAddDto);
-		}else{
+		} else {
 			return addCommon(orderAddDto);
 		}
-
 	}
 	
-	public JsonResult addLimit(OrderAddDto orderAddDto) throws Exception,StockException{
+	private JsonResult addLimit(OrderAddDto orderAddDto) throws StockException,Exception{
 
 		Long addrId = orderAddDto.getAddrId();
 		Long userId = orderAddDto.getUserId();
@@ -212,42 +207,35 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		
 		//总订单号
 		String preorderNo = generateOrderNo("10");
-		
 		List<PhOrderInfo> phOrderInfos = new ArrayList<>();
 		List<PhOrderGoods> orderGoodss = new ArrayList<>();
-
 		List<OrderMerchantDto> merchantDtos =  orderAddDto.getMerchantDtos();
-
 		List<Long> goodsIdAll = new ArrayList<>();
-		List<OrderInitStockDto> stockArray = new ArrayList<>();
-
-
 		for (OrderMerchantDto orderMerchantDto : merchantDtos) {
 			List<OrderInitStockDto> stocks = orderMerchantDto.getStocks();
-			stockArray.addAll(stocks);
 			for (OrderInitStockDto stock : stocks) {
 				Long stockId = stock.getStockId();
-				PhGoodsStock phGoodsStock=  phGoodsStockService.findById(stockId);
+				PhGoodsStock phGoodsStock = phGoodsStockService.findById(stockId);
+				for (int i = 1; i <= stock.getNum(); i++) {
+					stat(userId, preorderNo, phGoodsStock.getSku(), phGoodsStock.getGoodsName(), phGoodsStock.getGoodsId());
+				}
 				goodsIdAll.add(phGoodsStock.getGoodsId());
 				//限量发售检查
 				PhLimitedSale phLimitedSale = phLimitedSaleService.findByGoodsId(phGoodsStock.getGoodsId());
-				if(null != phLimitedSale){
-
-					if("0".equals(phLimitedSale.getStatus()) || phLimitedSale.getBeginTime().after(now)
-							|| phLimitedSale.getEndTime().before(now)){
+				if (null != phLimitedSale) {
+					if ("0".equals(phLimitedSale.getStatus()) || phLimitedSale.getBeginTime().after(now)
+							|| phLimitedSale.getEndTime().before(now)) {
 						return jsonResultHelper.buildFailJsonResult(CommonResultCode.ACTIVITY_END);
 					}
-
 					int c = phLimitedSaleOpRepository.countByLimitedSaleIdAndUserIdAndType(phLimitedSale.getId(), userId, "0");
-					if(c < phLimitedSale.getBoostCount().intValue()){
+					if (c < phLimitedSale.getBoostCount().intValue()) {
 						return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_BOOST_LESS);
 					}
-					int buyCount = phOrderGoodsRepository.sumGoodsCountByLimitSale(phLimitedSale.getGoodsId(),userId,phLimitedSale.getBeginTime(),phLimitedSale.getEndTime());
-					if(buyCount + stock.getNum().intValue() > phLimitedSale.getBuyLimit().intValue()){
+					int buyCount = phOrderGoodsRepository.sumGoodsCountByLimitSale(phLimitedSale.getGoodsId(), userId, phLimitedSale.getBeginTime(), phLimitedSale.getEndTime());
+					if (buyCount + stock.getNum().intValue() > phLimitedSale.getBuyLimit().intValue()) {
 						return jsonResultHelper.buildFailJsonResult(CommonResultCode.LIMITEDSALE_BUY_LIMIT);
 					}
 				}
-
 			}
 		}
 		//检查是否有未上架的商品
@@ -266,7 +254,6 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			List<OrderInitStockDto> stocks = orderMerchantDto.getStocks();
 			double sumPrice = 0D;
 			int sumCount = 0;
-			List<Long> goodsIds = new ArrayList<>();
 			for (OrderInitStockDto stock : stocks) {
 				Long stockId = stock.getStockId();
 				stockIds.add(stockId);
@@ -311,8 +298,6 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 				if(count == 0){
 					sumPriceByplatform = MathUtils.add(sumPriceByplatform, phOrderGoods.getPrice());
 				}
-				goodsIds.add(phOrderGoods.getGoodsId());
-				
 			}
 			String message = orderMerchantDto.getMessage();
 			PhMerchant phMerchant = phMerchantService.findById(merchantId);
@@ -412,9 +397,22 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		return jsonResultHelper.buildSuccessJsonResult(resultMap);
 	}
 
-	public JsonResult addCommon(OrderAddDto orderAddDto) throws Exception,StockException{
+	private void stat(long userId, String orderNo, String productSKU, String productName, long productId) {
+		//事件行为消息体
+		GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+				.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+				.eventKey("orderADD")                           // 事件标识 (必填)
+				.loginUserId(String.valueOf(userId))                   // 登录用户ID (必填)
+				.addEventVariable("orderNo", orderNo)          // 事件级变量 (选填)
+				.addEventVariable("productSKU", productSKU)      // 事件级变量 (选填)
+				.addEventVariable("productName", productName)            // 事件级变量 (选填)
+				.addEventVariable("productId", String.valueOf(productId))            // 事件级变量 (选填)
+				.build();
+		//上传事件行为消息到服务器
+		GrowingAPI.send(eventMessage);
+	}
 
-
+	private JsonResult addCommon(OrderAddDto orderAddDto) throws StockException,Exception{
 		Long addrId = orderAddDto.getAddrId();
 		Long userId = orderAddDto.getUserId();
 		Long pVoucherId = orderAddDto.getVoucherId();
@@ -441,27 +439,18 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 		double sumALlPrice= 0D;
 		double sumpVoucherAmout = 0D;
 		double sumPriceByplatform= 0D;//除不能使用平台优惠券的商品总价
-
-
 		double pVoucherAmount = 0D;
 		if(null!=pVoucherId){
 			PhVoucherInfo pphVoucherInfo =  phVoucherInfoService.findById(pVoucherId);
 			pVoucherAmount = pphVoucherInfo.getAmount();
 			sumpVoucherAmout = pVoucherAmount;
 		}
-
-
-
 		Date now = new Date();
-
 		//总订单号
 		String preorderNo = generateOrderNo("10");
-
 		List<PhOrderInfo> phOrderInfos = new ArrayList<>();
 		List<PhOrderGoods> orderGoodss = new ArrayList<>();
-
 		List<OrderMerchantDto> merchantDtos =  orderAddDto.getMerchantDtos();
-
 
 		//平台活动优惠金额
 		double platformPromotionAmount = 0D;
@@ -475,12 +464,15 @@ public class PhOrderInfoServiceImpl implements PhOrderInfoService {
 			stockArray.addAll(stocks);
 			for (OrderInitStockDto stock : stocks) {
 				Long stockId = stock.getStockId();
-				PhGoodsStock phGoodsStock=  phGoodsStockService.findById(stockId);
+				PhGoodsStock phGoodsStock = phGoodsStockService.findById(stockId);
+				for (int i = 1; i <= stock.getNum(); i++) {
+					stat(userId, preorderNo, phGoodsStock.getSku(), phGoodsStock.getGoodsName(), phGoodsStock.getGoodsId());
+				}
 				goodsIdAll.add(phGoodsStock.getGoodsId());
 				//TODO chillhigh活动
-				if(4465L == phGoodsStock.getGoodsId().longValue()){
-					if(StringUtils.isBlank(stringRedisTemplate.opsForValue().get("zeus.chillhigh.share."+userId)) ||
-							now.before(DateUtils.parseDate("2019-08-14 21:00:00","yyyy-MM-dd HH:mm:ss"))){
+				if (4465L == phGoodsStock.getGoodsId()) {
+					if (StringUtils.isBlank(stringRedisTemplate.opsForValue().get("zeus.chillhigh.share." + userId)) ||
+							now.before(DateUtils.parseDate("2019-08-14 21:00:00", "yyyy-MM-dd HH:mm:ss"))) {
 						return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 					}
 				}
