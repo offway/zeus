@@ -3,6 +3,8 @@ package cn.offway.zeus.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.growing.sdk.java.GrowingAPI;
+import io.growing.sdk.java.dto.GIOEventMessage;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +94,14 @@ public class BrandController {
 		if(null == phBrand){
 			return jsonResultHelper.buildFailJsonResult(CommonResultCode.PARAM_ERROR);
 		}
+		GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+				.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+				.eventKey("brandDetails")                           // 事件标识 (必填)
+				.loginUserId("18")                   // 登录用户ID (必填)
+				.addEventVariable("BannerID", phBrand.getId().toString())    // 事件级变量 (选填)
+				.build();
+		//上传事件行为消息到服务器
+		GrowingAPI.send(eventMessage);
 		return jsonResultHelper.buildSuccessJsonResult(phBrand);
 	}
 
