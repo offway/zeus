@@ -1,25 +1,16 @@
 package cn.offway.zeus.service.impl;
 
-import java.util.*;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.CriteriaBuilder.In;
-
 import cn.offway.zeus.domain.*;
-import cn.offway.zeus.service.*;
-import com.aliyun.mq.http.MQClient;
-import com.aliyun.mq.http.MQProducer;
-import com.aliyun.mq.http.common.ClientException;
-import com.aliyun.mq.http.common.ServiceException;
-import com.aliyun.mq.http.model.TopicMessage;
-import org.apache.commons.lang3.StringUtils;
+import cn.offway.zeus.repository.*;
+import cn.offway.zeus.service.AlipayService;
+import cn.offway.zeus.service.PhPreorderInfoService;
+import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.service.SmsService;
+import io.growing.sdk.java.GrowingAPI;
+import io.growing.sdk.java.dto.GIOEventMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,13 +19,14 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.offway.zeus.repository.PhCapitalFlowRepository;
-import cn.offway.zeus.repository.PhGoodsRepository;
-import cn.offway.zeus.repository.PhGoodsStockRepository;
-import cn.offway.zeus.repository.PhOrderGoodsRepository;
-import cn.offway.zeus.repository.PhOrderInfoRepository;
-import cn.offway.zeus.repository.PhPreorderInfoRepository;
-import cn.offway.zeus.repository.PhVoucherInfoRepository;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -144,34 +136,76 @@ public class PhPreorderInfoServiceImpl implements PhPreorderInfoService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
-	public void alipay(String status,String preorderNo) throws Exception {
-		/**
+	public void alipay(String status, String preorderNo) throws Exception {
+		/*
 		 * 	WAIT_BUYER_PAY	交易创建，等待买家付款
 			TRADE_CLOSED	未付款交易超时关闭，或支付完成后全额退款
 			TRADE_SUCCESS	交易支付成功
 			TRADE_FINISHED	交易结束，不可退款
 		 */
-		if("TRADE_SUCCESS".equals(status)){
-			successResult(preorderNo,"alipay");
-		}else if("TRADE_CLOSED".equals(status)){
-			failResult(preorderNo,"alipay",null);
+		PhPreorderInfo phPreorderInfo = findByOrderNoAndStatus(preorderNo, "0");
+		String userId = phPreorderInfo == null ? "" : String.valueOf(phPreorderInfo.getUserId());
+		if ("TRADE_SUCCESS".equals(status)) {
+			//事件行为消息体
+			GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+					.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+					.eventKey("orderPaymentSucce")                           // 事件标识 (必填)
+					.loginUserId(userId)                   // 登录用户ID (必填)
+					.addEventVariable("orderNo", preorderNo)          // 事件级变量 (选填)
+					.addEventVariable("payType", 0)          // 事件级变量 (选填)
+					.build();
+			//上传事件行为消息到服务器
+			GrowingAPI.send(eventMessage);
+			successResult(preorderNo, "alipay");
+		} else if ("TRADE_CLOSED".equals(status)) {
+			//事件行为消息体
+			GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+					.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+					.eventKey("orderPaymentFailure")                           // 事件标识 (必填)
+					.loginUserId(userId)                   // 登录用户ID (必填)
+					.addEventVariable("orderNo", preorderNo)          // 事件级变量 (选填)
+					.addEventVariable("payType", 0)          // 事件级变量 (选填)
+					.build();
+			//上传事件行为消息到服务器
+			GrowingAPI.send(eventMessage);
+			failResult(preorderNo, "alipay", null);
 		}
-		
 	}
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, rollbackFor = Exception.class)
-	public void wxpay(String status,String preorderNo) throws Exception {
-		/**
+	public void wxpay(String status, String preorderNo) throws Exception {
+		/*
 			SUCCESS	交易支付成功
 			FAIL	失败
 		 */
-		if("SUCCESS".equals(status)){
-			successResult(preorderNo,"wxpay");
-		}else if("FAIL".equals(status)){
-			failResult(preorderNo,"wxpay",null);
+		PhPreorderInfo phPreorderInfo = findByOrderNoAndStatus(preorderNo, "0");
+		String userId = phPreorderInfo == null ? "" : String.valueOf(phPreorderInfo.getUserId());
+		if ("SUCCESS".equals(status)) {
+			//事件行为消息体
+			GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+					.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+					.eventKey("orderPaymentSucce")                           // 事件标识 (必填)
+					.loginUserId(userId)                   // 登录用户ID (必填)
+					.addEventVariable("orderNo", preorderNo)          // 事件级变量 (选填)
+					.addEventVariable("payType", 1)          // 事件级变量 (选填)
+					.build();
+			//上传事件行为消息到服务器
+			GrowingAPI.send(eventMessage);
+			successResult(preorderNo, "wxpay");
+		} else if ("FAIL".equals(status)) {
+			//事件行为消息体
+			GIOEventMessage eventMessage = new GIOEventMessage.Builder()
+					.eventTime(System.currentTimeMillis())            // 事件时间，默认为系统时间（选填）
+					.eventKey("orderPaymentFailure")                           // 事件标识 (必填)
+					.loginUserId(userId)                   // 登录用户ID (必填)
+					.addEventVariable("orderNo", preorderNo)          // 事件级变量 (选填)
+					.addEventVariable("payType", 1)          // 事件级变量 (选填)
+					.build();
+			//上传事件行为消息到服务器
+			GrowingAPI.send(eventMessage);
+			failResult(preorderNo, "wxpay", null);
 		}
-		
 	}
 	
 	private void returnResult(String preorderNo,String payChannel) throws Exception {
