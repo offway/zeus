@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -274,14 +276,22 @@ public class IndexController {
 				List<Map> brands  = JSON.parseArray(content,Map.class);
 				for (Map<String,Object> brand : brands) {
 					Long brandId = Long.parseLong(brand.get("id").toString());
-					brand.put("goods", phGoodsService.findBrandRecommend(brandId));
+					List<Object> l = new ArrayList<>();
+					for(PhGoods tmp:phGoodsService.findBrandRecommend(brandId)){
+						ObjectMapper mapper = new ObjectMapper();
+						Map<String,Object> m = mapper.convertValue(tmp,Map.class);
+						for(String k : m.keySet()){
+							m.put(k,StringEscapeUtils.escapeJava(String.valueOf(m.get(k))));
+						}
+						l.add(m);
+					}
+					brand.put("goods", l);
 				}
 				map.put(name,brands);
 			}else{
 				map.put(name,JSON.parse(content));
 			}
 		}
-
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 	
