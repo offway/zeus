@@ -66,10 +66,10 @@ public class IndexController {
 	@Value("${wx.secret}")
 	private String SECRET;
 
-	@Value("${mini.appidBooks}")
+	@Value("${wx.appidBooks}")
 	private String APPIDBOOKS;
 
-	@Value("${mini.secretBooks}")
+	@Value("${wx.secretBooks}")
 	private String SECRETBOOKS;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
