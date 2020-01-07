@@ -301,33 +301,31 @@ public class IndexController {
 	@ApiOperation(value = "首页数据-小程序")
 	@GetMapping("/data/mini")
 	@ResponseBody
-	public JsonResult datavMini(){
+	public JsonResult datavMini() {
 		Map<String, Object> map = new HashMap<>();
-
 		map.put("banners", phBannerService.banners("4"));
-
-		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI","INDEX_BRAND_GOODS_MINI","INDEX_CATEGORY_MINI");
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI", "INDEX_BRAND_GOODS_MINI", "INDEX_CATEGORY_MINI");
 		for (PhConfig phConfig : configs) {
 			String name = phConfig.getName().toLowerCase();
 			String content = phConfig.getContent();
-			if("index_brand_goods_mini".equals(name)){
-				List<Map> brands  = JSON.parseArray(content,Map.class);
-				for (Map<String,Object> brand : brands) {
+			if ("index_brand_goods_mini".equals(name)) {
+				List<Map> brands = JSON.parseArray(content, Map.class);
+				for (Map<String, Object> brand : brands) {
 					Long brandId = Long.parseLong(brand.get("id").toString());
 					List<Object> l = new ArrayList<>();
-					for(PhGoods tmp:phGoodsService.findBrandRecommend(brandId)){
+					for (PhGoods tmp : phGoodsService.findBrandRecommend(brandId)) {
 						ObjectMapper mapper = new ObjectMapper();
-						Map<String,Object> m = mapper.convertValue(tmp,Map.class);
-						for(String k : m.keySet()){
-							m.put(k,StringEscapeUtils.unescapeJava(StringEscapeUtils.escapeJava(String.valueOf(m.get(k)))));
+						Map<String, Object> m = mapper.convertValue(tmp, Map.class);
+						for (String k : m.keySet()) {
+							m.put(k, StringEscapeUtils.unescapeJava(StringEscapeUtils.escapeJava(String.valueOf(m.get(k))).replaceAll("\\\\u2028", "")));
 						}
 						l.add(m);
 					}
 					brand.put("goods", l);
 				}
-				map.put(name,brands);
-			}else{
-				map.put(name,JSON.parse(content));
+				map.put(name, brands);
+			} else {
+				map.put(name, JSON.parse(content));
 			}
 		}
 		return jsonResultHelper.buildSuccessJsonResult(map);
