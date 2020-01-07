@@ -65,6 +65,12 @@ public class IndexController {
 
 	@Value("${wx.secret}")
 	private String SECRET;
+
+	@Value("${mini.appidBooks}")
+	private String APPIDBOOKS;
+
+	@Value("${mini.secretBooks}")
+	private String SECRETBOOKS;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
@@ -126,6 +132,38 @@ public class IndexController {
 		String userInfoStr = HttpClientUtil.get("https://api.weixin.qq.com/sns/userinfo?access_token=" + accessToken
 				+ "&openid=" + openid + "&lang=zh_CN");
 		
+		PhWxuserInfo phWxuserInfo = JSON.parseObject(userInfoStr, PhWxuserInfo.class);
+		if(StringUtils.isNotBlank(phWxuserInfo.getOpenid())){
+			//如果存在授权用户信息则更新
+			PhWxuserInfo oldphWxuserInfo = phWxuserInfoService.findByUnionid(phWxuserInfo.getUnionid());
+			phWxuserInfo.setCreateTime(new Date());
+			if(null != oldphWxuserInfo){
+				phWxuserInfo.setId(oldphWxuserInfo.getId());
+				phWxuserInfo.setAppopenid(oldphWxuserInfo.getAppopenid());
+				phWxuserInfo.setMiniopenid(oldphWxuserInfo.getMiniopenid());
+			}
+			return phWxuserInfoService.save(phWxuserInfo);
+		}else{
+			return JSON.parseObject(userInfoStr);
+		}
+	}
+
+	@ResponseBody
+	@ApiOperation(value = "微信授权-根据授权码获取用户信息")
+	@PostMapping("/access/wxBooks")
+	public Object wxBooksAccess(@ApiParam("授权码") @RequestParam String code) {
+
+		String accessTokenResult = HttpClientUtil.get("https://api.weixin.qq.com/sns/oauth2/access_token?appid="
+				+ APPIDBOOKS + "&secret=" + SECRETBOOKS + "&code=" + code + "&grant_type=authorization_code");
+
+		JSONObject accessTokenMap = JSON.parseObject(accessTokenResult);
+
+		String accessToken = String.valueOf(accessTokenMap.get("access_token"));
+		String openid = String.valueOf(accessTokenMap.get("openid"));
+
+		String userInfoStr = HttpClientUtil.get("https://api.weixin.qq.com/sns/userinfo?access_token=" + accessToken
+				+ "&openid=" + openid + "&lang=zh_CN");
+
 		PhWxuserInfo phWxuserInfo = JSON.parseObject(userInfoStr, PhWxuserInfo.class);
 		if(StringUtils.isNotBlank(phWxuserInfo.getOpenid())){
 			//如果存在授权用户信息则更新
@@ -281,7 +319,7 @@ public class IndexController {
 						ObjectMapper mapper = new ObjectMapper();
 						Map<String,Object> m = mapper.convertValue(tmp,Map.class);
 						for(String k : m.keySet()){
-							m.put(k,StringEscapeUtils.escapeJava(String.valueOf(m.get(k))));
+							m.put(k,StringEscapeUtils.unescapeJava(StringEscapeUtils.escapeJava(String.valueOf(m.get(k)))));
 						}
 						l.add(m);
 					}

@@ -82,6 +82,8 @@ spring:
 wx:
   appid:  wx22e5d09caef77790
   secret: 05dfad0c04339cfbab32818f5e904056
+  appidBooks:  wxa32e68e20b08bf5d
+  secretBooks: 8ea8e9c879035f1ed5580802e095dcb9
 mini:
   appid:  wx12d022a9493f1b26
   secret: 52ba3a89ae58aa6a2294806d516d6107
