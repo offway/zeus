@@ -119,6 +119,9 @@ public class UserController {
 	@Autowired
 	private PhGoodsService phGoodsService;
 
+	@Autowired
+	private PhChannelUserService phChannelUserService;
+
 	
 	@ApiOperation("微信用户信息保存")
 	@PostMapping("/wx")
@@ -640,6 +643,67 @@ public class UserController {
 			@ApiParam("页码,从0开始") @RequestParam int page,
 			@ApiParam("页大小") @RequestParam int size){
 		return jsonResultHelper.buildSuccessJsonResult(phWithdrawInfoService.findByPage(userId,PageRequest.of(page,size)));
+	}
+
+	@ApiOperation("渠道信息查询")
+	@GetMapping("/channelInfo")
+	public JsonResult withdraw(
+			@ApiParam("渠道ID") @RequestParam Long id){
+		return jsonResultHelper.buildSuccessJsonResult(phChannelUserService.findOne(id));
+	}
+
+	@ApiOperation("注册")
+	@PostMapping("/registerChannel")
+	public JsonResult registerChannel(
+			@ApiParam("手机号") @RequestParam String phone,
+			@ApiParam("验证码") @RequestParam String code,
+			@ApiParam("渠道") @RequestParam String channel,
+			@ApiParam("微信用户ID") @RequestParam(required=false) String unionid,
+			@ApiParam("微博ID") @RequestParam(required=false) String weiboid,
+			@ApiParam("QQID") @RequestParam(required=false) String qqid,
+			@ApiParam("用户昵称") @RequestParam(required=false) String nickName,
+			@ApiParam("头像") @RequestParam(required=false) String headimgurl,
+			@ApiParam("邀请用户ID") @RequestParam(required=false) Long inviteUserId){
+
+		phone = phone.contains("+")?phone:"+86"+phone;
+		unionid = StringUtils.isBlank(unionid)?null:unionid;
+
+		String smsCode = stringRedisTemplate.opsForValue().get(SMS_CODE_KEY+"_"+phone);
+		if(StringUtils.isBlank(smsCode)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_INVALID);
+		}
+
+		if(!code.equals(smsCode)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.SMS_CODE_ERROR);
+		}
+
+
+		if(StringUtils.isNotBlank(phone) && null!=phUserInfoService.findByPhone(phone)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
+		}
+
+		if(StringUtils.isNotBlank(weiboid) && null!=phUserInfoService.findByWeiboid(weiboid)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
+		}
+
+		if(StringUtils.isNotBlank(unionid) && null!=phUserInfoService.findByUnionid(unionid)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
+		}
+
+		if(StringUtils.isNotBlank(qqid) && null!=phUserInfoService.findByQqid(qqid)){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_EXISTS);
+		}
+
+		PhUserInfo userInfo = phUserInfoService.register(phone, unionid, weiboid, qqid, nickName, headimgurl, inviteUserId,channel,null);
+		if (userInfo!= null){
+			PhChannelUser channelUser = phChannelUserService.findByChannel(channel);
+			if (channelUser != null){
+				channelUser.setNumber(channelUser.getNumber()+1L);
+				phChannelUserService.save(channelUser);
+			}
+		}
+		return jsonResultHelper.buildSuccessJsonResult(userInfo);
+
 	}
 
 
