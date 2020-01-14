@@ -40,7 +40,6 @@ public class NewSpringController {
     private static final String KEY_SHARE = "NewSpring_SHARE";
     private static final String KEY_CHAR = "NewSpring_CHAR_{0}";
     private static final String KEY_SPECIAL_REWARD_1 = "NewSpring_SPECIAL_REWARD_1";
-    private static final String KEY_SPECIAL_REWARD_2 = "NewSpring_SPECIAL_REWARD_2";
     private String todayStr;
     private DateTime now;
     private SimpleDateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
@@ -233,45 +232,29 @@ public class NewSpringController {
     private List<Map<String, String>> generateRewardPool() {
         double totalProb = 0;
         List<Map<String, String>> rewardPool = new ArrayList<>();
-        //5元无门槛代金券
-        Map<String, String> rewardObj1 = new HashMap<>();
-        rewardObj1.put("prob", "0.3");
-        totalProb += 0.3;
-        rewardObj1.put("reward", "5元无门槛代金券");
-        rewardPool.add(rewardObj1);
-        //5-200元现金礼包 除了 满100-5
-        Double[] probs = new Double[]{0.06, 0.06, 0.06, 0.06, 0.06};
-        String[] rewards = new String[]{"满300-15", "满500-30", "满1000-60", "满1500-100", "满2000-140"};
+        //20新春快
+        Double[] probs = new Double[]{0.25, 0.1, 0.235, 0.075, 0.15};
+        String[] rewards = new String[]{"2", "0", "新", "春", "快"};//20二零新春快乐
         int index = 0;
         for (double i : probs) {
             totalProb += i;
             rewardPool.add(buildRewardObj(String.valueOf(i), rewards[index]));
             index++;
         }
-        //OFFWAY限量PVC袋子 暂定20个
-        stringRedisTemplate.opsForValue().setIfAbsent(KEY_SPECIAL_REWARD_1, "20");
+        //乐（5%50张）
+        stringRedisTemplate.opsForValue().setIfAbsent(KEY_SPECIAL_REWARD_1, "50");
         String tmp1 = stringRedisTemplate.opsForValue().get(KEY_SPECIAL_REWARD_1);
         if (tmp1 != null && Integer.valueOf(tmp1) > 0) {
             Map<String, String> rewardObj3 = new HashMap<>();
-            rewardObj3.put("prob", "0.02");
-            totalProb += 0.02;
-            rewardObj3.put("reward", "OFFWAY限量PVC袋子");
+            rewardObj3.put("prob", "0.05");
+            totalProb += 0.05;
+            rewardObj3.put("reward", "乐");
             rewardPool.add(rewardObj3);
         }
-        //OFFWAY潮流福袋 暂定5份
-        stringRedisTemplate.opsForValue().setIfAbsent(KEY_SPECIAL_REWARD_2, "5");
-        String tmp2 = stringRedisTemplate.opsForValue().get(KEY_SPECIAL_REWARD_2);
-        if (tmp2 != null && Integer.valueOf(tmp2) > 0) {
-            Map<String, String> rewardObj4 = new HashMap<>();
-            rewardObj4.put("prob", "0.02");
-            totalProb += 0.02;
-            rewardObj4.put("reward", "OFFWAY潮流福袋");
-            rewardPool.add(rewardObj4);
-        }
-        //5-200元现金礼包 满100-5
+        //零（15% 20%）
         Map<String, String> rewardObj5 = new HashMap<>();
         rewardObj5.put("prob", String.valueOf(1 - totalProb));//计算余下概率
-        rewardObj5.put("reward", "满100-5");
+        rewardObj5.put("reward", "零");
         rewardPool.add(rewardObj5);
         return rewardPool;
     }
@@ -286,71 +269,25 @@ public class NewSpringController {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
         }
         //检查抽奖券库存
-        long lotteryData = getData(userId, KEY_LOTTERY);
+        long lotteryData = getLotteryTimes(userId);
         if (lotteryData <= 0) {
             return jsonResultHelper.buildFailJsonResult(CommonResultCode.LOTTERYNUM_LESS);
         }
         //扣除抽奖券库存
-        stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, userId, -1L);
+        String dayKey = MessageFormat.format("{0}_{1}", userId, todayStr);
+        stringRedisTemplate.opsForHash().increment(KEY_LOTTERY, dayKey, -1L);
         //生成奖品池
         List<Map<String, String>> rewardPool = generateRewardPool();
         //落点随机法获得对应奖品
         String reward = randomPick(rewardPool);
         logger.info("reward is :" + reward);
-        //发放奖励
-        long userIdLong = Long.valueOf(userId);
-        String redisKey = getRewardListKey(userId);
-        String finalRewardStr = "无";
-        switch (reward) {
-            case "5元无门槛代金券":
-                voucherInfoService.giveVoucher(userIdLong, 110L);
-                stringRedisTemplate.opsForList().leftPush(redisKey, reward);
-                finalRewardStr = reward;
-                break;
-            case "OFFWAY限量PVC袋子":
-            case "OFFWAY潮流福袋":
-                stringRedisTemplate.opsForList().leftPush(redisKey, reward);
-                finalRewardStr = reward;
-                break;
-            case "满100-5":
-                voucherInfoService.giveVoucher(userIdLong, 112L);
-                finalRewardStr = "5元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
-                break;
-            case "满300-15":
-                voucherInfoService.giveVoucher(userIdLong, 113L);
-                finalRewardStr = "15元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
-                break;
-            case "满500-30":
-                voucherInfoService.giveVoucher(userIdLong, 114L);
-                finalRewardStr = "30元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
-                break;
-            case "满1000-60":
-                voucherInfoService.giveVoucher(userIdLong, 115L);
-                finalRewardStr = "60元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
-                break;
-            case "满1500-100":
-                voucherInfoService.giveVoucher(userIdLong, 116L);
-                finalRewardStr = "100元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
-                break;
-            case "满2000-140":
-                voucherInfoService.giveVoucher(userIdLong, 117L);
-                finalRewardStr = "140元优惠券";
-                stringRedisTemplate.opsForList().leftPush(redisKey, finalRewardStr);
-                break;
-            default:
-                break;
-        }
+        //发放奖励(字)
+        String charKey = getCharKey(userId);
+        stringRedisTemplate.opsForHash().increment(charKey, reward, 1);
         //扣除限量奖品库存
-        if ("OFFWAY限量PVC袋子".equals(reward)) {
+        if ("乐".equals(reward)) {
             stringRedisTemplate.opsForValue().decrement(KEY_SPECIAL_REWARD_1);
-        } else if ("OFFWAY潮流福袋".equals(reward)) {
-            stringRedisTemplate.opsForValue().decrement(KEY_SPECIAL_REWARD_2);
         }
-        return jsonResultHelper.buildSuccessJsonResult(finalRewardStr);
+        return jsonResultHelper.buildSuccessJsonResult(reward);
     }
 }
