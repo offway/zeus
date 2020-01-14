@@ -290,4 +290,108 @@ public class NewSpringController {
         }
         return jsonResultHelper.buildSuccessJsonResult(reward);
     }
+
+    @ApiOperation("领取")
+    @PostMapping("/getprize")
+    public JsonResult getPrize(
+            @ApiParam("用户ID") @RequestParam String userId,
+            @ApiParam("奖品索引[0-新春快乐,1-20,2-新春,3-0,4-春,5-2020,6-20快乐,7-2020新春快乐]") @RequestParam int rewardIndex) {
+        //20二零新春快乐
+        String redisKey = getCharKey(userId);
+        Map<Object, Object> chars = stringRedisTemplate.opsForHash().entries(redisKey);
+        Long twoSum = 0L;
+        if (chars.get("2")!=null){
+            twoSum = Long.valueOf(chars.get("2").toString());
+        }
+        Long zeroSum = 0L;
+        if (chars.get("0")!=null){
+            zeroSum = Long.valueOf(chars.get("0").toString());
+        }
+        Long xinSum = 0L;
+        if (chars.get("新")!=null){
+            xinSum = Long.valueOf(chars.get("新").toString());
+        }
+        Long chunSum = 0L;
+        if (chars.get("春")!=null){
+            chunSum = Long.valueOf(chars.get("春").toString());
+        }
+        Long kuaiSum = 0L;
+        if (chars.get("快")!=null){
+            kuaiSum = Long.valueOf(chars.get("快").toString());
+        }
+        Long leSum = 0L;
+        if (chars.get("乐")!=null){
+            leSum = Long.valueOf(chars.get("乐").toString());
+        }
+//        Long xinSum = Long.valueOf(chars.get("新").toString());
+//        Long chunSum = Long.valueOf(chars.get("春").toString());
+//        Long kuaiSum = Long.valueOf(chars.get("快").toString());
+//        Long leSum = Long.valueOf(chars.get("乐").toString());
+        long userIdLong = Long.valueOf(userId);
+        String redisLogKey = getRewardListKey(userId);
+        String finalRewardStr = "集字条件不足，无法兑换";
+        switch (rewardIndex){
+            case 0:
+                //新春快乐(雅漾洗面奶)
+                if ((xinSum+chunSum+kuaiSum+leSum)>=4){
+                    //领取
+                    finalRewardStr = "新春快乐(雅漾洗面奶)";
+                    String[] rewards = new String[]{"新", "春", "快", "乐"};//新春快乐
+                    for (String reward : rewards) {
+                        stringRedisTemplate.opsForHash().increment(redisKey, reward, -1);
+                    }
+                    stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
+                }
+                break;
+            case 1:
+                //20(899减120元优惠券)
+                if ((twoSum+zeroSum)>=2){
+                    //领取
+                    voucherInfoService.giveVoucher(userIdLong, 7L);
+                    finalRewardStr = "20(899减120元优惠券)";
+                    String[] rewards = new String[]{"2", "0"};//20
+                    for (String reward : rewards) {
+                        stringRedisTemplate.opsForHash().increment(redisKey, reward, -1);
+                    }
+                    stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
+                }
+                break;
+            case 2:
+                //新春(499减70元优惠券)
+                if ((xinSum+chunSum)>=2){
+                    //领取
+                    voucherInfoService.giveVoucher(userIdLong, 8L);
+                    finalRewardStr = "新春(499减70元优惠券)";
+                    String[] rewards = new String[]{"新", "春"};//新春
+                    for (String reward : rewards) {
+                        stringRedisTemplate.opsForHash().increment(redisKey, reward, -1);
+                    }
+                    stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
+                }
+                break;
+            case 3:
+                //0(199减20元优惠券)
+                if ((zeroSum)>=1){
+                    //领取
+                    voucherInfoService.giveVoucher(userIdLong, 9L);
+                    finalRewardStr = "0(199减20元优惠券)";
+                    stringRedisTemplate.opsForHash().increment(redisKey, "0", -1);
+                    stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
+                }
+                break;
+            case 4:
+                //春(5元无门槛代金券)
+                if ((chunSum)>=1){
+                    //领取
+                    voucherInfoService.giveVoucher(userIdLong, 10L);
+                    finalRewardStr = "春(5元无门槛代金券)";
+                    stringRedisTemplate.opsForHash().increment(redisKey, "春", -1);
+                    stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
+                }
+                break;
+            default:
+                break;
+        }
+        return jsonResultHelper.buildSuccessJsonResult(finalRewardStr);
+    }
 }
