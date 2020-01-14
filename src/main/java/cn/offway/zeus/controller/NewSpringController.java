@@ -333,7 +333,7 @@ public class NewSpringController {
         switch (rewardIndex){
             case 0:
                 //新春快乐(雅漾洗面奶)
-                if ((xinSum+chunSum+kuaiSum+leSum)>=4){
+                if (xinSum>=1&&chunSum>=1&&kuaiSum>=1&&leSum>=1){
                     //领取
                     finalRewardStr = "新春快乐(雅漾洗面奶)";
                     String[] rewards = new String[]{"新", "春", "快", "乐"};//新春快乐
@@ -345,7 +345,7 @@ public class NewSpringController {
                 break;
             case 1:
                 //20(899减120元优惠券)
-                if ((twoSum+zeroSum)>=2){
+                if (twoSum>=1&&zeroSum>=1){
                     //领取
                     voucherInfoService.giveVoucher(userIdLong, 7L);
                     finalRewardStr = "20(899减120元优惠券)";
@@ -358,7 +358,7 @@ public class NewSpringController {
                 break;
             case 2:
                 //新春(499减70元优惠券)
-                if ((xinSum+chunSum)>=2){
+                if (xinSum>=1&&chunSum>=1){
                     //领取
                     voucherInfoService.giveVoucher(userIdLong, 8L);
                     finalRewardStr = "新春(499减70元优惠券)";
@@ -371,7 +371,7 @@ public class NewSpringController {
                 break;
             case 3:
                 //0(199减20元优惠券)
-                if ((zeroSum)>=1){
+                if (zeroSum>=1){
                     //领取
                     voucherInfoService.giveVoucher(userIdLong, 9L);
                     finalRewardStr = "0(199减20元优惠券)";
@@ -381,7 +381,7 @@ public class NewSpringController {
                 break;
             case 4:
                 //春(5元无门槛代金券)
-                if ((chunSum)>=1){
+                if (chunSum>=1){
                     //领取
                     voucherInfoService.giveVoucher(userIdLong, 10L);
                     finalRewardStr = "春(5元无门槛代金券)";
