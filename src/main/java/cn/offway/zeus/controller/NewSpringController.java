@@ -156,7 +156,7 @@ public class NewSpringController {
         logger.info("新用户分享获取 reward is :" + reward);
         String redisKey = getCharKey(userId);
         stringRedisTemplate.opsForHash().increment(redisKey, reward, 1);
-        return jsonResultHelper.buildSuccessJsonResult(null);
+        return jsonResultHelper.buildSuccessJsonResult(reward);
     }
 
     @ApiOperation("活动入口")
