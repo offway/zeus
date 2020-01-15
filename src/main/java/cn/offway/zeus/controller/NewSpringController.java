@@ -306,7 +306,7 @@ public class NewSpringController {
             @ApiParam("奖品索引[0-新春快乐,1-20,2-新春,3-0,4-春,5-2020,6-20快乐,7-2020新春快乐]") @RequestParam int rewardIndex) {
         //20二零新春快乐
         Date date = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat("MM-dd hh:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat("MM-dd HH:mm:ss");
         String getDate = ft.format(date);
         String redisKey = getCharKey(userId);
         Map<Object, Object> chars = stringRedisTemplate.opsForHash().entries(redisKey);
