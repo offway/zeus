@@ -156,7 +156,7 @@ public class NewSpringController {
         logger.info("新用户分享获取 reward is :" + reward);
         String redisKey = getCharKey(userId);
         stringRedisTemplate.opsForHash().increment(redisKey, reward, 1);
-        return jsonResultHelper.buildSuccessJsonResult(null);
+        return jsonResultHelper.buildSuccessJsonResult(reward);
     }
 
     @ApiOperation("活动入口")
@@ -300,27 +300,27 @@ public class NewSpringController {
         String redisKey = getCharKey(userId);
         Map<Object, Object> chars = stringRedisTemplate.opsForHash().entries(redisKey);
         Long twoSum = 0L;
-        if (chars.get("2")!=null){
+        if (chars.get("2") != null) {
             twoSum = Long.valueOf(chars.get("2").toString());
         }
         Long zeroSum = 0L;
-        if (chars.get("0")!=null){
+        if (chars.get("0") != null) {
             zeroSum = Long.valueOf(chars.get("0").toString());
         }
         Long xinSum = 0L;
-        if (chars.get("新")!=null){
+        if (chars.get("新") != null) {
             xinSum = Long.valueOf(chars.get("新").toString());
         }
         Long chunSum = 0L;
-        if (chars.get("春")!=null){
+        if (chars.get("春") != null) {
             chunSum = Long.valueOf(chars.get("春").toString());
         }
         Long kuaiSum = 0L;
-        if (chars.get("快")!=null){
+        if (chars.get("快") != null) {
             kuaiSum = Long.valueOf(chars.get("快").toString());
         }
         Long leSum = 0L;
-        if (chars.get("乐")!=null){
+        if (chars.get("乐") != null) {
             leSum = Long.valueOf(chars.get("乐").toString());
         }
 //        Long xinSum = Long.valueOf(chars.get("新").toString());
@@ -330,10 +330,10 @@ public class NewSpringController {
         long userIdLong = Long.valueOf(userId);
         String redisLogKey = getRewardListKey(userId);
         String finalRewardStr = "集字条件不足，无法兑换";
-        switch (rewardIndex){
+        switch (rewardIndex) {
             case 0:
                 //新春快乐(雅漾洗面奶)
-                if (xinSum>=1&&chunSum>=1&&kuaiSum>=1&&leSum>=1){
+                if (xinSum >= 1 && chunSum >= 1 && kuaiSum >= 1 && leSum >= 1) {
                     //领取
                     finalRewardStr = "新春快乐(雅漾洗面奶)";
                     String[] rewards = new String[]{"新", "春", "快", "乐"};//新春快乐
@@ -345,7 +345,7 @@ public class NewSpringController {
                 break;
             case 1:
                 //20(899减120元优惠券)
-                if (twoSum>=1&&zeroSum>=1){
+                if (twoSum >= 1 && zeroSum >= 1) {
                     //领取
                     voucherInfoService.giveVoucher(userIdLong, 7L);
                     finalRewardStr = "20(899减120元优惠券)";
@@ -358,7 +358,7 @@ public class NewSpringController {
                 break;
             case 2:
                 //新春(499减70元优惠券)
-                if (xinSum>=1&&chunSum>=1){
+                if (xinSum >= 1 && chunSum >= 1) {
                     //领取
                     voucherInfoService.giveVoucher(userIdLong, 8L);
                     finalRewardStr = "新春(499减70元优惠券)";
@@ -371,7 +371,7 @@ public class NewSpringController {
                 break;
             case 3:
                 //0(199减20元优惠券)
-                if (zeroSum>=1){
+                if (zeroSum >= 1) {
                     //领取
                     voucherInfoService.giveVoucher(userIdLong, 9L);
                     finalRewardStr = "0(199减20元优惠券)";
@@ -381,7 +381,7 @@ public class NewSpringController {
                 break;
             case 4:
                 //春(5元无门槛代金券)
-                if (chunSum>=1){
+                if (chunSum >= 1) {
                     //领取
                     voucherInfoService.giveVoucher(userIdLong, 10L);
                     finalRewardStr = "春(5元无门槛代金券)";
