@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Api(tags = {"春节活动"})
 @RestController
@@ -32,6 +33,7 @@ public class NewSpringController {
     private static final String KEY_SHARE = "NewSpring_SHARE";
     private static final String KEY_CHAR = "NewSpring_CHAR_{0}";
     private static final String KEY_SPECIAL_REWARD_1 = "NewSpring_SPECIAL_REWARD_1";
+    private static final String USER_TOKEN_KEY = "USER_TOKEN_PHONE";
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private JsonResultHelper jsonResultHelper;
@@ -298,6 +300,64 @@ public class NewSpringController {
         }
         return jsonResultHelper.buildSuccessJsonResult(reward);
     }
+
+    @ApiOperation("获取兑换密钥")
+    @GetMapping("/gettoken")
+    public JsonResult gettoken(@ApiParam("手机") @RequestParam String phone,@ApiParam("用户ID") @RequestParam Long id) {
+        try {
+            List<String> phones = new ArrayList<>();
+            phones.add("+8617717272297");
+            PhUserInfo userInfo = userInfoService.findByPhone(phone);
+            String token = "无权限!";
+            if (userInfo.getId().toString().equals(id.toString())){
+                if (phones.contains(phone)){
+                    token = UUID.randomUUID().toString().replaceAll("-", "");
+                    stringRedisTemplate.opsForValue().set(USER_TOKEN_KEY + "_" + phone, token, 1, TimeUnit.MINUTES);
+                }
+            }
+            return jsonResultHelper.buildSuccessJsonResult(token);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获得用户token异常", e);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+        }
+    }
+
+    @ApiOperation("兑换")
+    @GetMapping("/setchar")
+    public JsonResult setchar(@ApiParam("手机") @RequestParam String phone,
+                              @ApiParam("用户ID") @RequestParam Long id,
+                              @ApiParam("派发用户ID") @RequestParam String userid,
+                              @ApiParam("token") @RequestParam String token,
+                              @ApiParam("派发字以,号隔开") @RequestParam String chars) {
+        try {
+            List<String> phones = new ArrayList<>();
+            phones.add("+8617717272297");
+            if (!phones.contains(phone)){
+                return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+            }
+            PhUserInfo userInfo = userInfoService.findByPhone(phone);
+            if (!userInfo.getId().toString().equals(id.toString())){
+                return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+            }
+            String tokens = stringRedisTemplate.opsForValue().get(USER_TOKEN_KEY + "_" + phone);
+            if (!token.equals(tokens)){
+                return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+            }
+            String [] chas = chars.split(",");
+            String redisKey = getCharKey(userid);
+            for (String cha : chas) {
+                stringRedisTemplate.opsForHash().increment(redisKey, cha, 1);
+            }
+            return jsonResultHelper.buildSuccessJsonResult("OK");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获得用户token异常", e);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+        }
+    }
+
+
 
     @ApiOperation("领取")
     @PostMapping("/getprize")
