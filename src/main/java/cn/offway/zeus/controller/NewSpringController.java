@@ -426,7 +426,7 @@ public class NewSpringController {
                 //20(899减120元优惠券)
                 if (twoSum >= 1 && zeroSum >= 1) {
                     //领取
-                    voucherInfoService.giveVoucher(userIdLong, 7L);
+                    voucherInfoService.giveVoucher(userIdLong, 157L);
                     finalRewardStr = "899减120元优惠券," + getDate;
                     String[] rewards = new String[]{"2", "0"};//20
                     for (String reward : rewards) {
@@ -439,7 +439,7 @@ public class NewSpringController {
                 //新春(499减70元优惠券)
                 if (xinSum >= 1 && chunSum >= 1) {
                     //领取
-                    voucherInfoService.giveVoucher(userIdLong, 8L);
+                    voucherInfoService.giveVoucher(userIdLong, 158L);
                     finalRewardStr = "499减70元优惠券," + getDate;
                     String[] rewards = new String[]{"新", "春"};//新春
                     for (String reward : rewards) {
@@ -452,7 +452,7 @@ public class NewSpringController {
                 //0(199减20元优惠券)
                 if (zeroSum >= 1) {
                     //领取
-                    voucherInfoService.giveVoucher(userIdLong, 9L);
+                    voucherInfoService.giveVoucher(userIdLong, 159L);
                     finalRewardStr = "199减20元优惠券," + getDate;
                     stringRedisTemplate.opsForHash().increment(redisKey, "0", -1);
                     stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
@@ -462,7 +462,7 @@ public class NewSpringController {
                 //春(5元无门槛代金券)
                 if (chunSum >= 1) {
                     //领取
-                    voucherInfoService.giveVoucher(userIdLong, 10L);
+                    voucherInfoService.giveVoucher(userIdLong, 160L);
                     finalRewardStr = "5元无门槛代金券," + getDate;
                     stringRedisTemplate.opsForHash().increment(redisKey, "春", -1);
                     stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
