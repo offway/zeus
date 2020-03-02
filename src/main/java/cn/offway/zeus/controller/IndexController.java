@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.offway.zeus.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -36,13 +37,6 @@ import cn.offway.zeus.domain.PhStarsame;
 import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.repository.PhGoodsCategoryRepository;
 import cn.offway.zeus.repository.PhGoodsTypeRepository;
-import cn.offway.zeus.service.PhBannerService;
-import cn.offway.zeus.service.PhBrandService;
-import cn.offway.zeus.service.PhConfigService;
-import cn.offway.zeus.service.PhGoodsService;
-import cn.offway.zeus.service.PhStarsameService;
-import cn.offway.zeus.service.PhWxuserInfoService;
-import cn.offway.zeus.service.WxService;
 import cn.offway.zeus.utils.HttpClientUtil;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -103,6 +97,9 @@ public class IndexController {
 	
 	@Autowired
 	private PhGoodsCategoryRepository phGoodsCategoryRepository;
+
+	@Autowired
+	private PhBrandRecommendService phBrandRecommendService;
 
 	@ResponseBody
 	@GetMapping("/")
@@ -304,6 +301,7 @@ public class IndexController {
 	public JsonResult datavMini() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("banners", phBannerService.banners("4"));
+		map.put("minibanners", phBrandRecommendService.findAllRecommend());
 		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI", "INDEX_BRAND_GOODS_MINI", "INDEX_CATEGORY_MINI");
 		for (PhConfig phConfig : configs) {
 			String name = phConfig.getName().toLowerCase();
