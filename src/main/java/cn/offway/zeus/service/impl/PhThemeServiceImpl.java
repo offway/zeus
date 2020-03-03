@@ -51,4 +51,9 @@ public class PhThemeServiceImpl implements PhThemeService {
 	public List<PhTheme> save(List<PhTheme> entities){
 		return phThemeRepository.saveAll(entities);
 	}
+
+	@Override
+	public List<PhTheme> findByIsRecommend(Long status){
+		return phThemeRepository.findByIsRecommend(status);
+	}
 }

@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhTheme;
 
+import java.util.List;
+
 /**
  * 主题列表Repository接口
  *
@@ -13,5 +15,5 @@ import cn.offway.zeus.domain.PhTheme;
  */
 public interface PhThemeRepository extends JpaRepository<PhTheme,Long>,JpaSpecificationExecutor<PhTheme> {
 
-	/** 此处写一些自定义的方法 **/
+    List<PhTheme> findByIsRecommend(Long status);
 }

@@ -51,4 +51,9 @@ public class PhThemeGoodsServiceImpl implements PhThemeGoodsService {
 	public List<PhThemeGoods> save(List<PhThemeGoods> entities){
 		return phThemeGoodsRepository.saveAll(entities);
 	}
+
+	@Override
+	public List<PhThemeGoods> findByThemeId(Long id){
+		return phThemeGoodsRepository.findByThemeId(id);
+	}
 }

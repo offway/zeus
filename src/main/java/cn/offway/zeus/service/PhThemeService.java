@@ -20,4 +20,6 @@ public interface PhThemeService{
     void delete(Long id);
 
     List<PhTheme> save(List<PhTheme> entities);
+
+    List<PhTheme> findByIsRecommend(Long status);
 }

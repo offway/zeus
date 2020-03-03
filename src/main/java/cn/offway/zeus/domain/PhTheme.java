@@ -32,6 +32,9 @@ public class PhTheme implements Serializable {
     /** 备注 **/
     private String remark;
 
+    /** 是否推荐【0-否，1-是】 **/
+    private String isRecommend;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -88,6 +91,15 @@ public class PhTheme implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Column(name = "is_recommend", length = 2)
+    public String getIsRecommend() {
+        return isRecommend;
+    }
+
+    public void setIsRecommend(String isRecommend) {
+        this.isRecommend = isRecommend;
     }
 
 }

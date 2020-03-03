@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.offway.zeus.domain.*;
 import cn.offway.zeus.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomUtils;
@@ -27,14 +28,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.offway.zeus.domain.PhBanner;
-import cn.offway.zeus.domain.PhBrand;
-import cn.offway.zeus.domain.PhConfig;
-import cn.offway.zeus.domain.PhGoods;
-import cn.offway.zeus.domain.PhGoodsCategory;
-import cn.offway.zeus.domain.PhGoodsType;
-import cn.offway.zeus.domain.PhStarsame;
-import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.repository.PhGoodsCategoryRepository;
 import cn.offway.zeus.repository.PhGoodsTypeRepository;
 import cn.offway.zeus.utils.HttpClientUtil;
@@ -100,6 +93,12 @@ public class IndexController {
 
 	@Autowired
 	private PhBrandRecommendService phBrandRecommendService;
+
+	@Autowired
+	private PhThemeService phThemeService;
+
+	@Autowired
+	private PhThemeGoodsService phThemeGoodsService;
 
 	@ResponseBody
 	@GetMapping("/")
@@ -325,6 +324,18 @@ public class IndexController {
 			} else {
 				map.put(name, JSON.parse(content));
 			}
+		}
+		List<PhTheme> phThemes = phThemeService.findByIsRecommend(1L);
+		if (phThemes.size()>0 || phThemes != null){
+			List<Object> objects = new ArrayList<>();
+			for (PhTheme phTheme : phThemes) {
+				List<PhThemeGoods> phThemeGoods = phThemeGoodsService.findByThemeId(phTheme.getId());
+				Map<String,Object> map1 = new HashMap<>();
+				map1.put("Theme",phTheme);
+				map1.put("Goods",phThemeGoods);
+				objects.add(map1);
+			}
+			map.put("ThemeData",objects);
 		}
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}

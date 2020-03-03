@@ -20,4 +20,6 @@ public interface PhThemeGoodsService{
     void delete(Long id);
 
     List<PhThemeGoods> save(List<PhThemeGoods> entities);
+
+    List<PhThemeGoods> findByThemeId(Long id);
 }

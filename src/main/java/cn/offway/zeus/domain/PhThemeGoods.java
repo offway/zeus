@@ -18,7 +18,7 @@ public class PhThemeGoods implements Serializable {
     private Long id;
 
     /** 主题ID[ph_theme] **/
-    private Long pickId;
+    private Long themeId;
 
     /** 商品ID[见ph_goods] **/
     private Long goodsId;
@@ -41,13 +41,13 @@ public class PhThemeGoods implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "pick_id", length = 11)
-    public Long getPickId() {
-        return pickId;
+    @Column(name = "theme_id", length = 11)
+    public Long getThemeId() {
+        return themeId;
     }
 
-    public void setPickId(Long pickId) {
-        this.pickId = pickId;
+    public void setThemeId(Long themeId) {
+        this.themeId = themeId;
     }
 
     @Column(name = "goods_id", length = 11)

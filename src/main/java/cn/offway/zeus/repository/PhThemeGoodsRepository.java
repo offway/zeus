@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhThemeGoods;
 
+import java.util.List;
+
 /**
  * 主题商品表Repository接口
  *
@@ -13,5 +15,5 @@ import cn.offway.zeus.domain.PhThemeGoods;
  */
 public interface PhThemeGoodsRepository extends JpaRepository<PhThemeGoods,Long>,JpaSpecificationExecutor<PhThemeGoods> {
 
-	/** 此处写一些自定义的方法 **/
+	List<PhThemeGoods> findByThemeId(Long id);
 }
