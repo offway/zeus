@@ -75,6 +75,12 @@ public class GoodsController {
 	@Autowired
 	private PhConfigService phConfigService;
 
+	@Autowired
+	private PhThemeService phThemeService;
+
+	@Autowired
+	private  VThemeGoodsService vThemeGoodsService;
+
 	private static Date updateDate = null;
 
 
@@ -284,6 +290,21 @@ public class GoodsController {
 	public JsonResult orderInitCheck(@RequestBody @ApiParam("请求参数") OrderInitDto orderInitDto){
 		return phShoppingCartService.orderInitCheck(orderInitDto);
 
+	}
+
+	@ApiOperation("主题详情")
+	@GetMapping("/theme")
+	public JsonResult themeInfo(@ApiParam("主题ID") @PathVariable Long id){
+		return jsonResultHelper.buildSuccessJsonResult(phThemeService.findOne(id));
+	}
+
+	@ApiOperation("主题商品列表")
+	@PostMapping("/theme/list")
+	public JsonResult themegoods(
+			@ApiParam("主题ID") @RequestParam Long themeId,
+			@ApiParam("页码,从0开始") @RequestParam int page,
+			@ApiParam("页大小") @RequestParam int size){
+		return jsonResultHelper.buildSuccessJsonResult(vThemeGoodsService.findByPage(themeId, PageRequest.of(page, size)));
 	}
 
 	@ApiOperation("优选详情")
