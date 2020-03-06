@@ -20,4 +20,8 @@ public interface PhFollowService{
     void delete(Long id);
 
     List<PhFollow> save(List<PhFollow> entities);
+
+    void deleteByUidAndCelebrityid(String uid, Long id);
+
+    List<PhFollow> findByUnionid(String uid);
 }

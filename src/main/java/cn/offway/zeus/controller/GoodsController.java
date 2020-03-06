@@ -293,7 +293,7 @@ public class GoodsController {
 	}
 
 	@ApiOperation("主题详情")
-	@GetMapping("/theme")
+	@GetMapping("/theme/{id}")
 	public JsonResult themeInfo(@ApiParam("主题ID") @PathVariable Long id){
 		return jsonResultHelper.buildSuccessJsonResult(phThemeService.findOne(id));
 	}

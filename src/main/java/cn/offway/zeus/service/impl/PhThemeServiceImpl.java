@@ -53,7 +53,7 @@ public class PhThemeServiceImpl implements PhThemeService {
 	}
 
 	@Override
-	public List<PhTheme> findByIsRecommend(Long status){
+	public List<PhTheme> findByIsRecommend(String status){
 		return phThemeRepository.findByIsRecommend(status);
 	}
 }

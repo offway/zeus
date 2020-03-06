@@ -87,6 +87,7 @@ public class VThemeGoods implements Serializable {
     private Long themeGoodsId;
 
 
+    @Id
     @Column(name = "id", length = 11)
     public Long getId() {
         return id;

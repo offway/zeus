@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhCelebrityList;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * 明星信息表Repository接口
@@ -13,5 +16,6 @@ import cn.offway.zeus.domain.PhCelebrityList;
  */
 public interface PhCelebrityListRepository extends JpaRepository<PhCelebrityList,Long>,JpaSpecificationExecutor<PhCelebrityList> {
 
-	/** 此处写一些自定义的方法 **/
+	@Query(nativeQuery = true,value = "select * from ph_celebrity_list where `name`like ?1 ")
+	List<PhCelebrityList> findBynNameLike(String name);
 }

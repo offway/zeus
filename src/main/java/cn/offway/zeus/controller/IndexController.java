@@ -330,7 +330,7 @@ public class IndexController {
 				map.put(name, JSON.parse(content));
 			}
 		}
-		List<PhTheme> phThemes = phThemeService.findByIsRecommend(1L);
+		List<PhTheme> phThemes = phThemeService.findByIsRecommend("1");
 		if (phThemes.size()>0 || phThemes != null){
 			List<Object> objects = new ArrayList<>();
 			for (PhTheme phTheme : phThemes) {

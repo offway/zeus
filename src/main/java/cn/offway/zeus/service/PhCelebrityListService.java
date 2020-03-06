@@ -20,4 +20,8 @@ public interface PhCelebrityListService{
     void delete(Long id);
 
     List<PhCelebrityList> save(List<PhCelebrityList> entities);
+
+    List<PhCelebrityList> findBynNameLike(String name);
+
+    List<PhCelebrityList> finAll();
 }

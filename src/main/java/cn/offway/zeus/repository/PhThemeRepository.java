@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface PhThemeRepository extends JpaRepository<PhTheme,Long>,JpaSpecificationExecutor<PhTheme> {
 
-    List<PhTheme> findByIsRecommend(Long status);
+    List<PhTheme> findByIsRecommend(String status);
 }

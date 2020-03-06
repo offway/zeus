@@ -4,6 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.PhFollow;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 关注列表Repository接口
@@ -13,5 +18,10 @@ import cn.offway.zeus.domain.PhFollow;
  */
 public interface PhFollowRepository extends JpaRepository<PhFollow,Long>,JpaSpecificationExecutor<PhFollow> {
 
-	/** 此处写一些自定义的方法 **/
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true,value="delete from ph_follow where unionid = ?1 and celebrity_id = ?2 ")
+    int deleteByUnionidAndCelebrityId(String uid, Long id);
+
+    List<PhFollow> findByUnionid(String unionid);
 }

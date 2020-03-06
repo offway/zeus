@@ -51,4 +51,14 @@ public class PhFollowServiceImpl implements PhFollowService {
 	public List<PhFollow> save(List<PhFollow> entities){
 		return phFollowRepository.saveAll(entities);
 	}
+
+	@Override
+	public void deleteByUidAndCelebrityid(String uid, Long id){
+		phFollowRepository.deleteByUnionidAndCelebrityId(uid,id);
+	}
+
+	@Override
+	public List<PhFollow> findByUnionid(String uid){
+		return phFollowRepository.findByUnionid(uid);
+	}
 }

@@ -31,6 +31,8 @@ public class PhCelebrityList implements Serializable {
     /** 备注 **/
     private String remark;
 
+    private String follow;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -88,4 +90,11 @@ public class PhCelebrityList implements Serializable {
         this.remark = remark;
     }
 
+    public String getFollow() {
+        return follow;
+    }
+
+    public void setFollow(String follow) {
+        this.follow = follow;
+    }
 }

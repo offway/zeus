@@ -21,5 +21,5 @@ public interface PhThemeService{
 
     List<PhTheme> save(List<PhTheme> entities);
 
-    List<PhTheme> findByIsRecommend(Long status);
+    List<PhTheme> findByIsRecommend(String status);
 }

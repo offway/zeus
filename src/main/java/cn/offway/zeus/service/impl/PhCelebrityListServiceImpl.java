@@ -51,4 +51,14 @@ public class PhCelebrityListServiceImpl implements PhCelebrityListService {
 	public List<PhCelebrityList> save(List<PhCelebrityList> entities){
 		return phCelebrityListRepository.saveAll(entities);
 	}
+
+	@Override
+	public List<PhCelebrityList> findBynNameLike(String name){
+		return phCelebrityListRepository.findBynNameLike("%"+name+"%");
+	}
+
+	@Override
+	public List<PhCelebrityList> finAll(){
+		return phCelebrityListRepository.findAll();
+	}
 }

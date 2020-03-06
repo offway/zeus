@@ -1,15 +1,10 @@
 package cn.offway.zeus.controller;
 
-import cn.offway.zeus.domain.PhStarsame;
-import cn.offway.zeus.domain.PhStarsameComments;
-import cn.offway.zeus.domain.PhStarsameGoods;
-import cn.offway.zeus.domain.PhUserInfo;
+import cn.offway.zeus.domain.*;
 import cn.offway.zeus.repository.PhStarsameGoodsRepository;
 import cn.offway.zeus.repository.PhStarsameImageRepository;
 import cn.offway.zeus.repository.PhStarsameRepository;
-import cn.offway.zeus.service.PhStarsameCommentsService;
-import cn.offway.zeus.service.PhStarsameService;
-import cn.offway.zeus.service.PhUserInfoService;
+import cn.offway.zeus.service.*;
 import cn.offway.zeus.utils.CommonResultCode;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -58,6 +53,12 @@ public class StarsameController {
 
 	@Autowired
 	private PhUserInfoService userInfoService;
+
+	@Autowired
+	private PhFollowService phFollowService;
+
+	@Autowired
+	private PhCelebrityListService phCelebrityListService;
 	
 	private static final String STARSAME_PRAISE="zeus.starsame.praise";
 	
@@ -224,5 +225,85 @@ public class StarsameController {
 		comments.setSex(userInfo.getSex());
 		starsameCommentsService.save(comments);
 		return jsonResultHelper.buildSuccessJsonResult(null);
+	}
+
+	@ApiOperation("添加关注")
+	@PostMapping("/addfollow")
+	public JsonResult addFollow(
+			@ApiParam("unionid") String unionid,
+			@ApiParam("明星Id") Long id){
+		PhCelebrityList celebrity = phCelebrityListService.findOne(id);
+		PhUserInfo user = userInfoService.findByUnionid(unionid);
+		PhFollow follow = new PhFollow();
+		follow.setUserId(user.getId());
+		follow.setUnionid(user.getUnionid());
+		follow.setNickname(user.getNickname());
+		follow.setHeadimgurl(user.getHeadimgurl());
+		follow.setCelebrityHeadimgurl(celebrity.getHeadimgurl());
+		follow.setCelebrityId(celebrity.getId());
+		follow.setCelebrityName(celebrity.getName());
+		if ("".equals(celebrity.getFansSum())||celebrity.getFansSum() == null){
+			celebrity.setFansSum(1L);
+		}else {
+			celebrity.setFansSum(celebrity.getFansSum()+1L);
+		}
+		phFollowService.save(follow);
+		phCelebrityListService.save(celebrity);
+		return jsonResultHelper.buildSuccessJsonResult(CommonResultCode.SUCCESS);
+	}
+
+	@ApiOperation("取消关注")
+	@PostMapping("/delfollow")
+	public JsonResult delFollow(
+			@ApiParam("unionid") String unionid,
+			@ApiParam("明星Id") Long id){
+		PhCelebrityList celebrity = phCelebrityListService.findOne(id);
+		celebrity.setFansSum(celebrity.getFansSum()-1L);
+		phCelebrityListService.save(celebrity);
+		phFollowService.deleteByUidAndCelebrityid(unionid,id);
+		return jsonResultHelper.buildSuccessJsonResult(CommonResultCode.SUCCESS);
+	}
+
+	@ApiOperation("搜索明星")
+	@GetMapping("/search")
+	public JsonResult search(
+			@ApiParam("unionid") String unionid,
+			@ApiParam("name") String name){
+		List<PhFollow> follow = phFollowService.findByUnionid(unionid);
+		List<PhCelebrityList> phCelebrityList = phCelebrityListService.findBynNameLike(name);
+		List<PhCelebrityList> phCelebrityLists = new ArrayList<>();
+		for (PhFollow phFollow : follow) {
+			for (PhCelebrityList celebrityList : phCelebrityList) {
+				if (phFollow.getCelebrityId().equals(celebrityList.getId())){
+					celebrityList.setFollow("Y");
+					phCelebrityLists.add(celebrityList);
+				}else {
+					celebrityList.setFollow("N");
+					phCelebrityLists.add(celebrityList);
+				}
+			}
+		}
+		return jsonResultHelper.buildSuccessJsonResult(phCelebrityLists);
+	}
+
+	@ApiOperation("明星列表")
+	@GetMapping("/starlist")
+	public JsonResult starList(
+			@ApiParam("unionid") String unionid){
+		List<PhFollow> follow = phFollowService.findByUnionid(unionid);
+		List<PhCelebrityList> phCelebrityList = phCelebrityListService.finAll();
+		List<PhCelebrityList> phCelebrityLists = new ArrayList<>();
+		for (PhFollow phFollow : follow) {
+			for (PhCelebrityList celebrityList : phCelebrityList) {
+				if (phFollow.getCelebrityId().equals(celebrityList.getId())){
+					celebrityList.setFollow("Y");
+					phCelebrityLists.add(celebrityList);
+				}else {
+					celebrityList.setFollow("N");
+					phCelebrityLists.add(celebrityList);
+				}
+			}
+		}
+		return jsonResultHelper.buildSuccessJsonResult(phCelebrityLists);
 	}
 }
