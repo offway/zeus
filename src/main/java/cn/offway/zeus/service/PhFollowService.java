@@ -24,4 +24,6 @@ public interface PhFollowService{
     void deleteByUidAndCelebrityid(String uid, Long id);
 
     List<PhFollow> findByUnionid(String uid);
+
+    PhFollow findByUnionidAndCelebrityId(String unionid, Long aLongcelebrityId);
 }

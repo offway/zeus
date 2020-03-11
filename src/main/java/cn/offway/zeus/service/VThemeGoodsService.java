@@ -24,4 +24,6 @@ public interface VThemeGoodsService{
     List<VThemeGoods> save(List<VThemeGoods> entities);
 
     Page<VThemeGoods> findByPage(Long themeId, Pageable page);
+
+    List<VThemeGoods> findAllTop10(Long id);
 }

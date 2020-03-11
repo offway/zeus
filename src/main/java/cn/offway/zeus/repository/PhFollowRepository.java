@@ -24,4 +24,6 @@ public interface PhFollowRepository extends JpaRepository<PhFollow,Long>,JpaSpec
     int deleteByUnionidAndCelebrityId(String uid, Long id);
 
     List<PhFollow> findByUnionid(String unionid);
+
+    PhFollow findByUnionidAndCelebrityId(String unionid,Long aLongcelebrityId);
 }

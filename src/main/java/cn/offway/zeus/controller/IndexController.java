@@ -10,6 +10,7 @@ import java.util.Set;
 
 import cn.offway.zeus.domain.*;
 import cn.offway.zeus.service.*;
+import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -306,7 +307,7 @@ public class IndexController {
 		Map<String, Object> map = new HashMap<>();
 		map.put("banners", phBannerService.banners("4"));
 		map.put("minibanners", phBrandRecommendService.findAllRecommend());
-		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI", "INDEX_BRAND_GOODS_MINI", "INDEX_CATEGORY_MINI");
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI", "INDEX_BRAND_GOODS_MINI", "INDEX_CATEGORY_MINI","INDEX_STYLE_FULL_MINI");
 		for (PhConfig phConfig : configs) {
 			String name = phConfig.getName().toLowerCase();
 			String content = phConfig.getContent();
@@ -334,7 +335,7 @@ public class IndexController {
 		if (phThemes.size()>0 || phThemes != null){
 			List<Object> objects = new ArrayList<>();
 			for (PhTheme phTheme : phThemes) {
-				Page<VThemeGoods> phThemeGoods = vThemeGoodsService.findByPage(phTheme.getId(), PageRequest.of(0, 10));
+				List<VThemeGoods> phThemeGoods = vThemeGoodsService.findAllTop10(phTheme.getId());
 				Map<String,Object> map1 = new HashMap<>();
 				map1.put("Theme",phTheme);
 				map1.put("Goods",phThemeGoods);
@@ -406,5 +407,14 @@ public class IndexController {
 		}
 		
 		return jsonResultHelper.buildSuccessJsonResult(s);
+	}
+
+	@ApiOperation("风格信息")
+	@GetMapping("/searchfull")
+	@ResponseBody
+	public JsonResult searchfull(@ApiParam("风格下标") @RequestParam Integer id){
+		String jsonStr = phConfigService.findContentByName("INDEX_STYLE_FULL_MINI");
+		JSONArray jsonArray = JSONArray.parseArray(jsonStr);
+		return jsonResultHelper.buildSuccessJsonResult(jsonArray.getJSONObject(id));
 	}
 }

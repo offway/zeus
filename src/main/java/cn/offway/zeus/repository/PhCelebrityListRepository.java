@@ -16,6 +16,12 @@ import java.util.List;
  */
 public interface PhCelebrityListRepository extends JpaRepository<PhCelebrityList,Long>,JpaSpecificationExecutor<PhCelebrityList> {
 
-	@Query(nativeQuery = true,value = "select * from ph_celebrity_list where `name`like ?1 ")
-	List<PhCelebrityList> findBynNameLike(String name);
+	@Query(nativeQuery=true,value="select * from ph_celebrity_list where name like ?1")
+	List<PhCelebrityList> findNameLike(String name);
+
+	@Query(nativeQuery=true,value="select * from ph_celebrity_list  ORDER BY `name` LIMIT ?1 ,?2 ")
+	List<PhCelebrityList> findPage(Long page,Long size);
+
+	List<PhCelebrityList> findByName(String name);
+
 }

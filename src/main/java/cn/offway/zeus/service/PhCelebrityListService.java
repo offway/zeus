@@ -24,4 +24,8 @@ public interface PhCelebrityListService{
     List<PhCelebrityList> findBynNameLike(String name);
 
     List<PhCelebrityList> finAll();
+
+    List<PhCelebrityList> findByName(String name);
+
+    List<PhCelebrityList> findPage(Long page, Long size);
 }

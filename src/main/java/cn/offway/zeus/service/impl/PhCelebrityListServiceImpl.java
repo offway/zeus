@@ -54,11 +54,21 @@ public class PhCelebrityListServiceImpl implements PhCelebrityListService {
 
 	@Override
 	public List<PhCelebrityList> findBynNameLike(String name){
-		return phCelebrityListRepository.findBynNameLike("%"+name+"%");
+		return phCelebrityListRepository.findNameLike("%"+name+"%");
 	}
 
 	@Override
 	public List<PhCelebrityList> finAll(){
 		return phCelebrityListRepository.findAll();
+	}
+
+	@Override
+	public List<PhCelebrityList> findByName(String name){
+		return phCelebrityListRepository.findByName(name);
+	}
+
+	@Override
+	public List<PhCelebrityList> findPage(Long page,Long size){
+		return phCelebrityListRepository.findPage(page*10L,size);
 	}
 }

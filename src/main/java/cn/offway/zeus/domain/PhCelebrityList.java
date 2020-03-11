@@ -31,6 +31,7 @@ public class PhCelebrityList implements Serializable {
     /** 备注 **/
     private String remark;
 
+
     private String follow;
 
 
@@ -90,6 +91,7 @@ public class PhCelebrityList implements Serializable {
         this.remark = remark;
     }
 
+    @Transient
     public String getFollow() {
         return follow;
     }

@@ -61,4 +61,9 @@ public class PhFollowServiceImpl implements PhFollowService {
 	public List<PhFollow> findByUnionid(String uid){
 		return phFollowRepository.findByUnionid(uid);
 	}
+
+	@Override
+	public PhFollow findByUnionidAndCelebrityId(String unionid,Long aLongcelebrityId){
+		return phFollowRepository.findByUnionidAndCelebrityId(unionid,aLongcelebrityId);
+	}
 }

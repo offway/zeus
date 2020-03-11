@@ -128,6 +128,21 @@ public enum CommonResultCode implements ResultCode {
      * 还未签到
      */
     NOT_SIGNED("1040", "NOT_SIGNED"),
+
+    /**
+     * 无关注
+     */
+    NOT_FOLLOW("1041", "NOT_FOLLOW"),
+
+    /**
+     * 已关注
+     */
+    CELEBRITY_FOLLOW("1042", "CELEBRITY_FOLLOW"),
+
+    /**
+     * 已关注
+     */
+    CELEBRITY_DELFOLLOW("1043", "CELEBRITY_DELFOLLOW"),
     ;
 	
 	

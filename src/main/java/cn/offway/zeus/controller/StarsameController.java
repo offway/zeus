@@ -230,8 +230,12 @@ public class StarsameController {
 	@ApiOperation("添加关注")
 	@PostMapping("/addfollow")
 	public JsonResult addFollow(
-			@ApiParam("unionid") String unionid,
-			@ApiParam("明星Id") Long id){
+			@ApiParam("unionid") @RequestParam String unionid,
+			@ApiParam("明星Id") @RequestParam Long id){
+		PhFollow follows = phFollowService.findByUnionidAndCelebrityId(unionid,id);
+		if (null != follows){
+			jsonResultHelper.buildFailJsonResult(CommonResultCode.CELEBRITY_FOLLOW);
+		}
 		PhCelebrityList celebrity = phCelebrityListService.findOne(id);
 		PhUserInfo user = userInfoService.findByUnionid(unionid);
 		PhFollow follow = new PhFollow();
@@ -255,8 +259,12 @@ public class StarsameController {
 	@ApiOperation("取消关注")
 	@PostMapping("/delfollow")
 	public JsonResult delFollow(
-			@ApiParam("unionid") String unionid,
-			@ApiParam("明星Id") Long id){
+			@ApiParam("unionid") @RequestParam String unionid,
+			@ApiParam("明星Id") @RequestParam Long id){
+		PhFollow follows = phFollowService.findByUnionidAndCelebrityId(unionid,id);
+		if (null == follows){
+			jsonResultHelper.buildFailJsonResult(CommonResultCode.CELEBRITY_DELFOLLOW);
+		}
 		PhCelebrityList celebrity = phCelebrityListService.findOne(id);
 		celebrity.setFansSum(celebrity.getFansSum()-1L);
 		phCelebrityListService.save(celebrity);
@@ -267,19 +275,26 @@ public class StarsameController {
 	@ApiOperation("搜索明星")
 	@GetMapping("/search")
 	public JsonResult search(
-			@ApiParam("unionid") String unionid,
-			@ApiParam("name") String name){
+			@ApiParam("unionid") @RequestParam String unionid,
+			@ApiParam("name") @RequestParam String name){
 		List<PhFollow> follow = phFollowService.findByUnionid(unionid);
 		List<PhCelebrityList> phCelebrityList = phCelebrityListService.findBynNameLike(name);
 		List<PhCelebrityList> phCelebrityLists = new ArrayList<>();
-		for (PhFollow phFollow : follow) {
+		if (follow.size()<=0){
 			for (PhCelebrityList celebrityList : phCelebrityList) {
-				if (phFollow.getCelebrityId().equals(celebrityList.getId())){
-					celebrityList.setFollow("Y");
-					phCelebrityLists.add(celebrityList);
-				}else {
-					celebrityList.setFollow("N");
-					phCelebrityLists.add(celebrityList);
+				celebrityList.setFollow("N");
+				phCelebrityLists.add(celebrityList);
+			}
+		}else {
+			for (PhFollow phFollow : follow) {
+				for (PhCelebrityList celebrityList : phCelebrityList) {
+					if (phFollow.getCelebrityId().equals(celebrityList.getId())){
+						celebrityList.setFollow("Y");
+						phCelebrityLists.add(celebrityList);
+					}else {
+						celebrityList.setFollow("N");
+						phCelebrityLists.add(celebrityList);
+					}
 				}
 			}
 		}
@@ -289,21 +304,69 @@ public class StarsameController {
 	@ApiOperation("明星列表")
 	@GetMapping("/starlist")
 	public JsonResult starList(
-			@ApiParam("unionid") String unionid){
+			@ApiParam("unionid") @RequestParam String unionid,
+			@ApiParam("页码,从0开始") @RequestParam Long page,
+			@ApiParam("页大小") @RequestParam Long size){
 		List<PhFollow> follow = phFollowService.findByUnionid(unionid);
-		List<PhCelebrityList> phCelebrityList = phCelebrityListService.finAll();
+		List<PhCelebrityList> phCelebrityList = phCelebrityListService.findPage(page,size);
 		List<PhCelebrityList> phCelebrityLists = new ArrayList<>();
-		for (PhFollow phFollow : follow) {
+		if (follow.size()<=0){
 			for (PhCelebrityList celebrityList : phCelebrityList) {
-				if (phFollow.getCelebrityId().equals(celebrityList.getId())){
-					celebrityList.setFollow("Y");
-					phCelebrityLists.add(celebrityList);
-				}else {
-					celebrityList.setFollow("N");
-					phCelebrityLists.add(celebrityList);
+				celebrityList.setFollow("N");
+				phCelebrityLists.add(celebrityList);
+			}
+		}else {
+			for (PhFollow phFollow : follow) {
+				for (PhCelebrityList celebrityList : phCelebrityList) {
+					if (phFollow.getCelebrityId().equals(celebrityList.getId())){
+						celebrityList.setFollow("Y");
+						phCelebrityLists.add(celebrityList);
+					}else {
+						celebrityList.setFollow("N");
+						phCelebrityLists.add(celebrityList);
+					}
 				}
 			}
 		}
 		return jsonResultHelper.buildSuccessJsonResult(phCelebrityLists);
+	}
+
+	@ApiOperation("我的关注列表")
+	@GetMapping("/myfollow")
+	public JsonResult myfollow(
+			@ApiParam("unionid") @RequestParam String unionid){
+		List<PhFollow> phFollows = phFollowService.findByUnionid(unionid);
+		if (phFollows.size() <= 0){
+			return jsonResultHelper.buildFailJsonResult(CommonResultCode.NOT_FOLLOW);
+		}
+		List<PhCelebrityList> phCelebrityLists = new ArrayList<>();
+		for (PhFollow phFollow : phFollows) {
+			PhCelebrityList celebrityList = phCelebrityListService.findOne(phFollow.getCelebrityId());
+			celebrityList.setFollow("Y");
+			phCelebrityLists.add(celebrityList);
+		}
+		return jsonResultHelper.buildSuccessJsonResult(phCelebrityLists);
+	}
+
+	@ApiOperation("明星主页")
+	@GetMapping("/starinfo")
+	public JsonResult starinfo(
+			@ApiParam("明星ID") @RequestParam Long id,
+			@ApiParam("页码,从0开始") @RequestParam int page,
+			@ApiParam("页大小") @RequestParam int size,
+			@ApiParam("排序字段[sort-APP,sortMini-小程序]") @RequestParam(defaultValue = "sort") String sortName,
+			@ApiParam("unionid") @RequestParam String unionid){
+		PhFollow follow = phFollowService.findByUnionidAndCelebrityId(unionid,id);
+		Map<String,Object> map = new HashMap<>();
+		PhCelebrityList celebrityList = phCelebrityListService.findOne(id);
+		if (follow != null){
+			celebrityList.setFollow("Y");
+		}else {
+			celebrityList.setFollow("N");
+		}
+		Page<PhStarsame> phStarsames = phStarsameService.findByPage(celebrityList.getName(), PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortName), Sort.Order.desc("createTime"))));
+		map.put("celebrity",celebrityList);
+		map.put("detail",phStarsames);
+		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
 }

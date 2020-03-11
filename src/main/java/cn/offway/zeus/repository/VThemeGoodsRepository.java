@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import cn.offway.zeus.domain.VThemeGoods;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * VIEWRepository接口
@@ -13,5 +16,6 @@ import cn.offway.zeus.domain.VThemeGoods;
  */
 public interface VThemeGoodsRepository extends JpaRepository<VThemeGoods,Long>,JpaSpecificationExecutor<VThemeGoods> {
 
-	/** 此处写一些自定义的方法 **/
+	@Query(nativeQuery = true,value = "select * from v_theme_goods where theme_id = ?1 ORDER BY id LIMIT 0,10 ")
+    List<VThemeGoods> findAllTop10(Long id);
 }

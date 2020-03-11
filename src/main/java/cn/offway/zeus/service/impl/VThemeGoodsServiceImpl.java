@@ -81,4 +81,9 @@ public class VThemeGoodsServiceImpl implements VThemeGoodsService {
 			}
 		},page);
 	}
+
+	@Override
+	public List<VThemeGoods> findAllTop10(Long id){
+		return vThemeGoodsRepository.findAllTop10(id);
+	}
 }
