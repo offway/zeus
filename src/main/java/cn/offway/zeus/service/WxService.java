@@ -29,7 +29,7 @@ public class WxService {
     
     private static String TICKET_URL = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi";
     
-    private static String ACCESS_TOKEN_KEY = "WX_ACCESS_TOKEN"; 
+    private static String ACCESS_TOKEN_KEY = "WX_ACCESS_TOKEN";
     
     private static String TICKET_KEY = "WX_TICKET"; 
     
