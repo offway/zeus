@@ -23,7 +23,7 @@ public interface VThemeGoodsService{
 
     List<VThemeGoods> save(List<VThemeGoods> entities);
 
-    Page<VThemeGoods> findByPage(Long themeId, Pageable page);
+    Page<VThemeGoods> findByPage(Long themeId, Pageable page,int sort);
 
     List<VThemeGoods> findAllTop10(Long id);
 }

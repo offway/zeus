@@ -62,7 +62,7 @@ public class VThemeGoodsServiceImpl implements VThemeGoodsService {
 	}
 
 	@Override
-	public Page<VThemeGoods> findByPage(final Long themeId, Pageable page){
+	public Page<VThemeGoods> findByPage(final Long themeId, Pageable page,int sort){
 		return vThemeGoodsRepository.findAll(new Specification<VThemeGoods>() {
 			@Override
 			public Predicate toPredicate(Root<VThemeGoods> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -72,11 +72,32 @@ public class VThemeGoodsServiceImpl implements VThemeGoodsService {
 					params.add(criteriaBuilder.equal(root.get("themeId"), themeId));
 				}
 
+				//0-销量，1-人气，2-新品，3-价格降序，4-价格升序，5-默认
+				switch (sort){
+					case 0:
+						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("saleCount")));
+						break;
+					case 1:
+						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("viewCount")));
+						break;
+					case 2:
+						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("upTime")));
+						break;
+					case 3:
+						criteriaQuery.orderBy(criteriaBuilder.desc(root.get("price")));
+						break;
+					case 4:
+						criteriaQuery.orderBy(criteriaBuilder.asc(root.get("price")));
+						break;
+					case 5:
+						criteriaQuery.orderBy(criteriaBuilder.asc(root.get("themeGoodsId")));
+						break;
+				}
+
 				params.add(criteriaBuilder.equal(root.get("status"),  "1"));
 
 				Predicate[] predicates = new Predicate[params.size()];
 				criteriaQuery.where(params.toArray(predicates));
-				criteriaQuery.orderBy(criteriaBuilder.asc(root.get("themeGoodsId")));
 				return null;
 			}
 		},page);

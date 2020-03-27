@@ -303,8 +303,9 @@ public class GoodsController {
 	public JsonResult themegoods(
 			@ApiParam("主题ID") @RequestParam Long themeId,
 			@ApiParam("页码,从0开始") @RequestParam int page,
-			@ApiParam("页大小") @RequestParam int size){
-		return jsonResultHelper.buildSuccessJsonResult(vThemeGoodsService.findByPage(themeId, PageRequest.of(page, size)));
+			@ApiParam("页大小") @RequestParam int size,
+			@ApiParam("排序:[0-销量，1-人气，2-新品，3-价格降序，4-价格升序，5-默认]") @RequestParam int sort){
+		return jsonResultHelper.buildSuccessJsonResult(vThemeGoodsService.findByPage(themeId, PageRequest.of(page, size),sort));
 	}
 
 	@ApiOperation("优选详情")
