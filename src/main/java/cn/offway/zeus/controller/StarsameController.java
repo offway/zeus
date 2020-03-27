@@ -297,6 +297,7 @@ public class StarsameController {
         List<PhCelebrityList> phCelebrityLists = new ArrayList<>();
         if (follow.size() <= 0) {
             for (PhCelebrityList celebrityList : phCelebrityList) {
+                celebrityList.setFansSum(celebrityList.getFansSum()+celebrityList.getFans());
                 celebrityList.setFollow("N");
                 phCelebrityLists.add(celebrityList);
             }
@@ -306,6 +307,7 @@ public class StarsameController {
                 list.add(phFollow.getCelebrityId());
             }
             for (PhCelebrityList celebrityList : phCelebrityList) {
+                celebrityList.setFansSum(celebrityList.getFansSum()+celebrityList.getFans());
                 if (list.contains(celebrityList.getId())) {
                     celebrityList.setFollow("Y");
                     phCelebrityLists.add(celebrityList);
@@ -329,6 +331,7 @@ public class StarsameController {
         List<PhCelebrityList> phCelebrityLists = new ArrayList<>();
         if (follow.size() <= 0) {
             for (PhCelebrityList celebrityList : phCelebrityList) {
+                celebrityList.setFansSum(celebrityList.getFansSum()+celebrityList.getFans());
                 celebrityList.setFollow("N");
                 phCelebrityLists.add(celebrityList);
             }
@@ -338,6 +341,7 @@ public class StarsameController {
                 list.add(phFollow.getCelebrityId());
             }
             for (PhCelebrityList celebrityList : phCelebrityList) {
+                celebrityList.setFansSum(celebrityList.getFansSum()+celebrityList.getFans());
                 if (list.contains(celebrityList.getId())) {
                     celebrityList.setFollow("Y");
                     phCelebrityLists.add(celebrityList);
@@ -364,6 +368,7 @@ public class StarsameController {
         for (PhFollow phFollow : phFollows) {
             PhCelebrityList celebrityList = phCelebrityListService.findOne(phFollow.getCelebrityId());
             celebrityList.setFollow("Y");
+            celebrityList.setFansSum(celebrityList.getFansSum()+celebrityList.getFans());
             phCelebrityLists.add(celebrityList);
         }
         return jsonResultHelper.buildSuccessJsonResult(phCelebrityLists);
@@ -385,9 +390,37 @@ public class StarsameController {
         } else {
             celebrityList.setFollow("N");
         }
+        celebrityList.setFansSum(celebrityList.getFansSum()+celebrityList.getFans());
         Page<PhStarsame> phStarsames = phStarsameService.findByPage(celebrityList.getName(), PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortName), Sort.Order.desc("createTime"))));
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Object> objectList = new ArrayList<>();
+        for (PhStarsame phStarsame : phStarsames) {
+            List<PhStarsameGoods> list = phStarsameGoodsRepository.findByStarsameIdOrderByCreateTimeDesc(phStarsame.getId());
+            PhUserInfo userInfo = userInfoService.findByUnionid(unionid);
+            String starsamePraise = stringRedisTemplate.opsForValue().get(STARSAME_PRAISE + "_" + phStarsame.getId() + "_" + userInfo.getId());
+            Map<String, Object> map1 = objectMapper.convertValue(phStarsame, Map.class);
+            if (StringUtils.isBlank(starsamePraise)) {
+                map1.put("praise", "0");
+            } else {
+                map1.put("praise", "1");
+            }
+            List<PhStarsameGoods> goods = new ArrayList<>();
+            List<PhStarsameGoods> brands = new ArrayList<>();
+
+            for (PhStarsameGoods phStarsameGoods : list) {
+                if ("1".equals(phStarsameGoods.getType())) {
+                    brands.add(phStarsameGoods);
+                } else {
+                    goods.add(phStarsameGoods);
+                }
+            }
+            map1.put("goods", goods);
+            map1.put("brands", brands);
+            map1.put("banner", phStarsameImageRepository.findImageByStarsameIdOrderBySortAsc(phStarsame.getId()));
+            objectList.add(map1);
+        }
         map.put("celebrity", celebrityList);
-        map.put("detail", phStarsames);
+        map.put("detail", objectList);
         return jsonResultHelper.buildSuccessJsonResult(map);
     }
 
@@ -427,7 +460,13 @@ public class StarsameController {
                 map1.put("brands", brands);
                 map1.put("banner", phStarsameImageRepository.findImageByStarsameIdOrderBySortAsc(phStarsame.getId()));
                 //map1.put("goods",list);
-                map1.put("celebrity", phCelebrityListService.findByName(phStarsame.getStarName()));
+                List<PhCelebrityList> celebrityLists =  phCelebrityListService.findByName(phStarsame.getStarName());
+                List<PhCelebrityList> celebrityLists1 = new ArrayList<>();
+                for (PhCelebrityList celebrityList : celebrityLists) {
+                    celebrityList.setFansSum(celebrityList.getFansSum()+celebrityList.getFans());
+                    celebrityLists1.add(celebrityList);
+                }
+                map1.put("celebrity", celebrityLists1);
                 objectList.add(map1);
             } else {
                 Map<String, Object> map1 = objectMapper.convertValue(phStarsame, Map.class);
@@ -446,7 +485,13 @@ public class StarsameController {
                 map1.put("brands", brands);
                 map1.put("banner", phStarsameImageRepository.findImageByStarsameIdOrderBySortAsc(phStarsame.getId()));
 //				map1.put("goods",list);
-                map1.put("celebrity", phCelebrityListService.findByName(phStarsame.getStarName()));
+                List<PhCelebrityList> celebrityLists =  phCelebrityListService.findByName(phStarsame.getStarName());
+                List<PhCelebrityList> celebrityLists1 = new ArrayList<>();
+                for (PhCelebrityList celebrityList : celebrityLists) {
+                    celebrityList.setFansSum(celebrityList.getFansSum()+celebrityList.getFans());
+                    celebrityLists1.add(celebrityList);
+                }
+                map1.put("celebrity", celebrityLists1);
                 objectList.add(map1);
             }
         }

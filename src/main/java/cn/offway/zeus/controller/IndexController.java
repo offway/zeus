@@ -307,7 +307,7 @@ public class IndexController {
 		Map<String, Object> map = new HashMap<>();
 		map.put("banners", phBannerService.banners("4"));
 		map.put("minibanners", phBrandRecommendService.findAllRecommend());
-		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI", "INDEX_BRAND_GOODS_MINI", "INDEX_CATEGORY_MINI","INDEX_STYLE_FULL_MINI","NEW_INDEX_BRAND_MINI","INDEX_SELL_WELL");
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI", "INDEX_BRAND_GOODS_MINI", "INDEX_CATEGORY_MINI","INDEX_STYLE_FULL_MINI","NEW_INDEX_BRAND_MINI","INDEX_SELL_WELL_MINI");
 		for (PhConfig phConfig : configs) {
 			String name = phConfig.getName().toLowerCase();
 			String content = phConfig.getContent();

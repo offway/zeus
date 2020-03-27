@@ -32,6 +32,10 @@ public class PhCelebrityList implements Serializable {
     private String remark;
 
 
+    /** 虚拟粉丝数 **/
+    private Long fans;
+
+
     private String follow;
 
 
@@ -89,6 +93,15 @@ public class PhCelebrityList implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Column(name = "fans", length = 11)
+    public Long getFans() {
+        return fans;
+    }
+
+    public void setFans(Long fans) {
+        this.fans = fans;
     }
 
     @Transient
