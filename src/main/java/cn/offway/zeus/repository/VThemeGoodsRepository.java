@@ -16,6 +16,6 @@ import java.util.List;
  */
 public interface VThemeGoodsRepository extends JpaRepository<VThemeGoods,Long>,JpaSpecificationExecutor<VThemeGoods> {
 
-	@Query(nativeQuery = true,value = "select * from v_theme_goods where theme_id = ?1 ORDER BY id LIMIT 0,10 ")
+	@Query(nativeQuery = true,value = "select * from v_theme_goods where theme_id = ?1 ORDER BY theme_goods_id LIMIT 0,10 ")
     List<VThemeGoods> findAllTop10(Long id);
 }
