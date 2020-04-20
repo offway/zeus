@@ -22,7 +22,9 @@ public interface PhStarsameService{
 	List<PhStarsame> indexData();
 
 	int praise(Long id);
-	
+
+	Page<PhStarsame> findByPage(String starName, Pageable page, String sortName);
+
 	int praisecancel(Long id);
 
 	Page<PhStarsame> findByPage(String starName, Pageable page);

@@ -85,6 +85,29 @@ public class PhStarsameServiceImpl implements PhStarsameService {
 	}
 
 	@Override
+	public Page<PhStarsame> findByPage(String starName, Pageable page, String sortName){
+		return phStarsameRepository.findAll(new Specification<PhStarsame>() {
+
+			@Override
+			public Predicate toPredicate(Root<PhStarsame> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+				List<Predicate> params = new ArrayList<Predicate>();
+
+				Predicate[] predicates = new Predicate[params.size()];
+				if(StringUtils.isNotBlank(starName)){
+					params.add(criteriaBuilder.like(root.get("starName"), "%"+starName+"%"));
+				}
+				if (!"sortMini".equals(sortName)){
+					params.add(criteriaBuilder.equal(root.get("sort"), "999"));
+				}
+
+				criteriaQuery.where(params.toArray(predicates));
+				criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createTime")));
+				return null;
+			}
+		}, page);
+	}
+
+	@Override
 	public int praisecancel(Long id) {
 		return phStarsameRepository.praisecancel(id);
 	}

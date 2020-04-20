@@ -431,8 +431,8 @@ public class StarsameController {
             @ApiParam("页大小") @RequestParam int size,
             @ApiParam("明星姓名") @RequestParam(required = false) String starName,
             @ApiParam("用户ID") @RequestParam(required = false) Long userid,
-            @ApiParam("排序字段[sort-APP,sortMini-小程序]") @RequestParam(defaultValue = "sort") String sortName) {
-        Page<PhStarsame> phStarsames = phStarsameService.findByPage(starName, PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortName), Sort.Order.desc("createTime"))));
+            @ApiParam("排序字段[sort-APP,sortMini-小程序]") @RequestParam(defaultValue = "sortMini") String sortName) {
+        Page<PhStarsame> phStarsames = phStarsameService.findByPage(starName, PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortName), Sort.Order.desc("createTime"))),sortName);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> map = new HashMap<>();
         List<Object> objectList = new ArrayList<>();
