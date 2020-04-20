@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class WXUtil {
     public static String getToken() {
-        String requestUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx12d022a9493f1b26&secret=52ba3a89ae58aa6a2294806d516d6107";
+        String requestUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxa524a03865079836&secret=8c5252a7430bd1e5a5156f01f4a3802e";
         String result = HttpClientUtil.post(requestUrl, "");
         JSONObject jsonObject = JSON.parseObject(result);
         if (jsonObject != null) {
