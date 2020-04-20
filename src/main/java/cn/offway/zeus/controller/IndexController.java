@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.offway.zeus.domain.*;
+import cn.offway.zeus.service.*;
+import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -16,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,23 +31,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import cn.offway.zeus.domain.PhBanner;
-import cn.offway.zeus.domain.PhBrand;
-import cn.offway.zeus.domain.PhConfig;
-import cn.offway.zeus.domain.PhGoods;
-import cn.offway.zeus.domain.PhGoodsCategory;
-import cn.offway.zeus.domain.PhGoodsType;
-import cn.offway.zeus.domain.PhStarsame;
-import cn.offway.zeus.domain.PhWxuserInfo;
 import cn.offway.zeus.repository.PhGoodsCategoryRepository;
 import cn.offway.zeus.repository.PhGoodsTypeRepository;
-import cn.offway.zeus.service.PhBannerService;
-import cn.offway.zeus.service.PhBrandService;
-import cn.offway.zeus.service.PhConfigService;
-import cn.offway.zeus.service.PhGoodsService;
-import cn.offway.zeus.service.PhStarsameService;
-import cn.offway.zeus.service.PhWxuserInfoService;
-import cn.offway.zeus.service.WxService;
 import cn.offway.zeus.utils.HttpClientUtil;
 import cn.offway.zeus.utils.JsonResult;
 import cn.offway.zeus.utils.JsonResultHelper;
@@ -103,6 +93,18 @@ public class IndexController {
 	
 	@Autowired
 	private PhGoodsCategoryRepository phGoodsCategoryRepository;
+
+	@Autowired
+	private PhBrandRecommendService phBrandRecommendService;
+
+	@Autowired
+	private PhThemeService phThemeService;
+
+	@Autowired
+	private PhThemeGoodsService phThemeGoodsService;
+
+	@Autowired
+	private VThemeGoodsService vThemeGoodsService;
 
 	@ResponseBody
 	@GetMapping("/")
@@ -304,7 +306,8 @@ public class IndexController {
 	public JsonResult datavMini() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("banners", phBannerService.banners("4"));
-		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI", "INDEX_BRAND_GOODS_MINI", "INDEX_CATEGORY_MINI");
+		map.put("minibanners", phBrandRecommendService.findAllRecommend());
+		List<PhConfig> configs = phConfigService.findByNameIn("INDEX_IMAGES_MINI", "INDEX_BRAND_GOODS_MINI", "INDEX_CATEGORY_MINI","INDEX_STYLE_FULL_MINI","NEW_INDEX_BRAND_MINI","INDEX_SELL_WELL_MINI");
 		for (PhConfig phConfig : configs) {
 			String name = phConfig.getName().toLowerCase();
 			String content = phConfig.getContent();
@@ -327,6 +330,18 @@ public class IndexController {
 			} else {
 				map.put(name, JSON.parse(content));
 			}
+		}
+		List<PhTheme> phThemes = phThemeService.findByIsRecommend("1");
+		if (phThemes.size()>0 || phThemes != null){
+			List<Object> objects = new ArrayList<>();
+			for (PhTheme phTheme : phThemes) {
+				List<VThemeGoods> phThemeGoods = vThemeGoodsService.findAllTop10(phTheme.getId());
+				Map<String,Object> map1 = new HashMap<>();
+				map1.put("Theme",phTheme);
+				map1.put("Goods",phThemeGoods);
+				objects.add(map1);
+			}
+			map.put("ThemeData",objects);
 		}
 		return jsonResultHelper.buildSuccessJsonResult(map);
 	}
@@ -392,5 +407,14 @@ public class IndexController {
 		}
 		
 		return jsonResultHelper.buildSuccessJsonResult(s);
+	}
+
+	@ApiOperation("风格信息")
+	@GetMapping("/searchfull")
+	@ResponseBody
+	public JsonResult searchfull(@ApiParam("风格下标") @RequestParam Integer id){
+		String jsonStr = phConfigService.findContentByName("INDEX_STYLE_FULL_MINI");
+		JSONArray jsonArray = JSONArray.parseArray(jsonStr);
+		return jsonResultHelper.buildSuccessJsonResult(jsonArray.getJSONObject(id));
 	}
 }

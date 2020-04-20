@@ -22,11 +22,18 @@ import org.springframework.web.bind.annotation.*;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Api(tags = {"春节活动"})
 @RestController
 @RequestMapping("/NewSpring")
 public class NewSpringController {
+    private static final String KEY_REWARD_LIST = "NewSpring_REWARD_LIST_{0}";
+    private static final String KEY_LOTTERY = "NewSpring_LOTTERY";
+    private static final String KEY_SHARE = "NewSpring_SHARE";
+    private static final String KEY_CHAR = "NewSpring_CHAR_{0}";
+    private static final String KEY_SPECIAL_REWARD_1 = "NewSpring_SPECIAL_REWARD_1";
+    private static final String USER_TOKEN_KEY = "USER_TOKEN_PHONE";
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private JsonResultHelper jsonResultHelper;
@@ -35,11 +42,6 @@ public class NewSpringController {
     @Autowired
     private PhUserInfoService userInfoService;
     private StringRedisTemplate stringRedisTemplate;
-    private static final String KEY_REWARD_LIST = "NewSpring_REWARD_LIST_{0}";
-    private static final String KEY_LOTTERY = "NewSpring_LOTTERY";
-    private static final String KEY_SHARE = "NewSpring_SHARE";
-    private static final String KEY_CHAR = "NewSpring_CHAR_{0}";
-    private static final String KEY_SPECIAL_REWARD_1 = "NewSpring_SPECIAL_REWARD_1";
     private String todayStr;
     private DateTime now;
     private SimpleDateFormat formatYMD = new SimpleDateFormat("yyyy-MM-dd");
@@ -175,11 +177,19 @@ public class NewSpringController {
         //奖品列表
         String redisKey = getRewardListKey(userId);
         Boolean redisKeyExist = stringRedisTemplate.hasKey(redisKey);
-        List<String> rewardResult;
+        List<Object> rewardResult;
         if (redisKeyExist == null || !redisKeyExist) {
             rewardResult = new ArrayList<>();
         } else {
-            rewardResult = stringRedisTemplate.opsForList().range(redisKey, 0, 100);
+            rewardResult = new ArrayList<>();
+            List<String> reward = stringRedisTemplate.opsForList().range(redisKey, 0, 100);
+            for (String s : reward) {
+                Map<String, String> map = new HashMap<>();
+                String[] data = s.split(",");
+                map.put("value", data[0]);
+                map.put("date", data[1]);
+                rewardResult.add(map);
+            }
         }
         //字列表
         String word = "20二零新春快乐";
@@ -291,12 +301,73 @@ public class NewSpringController {
         return jsonResultHelper.buildSuccessJsonResult(reward);
     }
 
+    @ApiOperation("获取兑换密钥")
+    @GetMapping("/gettoken")
+    public JsonResult gettoken(@ApiParam("手机") @RequestParam String phone,@ApiParam("用户ID") @RequestParam Long id) {
+        try {
+            List<String> phones = new ArrayList<>();
+            phones.add("+8617717272297");
+            PhUserInfo userInfo = userInfoService.findByPhone(phone);
+            String token = "无权限!";
+            if (userInfo.getId().toString().equals(id.toString())){
+                if (phones.contains(phone)){
+                    token = UUID.randomUUID().toString().replaceAll("-", "");
+                    stringRedisTemplate.opsForValue().set(USER_TOKEN_KEY + "_" + phone, token, 1, TimeUnit.MINUTES);
+                }
+            }
+            return jsonResultHelper.buildSuccessJsonResult(token);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获得用户token异常", e);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+        }
+    }
+
+    @ApiOperation("兑换")
+    @GetMapping("/setchar")
+    public JsonResult setchar(@ApiParam("手机") @RequestParam String phone,
+                              @ApiParam("用户ID") @RequestParam Long id,
+                              @ApiParam("派发用户ID") @RequestParam String userid,
+                              @ApiParam("token") @RequestParam String token,
+                              @ApiParam("派发字以,号隔开") @RequestParam String chars) {
+        try {
+            List<String> phones = new ArrayList<>();
+            phones.add("+8617717272297");
+            if (!phones.contains(phone)){
+                return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+            }
+            PhUserInfo userInfo = userInfoService.findByPhone(phone);
+            if (!userInfo.getId().toString().equals(id.toString())){
+                return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+            }
+            String tokens = stringRedisTemplate.opsForValue().get(USER_TOKEN_KEY + "_" + phone);
+            if (!token.equals(tokens)){
+                return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+            }
+            String [] chas = chars.split(",");
+            String redisKey = getCharKey(userid);
+            for (String cha : chas) {
+                stringRedisTemplate.opsForHash().increment(redisKey, cha, 1);
+            }
+            return jsonResultHelper.buildSuccessJsonResult("OK");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获得用户token异常", e);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.SYSTEM_ERROR);
+        }
+    }
+
+
+
     @ApiOperation("领取")
     @PostMapping("/getprize")
     public JsonResult getPrize(
             @ApiParam("用户ID") @RequestParam String userId,
             @ApiParam("奖品索引[0-新春快乐,1-20,2-新春,3-0,4-春,5-2020,6-20快乐,7-2020新春快乐]") @RequestParam int rewardIndex) {
         //20二零新春快乐
+        Date date = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("MM-dd HH:mm:ss");
+        String getDate = ft.format(date);
         String redisKey = getCharKey(userId);
         Map<Object, Object> chars = stringRedisTemplate.opsForHash().entries(redisKey);
         Long twoSum = 0L;
@@ -306,6 +377,14 @@ public class NewSpringController {
         Long zeroSum = 0L;
         if (chars.get("0") != null) {
             zeroSum = Long.valueOf(chars.get("0").toString());
+        }
+        Long two1Sum = 0L;
+        if (chars.get("二") != null) {
+            two1Sum = Long.valueOf(chars.get("二").toString());
+        }
+        Long zero1Sum = 0L;
+        if (chars.get("零") != null) {
+            zero1Sum = Long.valueOf(chars.get("零").toString());
         }
         Long xinSum = 0L;
         if (chars.get("新") != null) {
@@ -335,7 +414,7 @@ public class NewSpringController {
                 //新春快乐(雅漾洗面奶)
                 if (xinSum >= 1 && chunSum >= 1 && kuaiSum >= 1 && leSum >= 1) {
                     //领取
-                    finalRewardStr = "新春快乐(雅漾洗面奶)";
+                    finalRewardStr = "雅漾洁面乳," + getDate;
                     String[] rewards = new String[]{"新", "春", "快", "乐"};//新春快乐
                     for (String reward : rewards) {
                         stringRedisTemplate.opsForHash().increment(redisKey, reward, -1);
@@ -347,8 +426,8 @@ public class NewSpringController {
                 //20(899减120元优惠券)
                 if (twoSum >= 1 && zeroSum >= 1) {
                     //领取
-                    voucherInfoService.giveVoucher(userIdLong, 7L);
-                    finalRewardStr = "20(899减120元优惠券)";
+                    voucherInfoService.giveVoucher(userIdLong, 157L);
+                    finalRewardStr = "899减120元优惠券," + getDate;
                     String[] rewards = new String[]{"2", "0"};//20
                     for (String reward : rewards) {
                         stringRedisTemplate.opsForHash().increment(redisKey, reward, -1);
@@ -360,8 +439,8 @@ public class NewSpringController {
                 //新春(499减70元优惠券)
                 if (xinSum >= 1 && chunSum >= 1) {
                     //领取
-                    voucherInfoService.giveVoucher(userIdLong, 8L);
-                    finalRewardStr = "新春(499减70元优惠券)";
+                    voucherInfoService.giveVoucher(userIdLong, 158L);
+                    finalRewardStr = "499减70元优惠券," + getDate;
                     String[] rewards = new String[]{"新", "春"};//新春
                     for (String reward : rewards) {
                         stringRedisTemplate.opsForHash().increment(redisKey, reward, -1);
@@ -373,8 +452,8 @@ public class NewSpringController {
                 //0(199减20元优惠券)
                 if (zeroSum >= 1) {
                     //领取
-                    voucherInfoService.giveVoucher(userIdLong, 9L);
-                    finalRewardStr = "0(199减20元优惠券)";
+                    voucherInfoService.giveVoucher(userIdLong, 159L);
+                    finalRewardStr = "199减20元优惠券," + getDate;
                     stringRedisTemplate.opsForHash().increment(redisKey, "0", -1);
                     stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
                 }
@@ -383,9 +462,45 @@ public class NewSpringController {
                 //春(5元无门槛代金券)
                 if (chunSum >= 1) {
                     //领取
-                    voucherInfoService.giveVoucher(userIdLong, 10L);
-                    finalRewardStr = "春(5元无门槛代金券)";
+                    voucherInfoService.giveVoucher(userIdLong, 160L);
+                    finalRewardStr = "5元无门槛代金券," + getDate;
                     stringRedisTemplate.opsForHash().increment(redisKey, "春", -1);
+                    stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
+                }
+                break;
+            case 5:
+                //20二零(50元现金)
+                if (twoSum >= 1 && two1Sum >= 1 && zeroSum >= 1 && zero1Sum >= 1) {
+                    //领取
+                    finalRewardStr = "50元现金," + getDate;
+                    String[] rewards = new String[]{"2", "0", "二", "零"};//20二零
+                    for (String reward : rewards) {
+                        stringRedisTemplate.opsForHash().increment(redisKey, reward, -1);
+                    }
+                    stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
+                }
+                break;
+            case 6:
+                //二零快乐(100元现金)
+                if (two1Sum >= 1 && zero1Sum >= 1 && kuaiSum >= 1 && leSum >= 1) {
+                    //领取
+                    finalRewardStr = "100元现金," + getDate;
+                    String[] rewards = new String[]{"二", "零", "快", "乐"};//二零快乐
+                    for (String reward : rewards) {
+                        stringRedisTemplate.opsForHash().increment(redisKey, reward, -1);
+                    }
+                    stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
+                }
+                break;
+            case 7:
+                //20二零新春快乐(2020元现金)
+                if (twoSum >= 1 && zeroSum >= 1 && two1Sum >= 1 && zero1Sum >= 1 && chunSum >= 1 && xinSum >= 1 && kuaiSum >= 1 && leSum >= 1) {
+                    //领取
+                    finalRewardStr = "2020元现金," + getDate;
+                    String[] rewards = new String[]{"2", "0", "零", "新", "春", "快", "二","乐"};//20二零新春快乐
+                    for (String reward : rewards) {
+                        stringRedisTemplate.opsForHash().increment(redisKey, reward, -1);
+                    }
                     stringRedisTemplate.opsForList().leftPush(redisLogKey, finalRewardStr);
                 }
                 break;
