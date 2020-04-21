@@ -73,7 +73,9 @@ public class MayOneController {
     @Scheduled(cron = "0 55 11 * * *")
     public void pushWX() {
         refreshDateTime();
+        logger.info(MessageFormat.format("微信每日推送定时任务启动，时间是{0}", todayStr));
         if (Arrays.asList(dateStrArr).indexOf(todayStr) >= 0) {
+            logger.info("微信每日推送定时任务在时间内，执行!!!");
             //推送微信订阅消息
             String keyWX = getNotifyKeyOfWX(todayStr);
             String token = WXUtil.getToken();
@@ -84,7 +86,14 @@ public class MayOneController {
                 // 推送订阅消息
                 WXUtil.sendSubscribeMsg(logger, args, token);
             }
+        } else {
+            logger.info("微信每日推送定时任务不在时间内，跳过!!!");
         }
+    }
+
+    @Scheduled(cron = "*/5 * * * * *")
+    public void testCron() {
+        logger.info("test Cron!!!");
     }
 
     @GetMapping("/showTime")
