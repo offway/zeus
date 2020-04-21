@@ -78,7 +78,7 @@ public class MayOneController {
             String keyWX = getNotifyKeyOfWX(todayStr);
             String token = WXUtil.getToken();
             for (Object o : stringRedisTemplate.opsForHash().keys(keyWX)) {
-                String openid = String.valueOf(o);
+                String openid = String.valueOf(stringRedisTemplate.opsForHash().get(keyWX, o));
                 // 订阅消息包装
                 Map<String, Object> args = WXUtil.buildMsg(openid, "url", "五一抢券倒计时5分钟！", "¥1000000无门槛券准点放送，冲！");
                 // 推送订阅消息
@@ -258,6 +258,7 @@ public class MayOneController {
     @PostMapping("/subscribe")
     public JsonResult subscribe(
             @ApiParam("用户ID") @RequestParam String userId,
+            @ApiParam("OPENID") @RequestParam String openId,
             @ApiParam("日期") @RequestParam(defaultValue = "2019-12-23") String dateStd,
             @ApiParam("时间") @RequestParam(defaultValue = "11:55:00", required = false) String timeStd) {
         setRedisTemplate();
@@ -267,7 +268,7 @@ public class MayOneController {
         }
         //推到微信订阅消息列表
         String keyWX = getNotifyKeyOfWX(dateStd);
-        stringRedisTemplate.opsForHash().putIfAbsent(keyWX, userId, "1");
+        stringRedisTemplate.opsForHash().putIfAbsent(keyWX, userId, openId);
         //推到极光推送
         String key = getNotifyKey(userId);
         if (stringRedisTemplate.opsForHash().hasKey(key, dateStd)) {
