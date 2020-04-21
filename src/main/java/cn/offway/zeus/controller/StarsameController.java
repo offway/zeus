@@ -248,8 +248,11 @@ public class StarsameController {
             @ApiParam("unionid") @RequestParam String unionid,
             @ApiParam("明星Id") @RequestParam Long id) {
         PhFollow follows = phFollowService.findByUnionidAndCelebrityId(unionid, id);
+        if ("".equals(unionid)){
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
+        }
         if (null != follows) {
-            jsonResultHelper.buildFailJsonResult(CommonResultCode.CELEBRITY_FOLLOW);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.CELEBRITY_FOLLOW);
         }
         PhCelebrityList celebrity = phCelebrityListService.findOne(id);
         PhUserInfo user = userInfoService.findByUnionid(unionid);
@@ -277,8 +280,11 @@ public class StarsameController {
             @ApiParam("unionid") @RequestParam String unionid,
             @ApiParam("明星Id") @RequestParam Long id) {
         PhFollow follows = phFollowService.findByUnionidAndCelebrityId(unionid, id);
+        if ("".equals(unionid)){
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.USER_NOT_EXISTS);
+        }
         if (null == follows) {
-            jsonResultHelper.buildFailJsonResult(CommonResultCode.CELEBRITY_DELFOLLOW);
+            return jsonResultHelper.buildFailJsonResult(CommonResultCode.CELEBRITY_DELFOLLOW);
         }
         PhCelebrityList celebrity = phCelebrityListService.findOne(id);
         celebrity.setFansSum(celebrity.getFansSum() - 1L);

@@ -71,7 +71,7 @@ public class MayOneController {
     }
 
     @Scheduled(cron = "0 55 11 * * *")
-    private void pushWX() {
+    public void pushWX() {
         refreshDateTime();
         if (Arrays.asList(dateStrArr).indexOf(todayStr) >= 0) {
             //推送微信订阅消息
