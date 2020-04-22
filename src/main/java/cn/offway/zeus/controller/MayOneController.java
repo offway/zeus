@@ -70,7 +70,7 @@ public class MayOneController {
         return data;
     }
 
-    @Scheduled(cron = "0 55 11 * * *")
+    //    @Scheduled(cron = "0 55 11 * * *")
     public void pushWX() {
         refreshDateTime();
         logger.info(MessageFormat.format("微信每日推送定时任务启动，时间是{0}", todayStr));
@@ -82,7 +82,7 @@ public class MayOneController {
             for (Object o : stringRedisTemplate.opsForHash().keys(keyWX)) {
                 String openid = String.valueOf(stringRedisTemplate.opsForHash().get(keyWX, o));
                 // 订阅消息包装
-                Map<String, Object> args = WXUtil.buildMsg(openid, "url", "五一抢券倒计时5分钟！", "¥1000000无门槛券准点放送，冲！");
+                Map<String, Object> args = WXUtil.buildMsg(openid, "https://h5.offway.cn/act/#/mayday?uid=", "五一抢券倒计时5分钟！", "¥1000000无门槛券准点放送，冲！");
                 // 推送订阅消息
                 WXUtil.sendSubscribeMsg(logger, args, token);
             }
@@ -267,7 +267,7 @@ public class MayOneController {
     @PostMapping("/subscribe")
     public JsonResult subscribe(
             @ApiParam("用户ID") @RequestParam String userId,
-            @ApiParam("OPENID") @RequestParam String openId,
+            @ApiParam("OPENID") @RequestParam(defaultValue = "123456", required = false) String openId,
             @ApiParam("日期") @RequestParam(defaultValue = "2019-12-23") String dateStd,
             @ApiParam("时间") @RequestParam(defaultValue = "11:55:00", required = false) String timeStd) {
         setRedisTemplate();
@@ -286,7 +286,7 @@ public class MayOneController {
             Map<String, String> args = new HashMap<>();
             args.put("type", "0");//0-H5,1-精选文章,2-活动
             args.put("id", null);
-            args.put("url", "url");
+            args.put("url", "https://h5.offway.cn/act/#/mayday?uid=");
             DateTime timePoint = new DateTime();
             String[] YMD = dateStd.split("-");
             String[] HMS = timeStd.split(":");
