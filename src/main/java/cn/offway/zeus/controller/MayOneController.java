@@ -91,10 +91,10 @@ public class MayOneController {
         }
     }
 
-    @Scheduled(cron = "*/5 * * * * *")
-    public void testCron() {
-        logger.info("test Cron!!!");
-    }
+//    @Scheduled(cron = "*/5 * * * * *")
+//    public void testCron() {
+//        logger.info("test Cron!!!");
+//    }
 
     @GetMapping("/showTime")
     public String showTime() {
